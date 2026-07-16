@@ -10,24 +10,48 @@
  * prefers-color-scheme handling belongs here.
  */
 @theme {
-  /* Helvetica Neue is not licensed for web embedding and is never
-     self-hosted. macOS/iOS render the real face from the visitor's own
-     licensed copy; other platforms fall back to Arial. */
+  /* --- Typefaces -----------------------------------------------------------
+   * The design uses TWO families:
+   *   body     Helvetica Neue        (400 Regular, 500 Medium)
+   *   headings Helvetica Now Display (700 Bold, 900 Black)
+   *
+   * Neither is self-hosted — both are commercial Monotype faces and we hold no
+   * webfont licence (see CLAUDE.md → Typography).
+   *
+   * Helvetica Neue ships with macOS/iOS, so --font-sans renders the real face
+   * for Apple visitors and falls back to Arial elsewhere.
+   *
+   * Helvetica Now Display ships with NO operating system, so --font-display
+   * never resolves to the authored face for anyone. It degrades to Helvetica
+   * Neue on Apple (same family DNA, visibly tighter) and Arial elsewhere.
+   * This is a known, accepted fidelity gap on headings. */
   --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display:
+    "Helvetica Now Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-  /* Buttons and the phone pill. The alpha is authored into the fill itself.
-     Read exactly via get_design_context (nodes 95:18, 131:8). */
-  --color-rebm-navy: rgba(3, 44, 64, 0.9);
+  /* --- Colors --------------------------------------------------------------
+   * All read from the Figma REST API (file gde5QfMIOJoT15vDakKzpe, node 95:2).
+   * Exact authored values — nothing here is sampled or estimated. */
+  --color-rebm-navy: rgba(3, 44, 64, 0.9); /* buttons, phone pill (95:18, 131:8) */
+  --color-rebm-footer: #05212f; /* footer bg, card titles, legal band (95:135) */
+  --color-rebm-blue: #689ecf; /* frame fill; also the bio-name headings */
+  --color-rebm-card: #f9f9f9; /* property type card (Rectangle 19) */
+  --color-rebm-card-border: #d9d9d9; /* property card stroke */
+  --color-rebm-quote-border: #417aae; /* testimonial card stroke (Rectangle 28) */
+  --color-rebm-star: #fb9639; /* testimonial stars */
+  --color-rebm-link: #84c4ff; /* "View Legal Disclaimer" + its caret */
 
-  /* Sampled from the lossless PNG render of frame 95:2. PNG sampling of a
-     FLAT fill returns the exact authored value, so these are measured, not
-     estimated. Only flat regions are listed — bands composited over photos
-     (hero overlay, the dark info band, the "REBM Can" band) sample as
-     photo+overlay blended and are deliberately absent until read from Figma. */
-  --color-rebm-footer: #05212f; /* footer bg (Rectangle 30) */
-  --color-rebm-blue: #689ecf; /* frame fill: hero base + testimonials bg */
-  --color-rebm-legal: #4b799f; /* legal disclaimer band */
-  --color-rebm-card: #f9f9f9; /* property type card */
+  /* Section bands. These sit over photos or the frame fill, so what you see on
+     screen is a composite — never sample them from a screenshot; these are the
+     authored fills.
+       Rectangle 5  → fill #0E384F at fill-opacity 0.5
+       Rectangle 31 → fill #05212F at NODE opacity 0.3; over the #689ECF frame
+                      fill that composites to #4B799F, which is what a sample
+                      of the legal band returns. */
+  --color-rebm-band-cta: #4c84b7; /* "Google Is Luck" band (Rectangle 9) */
+  --color-rebm-band-can: #4076a7; /* "REBM Can" band (Rectangle 29) */
+  --color-rebm-band-info: rgba(14, 56, 79, 0.5); /* dark info band (Rectangle 5) */
+  --color-rebm-band-legal: rgba(5, 33, 47, 0.3); /* legal band (Rectangle 31) */
 }
 
 html {

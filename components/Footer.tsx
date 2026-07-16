@@ -1,46 +1,47 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { NAV_LINKS, PHONE_HREF, PHONE_NUMBER_INTL } from "@/lib/nav";
-import logo from "@/public/assets/rebm-logo.png";
+import { COPYRIGHT, FOOTER_LINKS, PHONE_HREF, PHONE_NUMBER_INTL } from "@/lib/nav";
+import logo from "@/public/assets/rebm-logo-footer@2x.png";
 
 /**
  * Site footer — identical across homepage / Blog / Post / tags (Figma 95:135-144,
- * and Group 60 on the other frames). Built once.
+ * Group 60 elsewhere). Built once.
  *
- * Exact geometry from Figma (desktop homepage, footer top = y 9209.5):
+ * Geometry, exact from Figma (footer top = y 9209.5 in frame 95:2):
  *   bg            0, 9209.5   1920 × 507        #05212F
- *   logo (image7) 188, 9305.5 538.667 × 78.667  → 96 from footer top
- *   COMPANY       840, 9305.5 119 × 31
- *   links         840, 9362.5 132 × 258         → 6 lines, 43px apart
- *   SERVICES     1100, 9305.5 115 × 31
- *   Disclaimer   1100, 9362.5 112 × 43
- *   CONTACT US   1360, 9305.5 151 × 31
- *   phone        1360, 9362.5 197 × 43
- *   "Real Estate Foundation Inc."  188, 9404.5  222 × 23
- *   copyright                      188, 9597.5  376 × 23
+ *   logo (image7) 188, 9305.5 538.667 × 78.667  → 96 below footer top
+ *   COMPANY       840, 9305.5 · SERVICES 1100 · CONTACT US 1360  (260 apart)
+ *   links         840, 9362.5 → 43.2px line pitch
+ *   "Real Estate Foundation Inc."  188, 9404.5
+ *   copyright                      188, 9597.5
  *
- * The columns are left-anchored at 840/1100/1360 (fixed 260 apart), ending at
- * ~1557 — leaving 363px of dead space on the right against 188 on the left.
- * That asymmetry is as authored; kept per decision #9.
+ * Type, exact from the Figma REST API:
+ *   column headings  Helvetica Neue 400 · 24px/31.2 · #FFFFFF
+ *   links            Helvetica Neue 400 · 24px/43.2 · #689ECF   ← blue, not white
+ *   brand + copyright Helvetica Neue 400 · 18px/23.4 · #FFFFFF
  *
- * ⚠️ FONT SIZES ARE NOT SET HERE. Figma's line boxes (31 / 43 / 23px) are exact
- * and applied as line-height, but the underlying fontSize was never read — the
- * MCP quota ran out first. Sizes come from the REST extract; until then this
- * inherits, deliberately, rather than guessing (CLAUDE.md: never guess a value).
+ * Columns are left-anchored at 840/1100/1360 and end at ~1557, leaving 363px of
+ * dead space right vs 188 left. Asymmetric as authored; kept per decision #9.
  *
- * The Figma homepage footer lists 6 links (no Blog) as a single text node.
- * Split into real anchors, Blog included, per decisions #1 and Known drift.
+ * Content deviates from Figma where the live site governs (CLAUDE.md):
+ *   - 8 links incl. Home, FAQ and Blog; Figma's single text node has 6
+ *   - copyright "© 2026 Real Estate Foundation, Inc.", not "@ ... 2024"
+ *   - Contact points at /contact-us, a real page, not an anchor
+ *
+ * Logo is image 7 (95:144) — the footer's own asset, exported at 2x via REST so
+ * it is genuinely transparent. It is a different file from the header's image 5,
+ * and neither is the A4 vector (a different mark entirely). See decision #5.
+ *
+ * ⚠️ Social icons (LinkedIn / X / YouTube) are on the live site but absent from
+ * the Figma footer. Unresolved — see SOCIAL_LINKS in lib/nav.ts.
  */
-
-const FOOTER_LINKS = [{ label: "Home", href: "/" }, ...NAV_LINKS];
-
 export function Footer() {
   return (
     <footer className="w-full bg-rebm-footer text-white">
       <div className="mx-auto h-[507px] w-full max-w-[1920px] px-[188px] pt-[96px]">
         <div className="flex">
-          {/* Brand column — anchored at x=188 */}
+          {/* Brand column, anchored at x=188 */}
           <div className="w-[652px] shrink-0">
             <Image
               src={logo}
@@ -49,17 +50,16 @@ export function Footer() {
               height={79}
               className="h-[78.667px] w-[538.667px]"
             />
-            <p className="mt-[21px] leading-[23px]">Real Estate Foundation Inc.</p>
-            <p className="mt-[170px] leading-[23px]">
-              Copyright @ Real Estate Foundation Inc., 2024
+            <p className="mt-[21px] text-[18px] leading-[23.4px]">
+              Real Estate Foundation Inc.
             </p>
+            <p className="mt-[170px] text-[18px] leading-[23.4px]">{COPYRIGHT}</p>
           </div>
 
-          {/* Link columns — 840 / 1100 / 1360, i.e. 260 apart from x=188 */}
           <FooterColumn heading="COMPANY">
             {FOOTER_LINKS.map((link) => (
-              <li key={link.href} className="leading-[43px]">
-                <Link href={link.href} className="transition-opacity hover:opacity-80">
+              <li key={link.href}>
+                <Link href={link.href} className={LINK_CLASS}>
                   {link.label}
                 </Link>
               </li>
@@ -67,18 +67,18 @@ export function Footer() {
           </FooterColumn>
 
           <FooterColumn heading="SERVICES">
-            <li className="leading-[43px]">
+            <li>
               {/* Terms of Service opens as a popup, not a page — decision #14.
                   Wired to the modal once that component exists. */}
-              <Link href="/#disclaimer" className="transition-opacity hover:opacity-80">
+              <Link href="/#disclaimer" className={LINK_CLASS}>
                 Disclaimer
               </Link>
             </li>
           </FooterColumn>
 
           <FooterColumn heading="CONTACT US">
-            <li className="leading-[43px]">
-              <a href={PHONE_HREF} className="transition-opacity hover:opacity-80">
+            <li>
+              <a href={PHONE_HREF} className={LINK_CLASS}>
                 {PHONE_NUMBER_INTL}
               </a>
             </li>
@@ -89,6 +89,9 @@ export function Footer() {
   );
 }
 
+const LINK_CLASS =
+  "block text-[24px] leading-[43.2px] text-rebm-blue transition-opacity hover:opacity-80";
+
 function FooterColumn({
   heading,
   children,
@@ -98,7 +101,7 @@ function FooterColumn({
 }) {
   return (
     <div className="w-[260px] shrink-0">
-      <h2 className="leading-[31px]">{heading}</h2>
+      <h2 className="text-[24px] leading-[31.2px]">{heading}</h2>
       <ul className="mt-[26px]">{children}</ul>
     </div>
   );

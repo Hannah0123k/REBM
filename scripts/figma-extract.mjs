@@ -64,10 +64,17 @@ function note(map, key, label) {
 function walk(node) {
   const label = `${node.name} (${node.id})`;
 
+  // Two independent opacities exist and BOTH must be folded in:
+  //   fill.opacity — per-fill (e.g. Rectangle 5 → rgba(14,56,79,0.5))
+  //   node.opacity — the whole layer (e.g. Rectangle 31: #05212F at 0.3, which
+  //                  composites over the frame fill to the #4B799F you see)
+  // Ignoring node.opacity reports an authored value the eye never sees.
+  const nodeOpacity = node.opacity ?? 1;
+
   for (const fill of node.fills ?? []) {
     if (fill.visible === false) continue;
     if (fill.type === "SOLID" && fill.color) {
-      note(colors, toCss(fill.color, fill.opacity ?? 1), label);
+      note(colors, toCss(fill.color, (fill.opacity ?? 1) * nodeOpacity), label);
     }
   }
   for (const stroke of node.strokes ?? []) {

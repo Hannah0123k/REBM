@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { PhonePill } from "@/components/PhonePill";
 import { NAV_LINKS } from "@/lib/nav";
-import logo from "@/public/assets/rebm-logo.png";
+import logo from "@/public/assets/rebm-logo-header@2x.png";
 
 /**
  * Site header — shared by every page (Figma: homepage 95:11 + 95:12, and the
@@ -20,9 +20,10 @@ import logo from "@/public/assets/rebm-logo.png";
  * frame places this nav 3px off from Blog/tags, and the homepage frame omits
  * the Blog link. One component, one position.
  *
- * The logo is currently the raster export from the web frames. The vector
- * lives only in the A4 print frame (2206:115); swapping to it is decision #5,
- * pending an SVG export once the Figma REST token is available.
+ * Logo is image 5 (95:11), exported at 2x via the REST API so it carries real
+ * transparency — the header sits over a photo on Blog/Post/tags, where a baked
+ * background would show as a box. NOT the A4 vector: that is a different mark
+ * entirely (sans-serif, no border, no ".com"). Decision #5 reversed.
  */
 export function SiteHeader() {
   return (

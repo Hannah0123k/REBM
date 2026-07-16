@@ -37,23 +37,49 @@ If Figma has the number, read it with `get_design_context` on that node. Do not 
 
 ## Design tokens
 
-Confirmed by `get_design_context` (exact):
-- **Font:** Helvetica Neue
-- **Primary dark** (buttons, phone pill): `rgba(3, 44, 64, 0.9)`
-- **Nav link:** 18px / 29.333px line-height, white
-- **Button:** 24px / 32px, white; padding 32×16; radius 80px
-- **Phone pill:** padding 24×8; radius 20px; gap 8px; icon 21.333px
-- **Nav row:** gap 40px; padding 13.333px
+**Source of values: the Figma REST API, not the MCP.** The MCP is capped at **6 tool calls/month** on Starter and is exhausted. Use `node scripts/figma-extract.mjs <nodeId>` — separate quota, exact values, caches raw JSON to `figma-data/`. Token in `.env.local` (gitignored, scope `file_content:read`).
 
-⚠️ **Unverified — eyeballed from PNG by a subagent, must be confirmed with `get_design_context` before use:**
-`#689ECF` (mobile frame blue) · `#0D374E` (mobile button) · `#F9F9F9` (property card) · `#FFFFFF` (testimonial card) · `#FB9639` (stars) · `#05212F`/`#0C2839` (footer) · `#3A6A8F` (explainer band) · `#5584AD` · `#477BA9` · `#4B799F` · `#D3E2F1` (newsletter card)
+⚠️ **Two opacities exist and both matter.** `fill.opacity` (per-fill) *and* `node.opacity` (whole layer). Reading only the fill reports a value the eye never sees — e.g. `Rectangle 31` is `#05212F` at node opacity 0.3, which composites over the frame fill to the `#4B799F` you'd sample. `figma-extract.mjs` folds both in.
+
+All tokens live in `app/globals.css` under `@theme` — see that file for the authoritative list with node references.
 
 Measurements carry a **1.333 factor** (29.333, 13.333, 21.333) — the frame was likely authored at 1440 and scaled to 1920. **Decision: build against 1920 as authored.**
 
-### Typography
-`font-family: "Helvetica Neue", Helvetica, Arial, sans-serif`
+### Typography — TWO families
 
-**Do not self-host Helvetica Neue.** The `.otf` files in `~/Downloads/Helvetica Neue/` are desktop files with an all-rights-reserved Linotype notice and **no license grant**. Serving them would redistribute a commercial font. The stack above renders genuine Helvetica Neue on macOS/iOS from the visitor's own licensed copy (pixel-exact to Figma) and falls back to Arial on Windows/Android. Approved by Hannah 2026-07-16.
+| Role | Family | Weights | Ships with an OS? |
+|---|---|---|---|
+| Body | **Helvetica Neue** | 400, 500 | ✅ macOS/iOS |
+| Headings | **Helvetica Now Display** | 700 Bd, 900 Blk | ❌ **nothing** |
+
+```css
+--font-sans:    "Helvetica Neue", Helvetica, Arial, sans-serif;
+--font-display: "Helvetica Now Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+```
+
+**Neither is self-hosted** — both are commercial Monotype faces and we hold no webfont licence. The `.otf` files in `~/Downloads/Helvetica Neue/` are desktop files with an all-rights-reserved Linotype notice and **no license grant**; serving them would redistribute a commercial font. (They're also Helvetica Neue only — they wouldn't cover the headings regardless.)
+
+Consequence, accepted knowingly: body text is pixel-exact on Apple devices. **Headings are never exact for anyone** — Helvetica Now Display is installed nowhere, so they degrade to Helvetica Neue on Apple and Arial elsewhere.
+
+### Type scale (exact, from REST)
+
+| Use | Family | Size / line-height | Color |
+|---|---|---|---|
+| Hero H1 | HND Bold 700 | 62 / 80.6 | `#FFFFFF` |
+| Bio names (Alan/Rhett) | HND **Black 900** | 62 / 80.6 | `#689ECF` |
+| Section H2 | HND Bold 700 | 32 / 41.6 | — |
+| Step labels | HND Bold 700 | 24 / 31.2 | — |
+| Small headings | HND Bold 700 | 18 / 23.4 | — |
+| Body | Helvetica Neue 400 | 24 / 31.2 | `#000000` |
+| Hero subcopy | Helvetica Neue **500** | 24 / 31.2 | — |
+| Steps body | Helvetica Neue **500** | 18 / 23.4 | — |
+| Button | Helvetica Neue 400 | 24 / 32 | `#FFFFFF` |
+| Nav link | Helvetica Neue 400 | 18 / 29.333 | `#FFFFFF` |
+| "REBM Can" items | Helvetica Neue 400 | 32 / 41.6 centered | — |
+| Footer headings | Helvetica Neue 400 | 24 / 31.2 | `#FFFFFF` |
+| Footer links | Helvetica Neue 400 | 24 / 43.2 | `#689ECF` ← blue |
+| Footer brand + copyright | Helvetica Neue 400 | 18 / 23.4 | `#FFFFFF` |
+| Legal disclaimer | Helvetica Neue 400 | 16 / 20.8 | — |
 
 ## Stack
 
@@ -92,7 +118,7 @@ Next.js 16.2 (App Router) · React 19.2 · TypeScript · Tailwind 4 · GSAP (aft
 | 2 | **Breakpoints invented** — mobile stack ≤768, desktop ≥1024, container scales between. Figma has only 1920 and 402; everything between is undesigned. |
 | 3 | **Hamburger drawer invented** — full-screen navy overlay, stacked links, phone pill, GSAP fade+stagger. No open state exists in Figma. |
 | 4 | **Font stack, not self-hosted** (see Typography). |
-| 5 | **Export the vector logo** from the A4 print frame (`2206:115`, ~21 paths). Web frames use a raster logo; vector is sharper and smaller. |
+| 5 | ~~Export the vector logo from the A4 print frame~~ **REVERSED after visual check.** The A4 "logo" is a *different mark*: sans-serif, no border, no ".com". The real logo is a serif wordmark in a rounded-rect border. Use the web frames' own assets, exported at 2x via REST (`image 5` → header, `image 7` → footer) — they carry real transparency. The blue box seen earlier was `get_screenshot` compositing the frame fill, not the asset. |
 | 6 | **"View more articles" → `/blog/page/2`.** No pagination designed. |
 | 7 | **Reference width 1920**, as authored. |
 | 8 | **Post body built once** — Figma duplicates it verbatim (y=1467 and y=2939). Design artifact, not structure. |
