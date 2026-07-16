@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens derived from Figma (file gde5QfMIOJoT15vDakKzpe, Page 1).
+ * The file defines no Figma variables, so every value here was read off a
+ * layer with get_design_context. Only add a token once its exact value has
+ * been read — never eyeballed from a screenshot.
+ *
+ * The design is light-only. There is no dark-mode variant in Figma, so no
+ * prefers-color-scheme handling belongs here.
+ */
+@theme {
+  /* Helvetica Neue is not licensed for web embedding and is never
+     self-hosted. macOS/iOS render the real face from the visitor's own
+     licensed copy; other platforms fall back to Arial. */
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* Buttons and the phone pill. The alpha is authored into the fill itself. */
+  --color-rebm-navy: rgba(3, 44, 64, 0.9);
+}
+
+html {
+  font-family: var(--font-sans);
+}
+
+body {
+  background: #ffffff;
+  color: #000000;
+}
