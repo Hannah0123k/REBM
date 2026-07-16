@@ -97,6 +97,23 @@ Next.js 16.2 (App Router) · React 19.2 · TypeScript · Tailwind 4 · GSAP (aft
 | 7 | **Reference width 1920**, as authored. |
 | 8 | **Post body built once** — Figma duplicates it verbatim (y=1467 and y=2939). Design artifact, not structure. |
 | 9 | **Container drift kept as authored** unless told otherwise. |
+| 10 | **All 21 blog posts ship**, not the 7 the live index exposes. 14 are orphaned on the live site (published + indexed, unreachable). Content is placeholder for now; the planned portal will update it. |
+| 11 | **FAQ: take design *and* copy from the live site.** Figma has no FAQ section at all — this is the one place the live site governs design. Use the real 23-question FAQ, not the duplicate 5-question stub the nav currently lands on. |
+| 12 | **Property types: follow the live site — 6 cards, no Multi-Family**, live ordering. Figma's 7-card version loses. Note the live FAQ contradicts this by listing multifamily and residential separately; flagged to Hannah, resolved in favor of the cards. |
+| 13 | **Surface the tag archives.** 65 tag + 1 category archive are live and indexed but linked from nowhere. They must be reachable, or 66 indexed URLs 404 at launch. |
+| 14 | **Terms of Service is a popup triggered by "Disclaimer"** — confirmed existing behavior, build it that way, not as a page. |
+
+## Before launch — do not skip
+
+- [ ] **Export form entries + the subscriber list from WP admin.** Both forms post server-side to destinations that are **not recoverable from the front end**. Once the WordPress site is off, those leads are gone permanently. Hannah asked to be reminded at DNS time.
+- [ ] **Tell the client the contact form's fields are cross-wired** on the *existing* site: the "Phone" input submits as Elementor's `email` field, "Email" submits as `field_596c840`. Anything keyed on `email` has been receiving phone numbers — inbound leads may have been mis-captured. This is a pre-existing bug, not something the rebuild introduced.
+- [ ] **Audit the GTM container contents.** Not auditable from the front end, and the most attractive place for a payload to survive a WordPress cleanup. The front end is otherwise clean.
+- [ ] **Replace the unpinned `unpkg.com` masonry script** — loads on every page, unversioned, third-party supply-chain risk. Don't carry it over.
+- [ ] **Write meta descriptions.** The live site has none anywhere and no SEO plugin.
+- [ ] **Privacy Policy does not exist** — the ToS contains an unresolved `[link]` placeholder pointing at it. Legal doc with a dead link; needs the client to supply one.
+- [ ] Redirects for the 14 orphaned posts + 66 tag/category URLs.
+
+**Never deploy or change DNS without Hannah's explicit approval.**
 
 ## Known drift in Figma (do not reproduce)
 

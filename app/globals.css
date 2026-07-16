@@ -15,8 +15,19 @@
      licensed copy; other platforms fall back to Arial. */
   --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-  /* Buttons and the phone pill. The alpha is authored into the fill itself. */
+  /* Buttons and the phone pill. The alpha is authored into the fill itself.
+     Read exactly via get_design_context (nodes 95:18, 131:8). */
   --color-rebm-navy: rgba(3, 44, 64, 0.9);
+
+  /* Sampled from the lossless PNG render of frame 95:2. PNG sampling of a
+     FLAT fill returns the exact authored value, so these are measured, not
+     estimated. Only flat regions are listed — bands composited over photos
+     (hero overlay, the dark info band, the "REBM Can" band) sample as
+     photo+overlay blended and are deliberately absent until read from Figma. */
+  --color-rebm-footer: #05212f; /* footer bg (Rectangle 30) */
+  --color-rebm-blue: #689ecf; /* frame fill: hero base + testimonials bg */
+  --color-rebm-legal: #4b799f; /* legal disclaimer band */
+  --color-rebm-card: #f9f9f9; /* property type card */
 }
 
 html {
