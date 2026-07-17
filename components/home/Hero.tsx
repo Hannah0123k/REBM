@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
 import { Container } from "@/components/Container";
 import { PillButton } from "@/components/PillButton";
 import { hero } from "@/content/homepage";
@@ -19,14 +23,68 @@ import { hero } from "@/content/homepage";
  *
  * The header is fixed/global (app/layout.tsx); the hero pads its content down by
  * the header height so the headline clears it.
+ *
+ * SCROLL-LINKED FADE (GSAP ScrollTrigger, scrub): as the user scrolls into the
+ * next section the hero CONTENT fades out and drifts up ~30px, and the building
+ * fades to ~0.25 slightly more slowly for a layered feel. The sticky header, the
+ * blue wash, and the dark info band are NOT animated — the band stays solid and
+ * naturally takes over. Disabled under prefers-reduced-motion (content stays
+ * fully visible). The rest of the homepage uses one-time entrance animations
+ * (separate; not this scroll effect).
  */
 export function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const buildingRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const section = sectionRef.current;
+    const content = contentRef.current;
+    const building = buildingRef.current;
+    if (!section || !content || !building) return;
+
+    let cleanup = () => {};
+    let cancelled = false;
+
+    // Load GSAP + ScrollTrigger on the client only.
+    Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(
+      ([{ gsap }, { ScrollTrigger }]) => {
+        if (cancelled) return;
+        gsap.registerPlugin(ScrollTrigger);
+        const ctx = gsap.context(() => {
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: section,
+              start: "top top",
+              // Complete around where the info band reaches the top portion of
+              // the viewport (≈70% down the hero), not the whole section.
+              end: "70% top",
+              scrub: 0.8,
+            },
+          });
+          // Text fades a touch faster than the building (duration 0.7 vs 1) so
+          // the building lingers → subtle layered depth.
+          tl.to(content, { opacity: 0, y: -30, ease: "none", duration: 0.7 }, 0);
+          tl.to(building, { opacity: 0.25, ease: "none", duration: 1 }, 0);
+        }, section);
+        cleanup = () => ctx.revert();
+      },
+    );
+
+    return () => {
+      cancelled = true;
+      cleanup();
+    };
+  }, []);
+
   return (
-    <section className="relative w-full overflow-hidden bg-rebm-blue">
+    <section ref={sectionRef} className="relative w-full overflow-hidden bg-rebm-blue">
       {/* Photo as a background layer — exactly the live treatment:
           size 100% (width 100%, height auto) · position top-centre · no-repeat.
           Set inline for reliability (the Tailwind arbitrary bg-size didn't apply). */}
       <div
+        ref={buildingRef}
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
@@ -49,26 +107,30 @@ export function Hero() {
       {/* Content block: live is padding 150 top / 312 bottom → the tall bottom
           pad is what makes the hero 982 and crops the building to match live. */}
       <Container className="relative pt-[calc(var(--header-h)+42px)] pb-[60px] lg:pb-[44px]">
-        <h1 className="max-w-[840px] text-[34px] leading-[42px] font-semibold tracking-[-0.2px] text-white sm:text-[44px] sm:leading-[58px] lg:text-[50px] lg:leading-[70px]">
-          {hero.headingLines.map((line, i) => (
-            <span key={line}>
-              {line}
-              {/* Force the exact live break on desktop; wrap naturally below. */}
-              {i < hero.headingLines.length - 1 && <br className="hidden lg:inline" />}
-              {i < hero.headingLines.length - 1 && <span className="lg:hidden"> </span>}
-            </span>
-          ))}
-        </h1>
+        {/* Everything inside contentRef fades/drifts on scroll; the header, wash
+            and info band stay put. */}
+        <div ref={contentRef} className="will-change-[opacity,transform]">
+          <h1 className="max-w-[840px] text-[34px] leading-[42px] font-semibold tracking-[-0.2px] text-white sm:text-[44px] sm:leading-[58px] lg:text-[50px] lg:leading-[70px]">
+            {hero.headingLines.map((line, i) => (
+              <span key={line}>
+                {line}
+                {/* Force the exact live break on desktop; wrap naturally below. */}
+                {i < hero.headingLines.length - 1 && <br className="hidden lg:inline" />}
+                {i < hero.headingLines.length - 1 && <span className="lg:hidden"> </span>}
+              </span>
+            ))}
+          </h1>
 
-        <div className="mt-[32px] max-w-[580px] space-y-[26px] text-[20px] leading-[26px] text-white">
-          {hero.paragraphs.map((p) => (
-            <p key={p}>{p}</p>
-          ))}
+          <div className="mt-[32px] max-w-[580px] space-y-[26px] text-[20px] leading-[26px] text-white">
+            {hero.paragraphs.map((p) => (
+              <p key={p}>{p}</p>
+            ))}
+          </div>
+
+          <PillButton href={hero.cta.href} className="mt-[32px]">
+            {hero.cta.label}
+          </PillButton>
         </div>
-
-        <PillButton href={hero.cta.href} className="mt-[32px]">
-          {hero.cta.label}
-        </PillButton>
       </Container>
 
       {/* Info band — EXACT Figma design (Rectangle 5, 95:36). The Figma node is
