@@ -29,10 +29,16 @@ export function Bios() {
   return (
     <section id="about" className="w-full bg-[#F5F5F5]">
       <Container className="pt-[202px] pb-[50px]">
+        {/* "Meet Alan & Rhett" kicker — indented to the text column so it sits
+            above the name; the photo below aligns to the name's top, not the
+            kicker (matches the reference). An addition; not on the live site. */}
+        <h2 className="mb-[16px] text-[28px] leading-[34px] font-bold text-rebm-navy sm:pl-[350.7px] lg:text-[34px] lg:leading-[42px]">
+          Meet Alan &amp; Rhett
+        </h2>
         {bios.people.map((person, i) => (
           <div
             key={person.name}
-            className={`flex flex-col gap-[24px] sm:flex-row ${i > 0 ? "mt-[51px]" : ""}`}
+            className={`flex flex-col items-start gap-[24px] sm:flex-row ${i > 0 ? "mt-[51px]" : ""}`}
           >
             <Image
               src={PHOTOS[person.photo]}
@@ -40,13 +46,6 @@ export function Bios() {
               className="h-[248px] w-[285.7px] shrink-0 rounded-[30px] object-cover object-top sm:mr-[65px]"
             />
             <div className="min-w-0 flex-1">
-              {/* "Meet Alan & Rhett" kicker — small bold label above the first
-                  name, in the text column (an addition; not on the live site). */}
-              {i === 0 && (
-                <h2 className="mb-[12px] text-[24px] leading-[30px] font-bold text-rebm-navy lg:text-[28px] lg:leading-[34px]">
-                  Meet Alan &amp; Rhett
-                </h2>
-              )}
               <h3 className="mb-[20px] text-[40px] leading-[48px] font-black text-rebm-navy lg:text-[62px] lg:leading-[80.6px]">
                 {person.name}
               </h3>
