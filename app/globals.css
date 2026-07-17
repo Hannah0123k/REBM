@@ -27,7 +27,7 @@
      composite — never sample them from a screenshot. */
   --color-rebm-band-cta: #4c84b7; /* "Google Is Luck" band */
   --color-rebm-band-can: #4076a7; /* "REBM can also introduce" band */
-  --color-rebm-band-info: rgba(6, 33, 47, 0.62); /* dark info band under hero — darker than live's 0.5 per request, but close to its look */
+  --color-rebm-band-info: rgba(14, 56, 79, 0.5); /* dark info band under hero — exact live value; translucent navy over the hero photo */
   --color-rebm-band-legal: rgba(5, 33, 47, 0.3); /* legal band */
 }
 
