@@ -29,6 +29,11 @@ export function Bios() {
   return (
     <section id="about" className="w-full bg-[#F5F5F5]">
       <Container className="pt-[202px] pb-[50px]">
+        {/* Section title — an addition (not on the live site), styled to match
+            the other section headings (Markets We Serve, Testimonials). */}
+        <h2 className="mb-[48px] text-[36px] leading-[44px] font-bold text-rebm-navy lg:text-[62px] lg:leading-[80.6px]">
+          Meet Alan and Rhett
+        </h2>
         {bios.people.map((person, i) => (
           <div
             key={person.name}
