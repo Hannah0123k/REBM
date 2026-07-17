@@ -1,4 +1,5 @@
 import { Container } from "@/components/Container";
+import { Reveal } from "@/components/Reveal";
 import { process } from "@/content/homepage";
 
 /**
@@ -29,35 +30,34 @@ export function Process() {
       {/* Group 34: x=1125, y=1121.5 → 109 below the section top. */}
       <Container className="relative flex min-h-[846px] justify-end pt-[109px]">
         <div className="w-full lg:w-[605px] lg:shrink-0">
-        <h2 className="text-[32px] leading-[41.6px] font-bold text-black">
-          {process.heading}
-        </h2>
+          {/* Heading + intro slide gently in from the right (fade-up on mobile). */}
+          <Reveal x={30} stagger={0.1}>
+            <h2 className="text-[32px] leading-[41.6px] font-bold text-black">{process.heading}</h2>
+            <p className="mt-[24px] text-[24px] leading-[31.2px] text-black">{process.intro}</p>
+          </Reveal>
 
-        <p className="mt-[24px] text-[24px] leading-[31.2px] text-black">
-          {process.intro}
-        </p>
-
-        <div className="mt-[39px] space-y-[24px]">
-          {process.steps.map((step) => (
-            <div key={step.label}>
-              <h4 className="text-[24px] leading-[31.2px] font-bold text-rebm-blue">
-                {step.label}
-              </h4>
-              <p className="mt-[8px] text-[18px] leading-[23.4px] font-medium text-black">
-                {step.before}
-                {step.linkText && (
-                  <a
-                    href={step.linkHref}
-                    className="text-rebm-link underline transition-opacity hover:opacity-70"
-                  >
-                    {step.linkText}
-                  </a>
-                )}
-                {step.after}
-              </p>
-            </div>
-          ))}
-        </div>
+          {/* Steps 1–3 fade upward in a short stagger. */}
+          <Reveal className="mt-[39px] space-y-[24px]" stagger={0.08} start="top 82%">
+            {process.steps.map((step) => (
+              <div key={step.label}>
+                <h4 className="text-[24px] leading-[31.2px] font-bold text-rebm-blue">
+                  {step.label}
+                </h4>
+                <p className="mt-[8px] text-[18px] leading-[23.4px] font-medium text-black">
+                  {step.before}
+                  {step.linkText && (
+                    <a
+                      href={step.linkHref}
+                      className="text-rebm-link underline transition-opacity hover:opacity-70"
+                    >
+                      {step.linkText}
+                    </a>
+                  )}
+                  {step.after}
+                </p>
+              </div>
+            ))}
+          </Reveal>
         </div>
       </Container>
     </section>

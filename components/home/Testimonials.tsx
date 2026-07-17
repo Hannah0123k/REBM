@@ -1,5 +1,6 @@
 import { Container } from "@/components/Container";
 import { PillButton } from "@/components/PillButton";
+import { Reveal } from "@/components/Reveal";
 import { Faq } from "@/components/home/Faq";
 import { testimonials } from "@/content/homepage";
 
@@ -26,11 +27,14 @@ export function Testimonials() {
   return (
     <section id="testimonials" className="w-full bg-rebm-blue">
       <Container className="pt-[96px] pb-[125px]">
-        <h2 className="text-[36px] leading-[44px] font-bold text-rebm-navy lg:text-[62px] lg:leading-[80.6px]">
-          {testimonials.heading}
-        </h2>
+        <Reveal>
+          <h2 className="text-[36px] leading-[44px] font-bold text-rebm-navy lg:text-[62px] lg:leading-[80.6px]">
+            {testimonials.heading}
+          </h2>
+        </Reveal>
 
-        <div className="mt-[32px] gap-[20px] lg:columns-3">
+        {/* Cards reveal in a quick stagger so reading isn't held up. */}
+        <Reveal className="mt-[32px] gap-[20px] lg:columns-3" stagger={0.05} start="top 82%">
           {testimonials.items.map((t) => (
             <figure
               key={t.author}
@@ -46,13 +50,13 @@ export function Testimonials() {
               </figcaption>
             </figure>
           ))}
-        </div>
+        </Reveal>
 
         <Faq />
 
-        <div className="mt-[48px] flex justify-center">
+        <Reveal className="mt-[48px] flex justify-center">
           <PillButton href={testimonials.cta.href}>{testimonials.cta.label}</PillButton>
-        </div>
+        </Reveal>
       </Container>
     </section>
   );

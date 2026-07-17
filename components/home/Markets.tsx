@@ -1,4 +1,5 @@
 import { Container } from "@/components/Container";
+import { Reveal } from "@/components/Reveal";
 import { markets } from "@/content/homepage";
 
 /**
@@ -21,11 +22,18 @@ export function Markets() {
   return (
     <section id="property" className="w-full bg-[#F5F5F5]">
       <Container className="pt-[96px] pb-[96px]">
-        <h2 className="text-[36px] leading-[44px] font-bold text-rebm-navy lg:text-[62px] lg:leading-[80.6px]">
-          {markets.heading}
-        </h2>
+        <Reveal>
+          <h2 className="text-[36px] leading-[44px] font-bold text-rebm-navy lg:text-[62px] lg:leading-[80.6px]">
+            {markets.heading}
+          </h2>
+        </Reveal>
 
-        <div className="mt-[42px] grid grid-cols-1 gap-[20px] lg:grid-cols-2">
+        {/* Cards fade up in a quick stagger. */}
+        <Reveal
+          className="mt-[42px] grid grid-cols-1 gap-[20px] lg:grid-cols-2"
+          stagger={0.07}
+          start="top 80%"
+        >
           {markets.cards.map((card) => (
             <article
               key={card.title}
@@ -55,7 +63,7 @@ export function Markets() {
               </p>
             </article>
           ))}
-        </div>
+        </Reveal>
       </Container>
     </section>
   );

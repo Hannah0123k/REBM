@@ -1,4 +1,5 @@
 import { Container } from "@/components/Container";
+import { Reveal } from "@/components/Reveal";
 import { introduce } from "@/content/homepage";
 
 /**
@@ -16,23 +17,23 @@ import { introduce } from "@/content/homepage";
 export function Introduce() {
   return (
     <section className="w-full bg-rebm-band-can">
-      <Container className="flex flex-col items-center pt-[100px] pb-[90px] text-center">
-        <h2 className="text-[30px] leading-[39px] font-bold text-white">
-          {introduce.heading}
-        </h2>
+      <Container className="pt-[100px] pb-[90px]">
+        <Reveal className="flex flex-col items-center text-center" stagger={0.1}>
+          <h2 className="text-[30px] leading-[39px] font-bold text-white">{introduce.heading}</h2>
 
-        <div className="mt-[63px] flex w-full flex-col gap-[32px] lg:flex-row lg:gap-0">
-          {introduce.items.map((item, i) => (
-            <p
-              key={item}
-              className={`flex-1 px-[24px] text-[30px] leading-[39px] text-white ${
-                i < introduce.items.length - 1 ? "lg:border-r lg:border-white" : ""
-              }`}
-            >
-              {item}
-            </p>
-          ))}
-        </div>
+          <div className="mt-[63px] flex w-full flex-col gap-[32px] lg:flex-row lg:gap-0">
+            {introduce.items.map((item, i) => (
+              <p
+                key={item}
+                className={`flex-1 px-[24px] text-[30px] leading-[39px] text-white ${
+                  i < introduce.items.length - 1 ? "lg:border-r lg:border-white" : ""
+                }`}
+              >
+                {item}
+              </p>
+            ))}
+          </div>
+        </Reveal>
       </Container>
     </section>
   );

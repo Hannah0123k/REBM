@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Container } from "@/components/Container";
+import { Reveal } from "@/components/Reveal";
 import { SOCIAL_ICONS } from "@/components/icons/SocialIcons";
 import { COPYRIGHT, FOOTER_LINKS, PHONE_HREF, PHONE_NUMBER_INTL, SOCIAL_LINKS } from "@/lib/nav";
 import logo from "@/public/assets/rebm-logo-footer@2x.png";
@@ -43,7 +44,7 @@ export function Footer() {
   return (
     <footer className="w-full bg-rebm-footer text-white">
       <Container className="pt-[96px] pb-[96px]">
-        <div className="flex flex-col gap-[48px] lg:flex-row lg:gap-0">
+        <Reveal className="flex flex-col gap-[48px] lg:flex-row lg:gap-0" stagger={0.08}>
           {/* Brand column. Flexible, not a fixed 652: at 1920 the link columns
               land at 840/1100/1360 (i.e. 653/913/1173 inside the container), but
               a fixed 652 + 3×260 = 1432 overflows any container below ~1560 —
@@ -111,7 +112,7 @@ export function Footer() {
               })}
             </li>
           </FooterColumn>
-        </div>
+        </Reveal>
       </Container>
     </footer>
   );

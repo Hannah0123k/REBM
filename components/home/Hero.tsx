@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 import { Container } from "@/components/Container";
 import { PillButton } from "@/components/PillButton";
+import { Reveal } from "@/components/Reveal";
 import { hero } from "@/content/homepage";
 
 /**
@@ -152,16 +153,22 @@ export function Hero() {
         {/* Navy tint #0E384F @ 0.5 over the frosted building. */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-rebm-band-info" />
 
-        <Container className="relative flex flex-col gap-[28px] py-[48px] lg:flex-row lg:gap-0 lg:py-[67px]">
-          <p className="text-[18px] leading-[23.4px] text-white lg:w-[782px] lg:shrink-0">
-            {hero.band.summary}
-          </p>
-          <div aria-hidden="true" className="hidden self-stretch lg:mx-[52px] lg:block lg:w-px lg:bg-white" />
-          <div className="flex flex-col gap-[4px] text-[18px] leading-[23.4px] text-white lg:w-[617px]">
-            {hero.band.points.map((point) => (
-              <p key={point}>{point}</p>
-            ))}
-          </div>
+        <Container className="relative py-[48px] lg:py-[67px]">
+          <Reveal
+            className="flex flex-col gap-[28px] lg:flex-row lg:gap-0"
+            stagger={0.1}
+            start="top 90%"
+          >
+            <p className="text-[18px] leading-[23.4px] text-white lg:w-[782px] lg:shrink-0">
+              {hero.band.summary}
+            </p>
+            <div aria-hidden="true" className="hidden self-stretch lg:mx-[52px] lg:block lg:w-px lg:bg-white" />
+            <div className="flex flex-col gap-[4px] text-[18px] leading-[23.4px] text-white lg:w-[617px]">
+              {hero.band.points.map((point) => (
+                <p key={point}>{point}</p>
+              ))}
+            </div>
+          </Reveal>
         </Container>
       </div>
     </section>

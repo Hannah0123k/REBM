@@ -1,4 +1,5 @@
 import { Container } from "@/components/Container";
+import { Reveal } from "@/components/Reveal";
 import { valueProps } from "@/content/homepage";
 
 /**
@@ -20,23 +21,27 @@ import { valueProps } from "@/content/homepage";
 export function ValueProps() {
   return (
     <section className="w-full bg-rebm-blue">
-      <Container className="grid grid-cols-1 gap-x-[64px] gap-y-[40px] pt-[123px] pb-[176px] lg:grid-cols-3 lg:grid-rows-[auto_1fr]">
-        {valueProps.map((col) => (
-          <h3
-            key={col.title}
-            className="text-[26px] leading-[34px] font-bold text-rebm-navy lg:row-start-1 lg:mb-[25px] lg:text-[28px] lg:leading-[36px] lg:whitespace-nowrap"
-          >
-            {col.title}
-          </h3>
-        ))}
-        {valueProps.map((col) => (
-          <p
-            key={col.title}
-            className="text-[23px] leading-[29.9px] text-white lg:row-start-2"
-          >
-            {col.body}
-          </p>
-        ))}
+      <Container className="pt-[123px] pb-[176px]">
+        {/* Columns reveal left-to-right (titles cascade, then bodies), ~20px rise. */}
+        <Reveal
+          className="grid grid-cols-1 gap-x-[64px] gap-y-[40px] lg:grid-cols-3 lg:grid-rows-[auto_1fr]"
+          y={20}
+          stagger={0.1}
+        >
+          {valueProps.map((col) => (
+            <h3
+              key={col.title}
+              className="text-[26px] leading-[34px] font-bold text-rebm-navy lg:row-start-1 lg:mb-[25px] lg:text-[28px] lg:leading-[36px] lg:whitespace-nowrap"
+            >
+              {col.title}
+            </h3>
+          ))}
+          {valueProps.map((col) => (
+            <p key={col.title} className="text-[23px] leading-[29.9px] text-white lg:row-start-2">
+              {col.body}
+            </p>
+          ))}
+        </Reveal>
       </Container>
     </section>
   );

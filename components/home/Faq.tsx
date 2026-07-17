@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { Reveal } from "@/components/Reveal";
 import { faq } from "@/content/homepage";
 
 /**
@@ -56,15 +57,19 @@ function Item({ q, a }: { q: string; a: string }) {
 export function Faq() {
   return (
     <div id="faq" className="mt-[96px]">
-      <h2 className="text-[32px] leading-[40px] font-bold text-rebm-navy lg:text-[48px] lg:leading-[62.4px]">
-        {faq.heading}
-      </h2>
+      {/* Heading then the list fade up on entry; each item keeps its own
+          open/close accordion animation (independent of this reveal). */}
+      <Reveal stagger={0.1}>
+        <h2 className="text-[32px] leading-[40px] font-bold text-rebm-navy lg:text-[48px] lg:leading-[62.4px]">
+          {faq.heading}
+        </h2>
 
-      <div className="mt-[32px] flex flex-col gap-[10px]">
-        {faq.items.map((item) => (
-          <Item key={item.q} q={item.q} a={item.a} />
-        ))}
-      </div>
+        <div className="mt-[32px] flex flex-col gap-[10px]">
+          {faq.items.map((item) => (
+            <Item key={item.q} q={item.q} a={item.a} />
+          ))}
+        </div>
+      </Reveal>
 
       <div className="mt-[32px] flex justify-center">
         {/* Live: opens Elementor popup #602 with the remaining FAQs; wired to

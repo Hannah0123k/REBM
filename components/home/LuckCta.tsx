@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import { Container } from "@/components/Container";
 import { PillButton } from "@/components/PillButton";
+import { Reveal } from "@/components/Reveal";
 import { luckCta } from "@/content/homepage";
 import bandPhoto from "@/public/assets/band-photo.webp";
 
@@ -32,23 +33,25 @@ export function LuckCta() {
         className="pointer-events-none absolute inset-0 size-full object-cover opacity-10 select-none"
       />
 
-      <Container className="relative flex min-h-[448px] flex-col items-center pt-[100px] pb-[90px] text-center">
-        <h2 className="max-w-[720px] text-[32px] leading-[41.6px] font-bold text-white">
-          {luckCta.headingLines.map((line, i) => (
-            <span key={line}>
-              {line}
-              {i < luckCta.headingLines.length - 1 && <br />}
-            </span>
-          ))}
-        </h2>
+      <Container className="relative min-h-[448px] pt-[100px] pb-[90px]">
+        <Reveal className="flex flex-col items-center text-center" stagger={0.1}>
+          <h2 className="max-w-[720px] text-[32px] leading-[41.6px] font-bold text-white">
+            {luckCta.headingLines.map((line, i) => (
+              <span key={line}>
+                {line}
+                {i < luckCta.headingLines.length - 1 && <br />}
+              </span>
+            ))}
+          </h2>
 
-        <p className="mt-[24px] max-w-[988px] text-[24px] leading-[31.2px] text-white">
-          {luckCta.body}
-        </p>
+          <p className="mt-[24px] max-w-[988px] text-[24px] leading-[31.2px] text-white">
+            {luckCta.body}
+          </p>
 
-        <PillButton href={luckCta.cta.href} className="mt-[24px]">
-          {luckCta.cta.label}
-        </PillButton>
+          <PillButton href={luckCta.cta.href} className="mt-[24px]">
+            {luckCta.cta.label}
+          </PillButton>
+        </Reveal>
       </Container>
     </section>
   );

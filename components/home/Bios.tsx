@@ -1,6 +1,7 @@
 import Image, { type StaticImageData } from "next/image";
 
 import { Container } from "@/components/Container";
+import { Reveal } from "@/components/Reveal";
 import { bios } from "@/content/homepage";
 import alanPhoto from "@/public/assets/live/alan.webp";
 import rhettPhoto from "@/public/assets/live/rhett.webp";
@@ -29,6 +30,9 @@ export function Bios() {
   return (
     <section id="about" className="w-full bg-[#F5F5F5]">
       <Container className="pt-[202px] pb-[50px]">
+        {/* Kicker, then each profile row as a unit (Alan first, Rhett ~0.15s
+            later), then the closing line — all fade up in sequence. */}
+        <Reveal stagger={0.15}>
         {/* "Meet Alan & Rhett" kicker — indented to the text column so it sits
             above the name; the photo below aligns to the name's top, not the
             kicker (matches the reference). An addition; not on the live site. */}
@@ -69,6 +73,7 @@ export function Bios() {
           </a>
           {bios.closing.after}
         </p>
+        </Reveal>
       </Container>
     </section>
   );
