@@ -1,21 +1,17 @@
 import { Footer } from "@/components/Footer";
-import { SiteHeader } from "@/components/SiteHeader";
+import { Hero } from "@/components/home/Hero";
 
 /**
- * Homepage. Sections get built one at a time against Figma node 95:2.
- * Right now this is a shell that mounts the shared header and footer so they
- * can be verified in a browser; the placeholder below stands in for the real
- * hero (Frame 6, 95:22) and gets replaced next.
+ * Homepage. Sections are built one at a time against Figma frame 95:2 and
+ * appended here in order. Remaining: "Makes Finding…Simple" (y 1012.5),
+ * "Google Is Luck" CTA (1858.5), bios (2306.5), value props (3341.5),
+ * property types (4206.5), "REBM Can" (6325.5), testimonials (6773.5),
+ * legal band (8976.5), FAQ (live-site design — no Figma frame exists).
  */
 export default function Home() {
   return (
     <>
-      <div className="relative">
-        <SiteHeader />
-        {/* PLACEHOLDER — the real hero is not built yet. Uses the frame fill so
-            the header's white text renders against the right background. */}
-        <section className="h-[900px] w-full bg-rebm-blue" />
-      </div>
+      <Hero />
       <Footer />
     </>
   );
