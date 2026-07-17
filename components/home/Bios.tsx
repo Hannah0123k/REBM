@@ -29,11 +29,6 @@ export function Bios() {
   return (
     <section id="about" className="w-full bg-[#F5F5F5]">
       <Container className="pt-[202px] pb-[50px]">
-        {/* Section title — an addition (not on the live site), styled to match
-            the other section headings (Markets We Serve, Testimonials). */}
-        <h2 className="mb-[48px] text-[36px] leading-[44px] font-bold text-rebm-navy lg:text-[62px] lg:leading-[80.6px]">
-          Meet Alan and Rhett
-        </h2>
         {bios.people.map((person, i) => (
           <div
             key={person.name}
@@ -45,6 +40,13 @@ export function Bios() {
               className="h-[248px] w-[285.7px] shrink-0 rounded-[30px] object-cover object-top sm:mr-[65px]"
             />
             <div className="min-w-0 flex-1">
+              {/* "Meet Alan & Rhett" kicker — small bold label above the first
+                  name, in the text column (an addition; not on the live site). */}
+              {i === 0 && (
+                <h2 className="mb-[12px] text-[24px] leading-[30px] font-bold text-rebm-navy lg:text-[28px] lg:leading-[34px]">
+                  Meet Alan &amp; Rhett
+                </h2>
+              )}
               <h3 className="mb-[20px] text-[40px] leading-[48px] font-black text-rebm-navy lg:text-[62px] lg:leading-[80.6px]">
                 {person.name}
               </h3>
