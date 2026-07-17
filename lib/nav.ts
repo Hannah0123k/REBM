@@ -29,8 +29,10 @@ export type NavLink = { label: string; href: string };
  * an older design (CLAUDE.md → the 2026-07-16 pivot), so it does not govern here.
  */
 export const NAV_LINKS: NavLink[] = [
-  { label: "Process", href: "/#process" },
+  // About before Process (Hannah) — matches the top-to-bottom section order,
+  // where the About/bios section comes first.
   { label: "About", href: "/#about" },
+  { label: "Process", href: "/#process" },
   { label: "Property", href: "/#property" },
   { label: "Testimonials", href: "/#testimonials" },
   { label: "FAQ", href: "/#faq" },
@@ -41,8 +43,8 @@ export const NAV_LINKS: NavLink[] = [
 /** Footer COMPANY column — live site order, which adds Home and FAQ. */
 export const FOOTER_LINKS: NavLink[] = [
   { label: "Home", href: "/" },
-  { label: "Process", href: "/#process" },
   { label: "About", href: "/#about" },
+  { label: "Process", href: "/#process" },
   { label: "Property", href: "/#property" },
   { label: "Testimonials", href: "/#testimonials" },
   { label: "FAQ", href: "/#faq" },
