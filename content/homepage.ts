@@ -95,6 +95,11 @@ export const process = {
 export const luckCta = {
   heading:
     "Finding the right broker on Google is luck. Finding the right broker through REBM is strategy.",
+  // Break so the second sentence starts on its own line (request).
+  headingLines: [
+    "Finding the right broker on Google is luck.",
+    "Finding the right broker through REBM is strategy.",
+  ],
   body: "When you work with a REBM broker – someone who understands your property and goals, brings unmatched expertise, anticipates your needs, and makes the entire process easier – you’ll be glad you didn’t leave it to luck.",
   cta: { label: "Contact REBM", href: CONTACT_HREF },
 } as const;

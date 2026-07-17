@@ -71,15 +71,21 @@ export function Hero() {
         </PillButton>
       </Container>
 
-      {/* Dark info band — full-bleed strip over the bottom of the photo. */}
-      <div className="relative mt-[42px] w-full bg-rebm-band-info">
-        <Container className="flex flex-col gap-[32px] py-[56px] lg:flex-row lg:gap-[68px] lg:py-[67px]">
-          <p className="text-[18px] leading-[23.4px] text-white lg:w-1/2 lg:border-r lg:border-white lg:pr-[68px]">
+      {/* Info band — redesigned as a solid deep-navy strip, distinct from the
+          hero photo (no longer a translucent overlay), for clean contrast and
+          readability. Two columns split by a subtle rule; bullets get a small
+          blue tick accent. */}
+      <div className="relative w-full bg-rebm-footer">
+        <Container className="grid grid-cols-1 gap-[36px] py-[56px] lg:grid-cols-2 lg:gap-[72px] lg:py-[64px]">
+          <p className="max-w-[620px] text-[18px] leading-[26px] text-white/90 lg:border-r lg:border-white/20 lg:pr-[72px]">
             {hero.band.summary}
           </p>
-          <ul className="list-disc pl-[20px] text-[18px] leading-[23.4px] text-white marker:text-white lg:w-1/2">
+          <ul className="flex flex-col gap-[14px]">
             {hero.band.points.map((point) => (
-              <li key={point}>{point}</li>
+              <li key={point} className="flex items-start gap-[12px] text-[18px] leading-[24px] text-white/90">
+                <span aria-hidden="true" className="mt-[9px] size-[7px] shrink-0 rounded-full bg-rebm-blue" />
+                <span>{point}</span>
+              </li>
             ))}
           </ul>
         </Container>

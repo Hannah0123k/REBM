@@ -24,7 +24,7 @@ export function Process() {
   return (
     <section
       id="process"
-      className="relative w-full overflow-hidden bg-white bg-cover bg-[position:100%_50%] bg-no-repeat lg:bg-[url('/assets/live/process-bg.webp')]"
+      className="relative w-full overflow-hidden bg-white bg-cover bg-[position:calc(100%+48px)_50%] bg-no-repeat lg:bg-[url('/assets/live/process-bg.webp')]"
     >
       {/* Group 34: x=1125, y=1121.5 → 109 below the section top. */}
       <Container className="relative flex min-h-[846px] justify-end pt-[109px]">

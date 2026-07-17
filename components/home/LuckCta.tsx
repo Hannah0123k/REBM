@@ -21,8 +21,13 @@ export function LuckCta() {
   return (
     <section className="w-full bg-rebm-band-cta">
       <Container className="flex flex-col items-center py-[76px] text-center">
-        <h2 className="max-w-[760px] text-[29px] leading-[37.7px] font-bold tracking-[-0.2px] text-white">
-          {luckCta.heading}
+        <h2 className="max-w-[820px] text-[29px] leading-[37.7px] font-bold tracking-[-0.2px] text-white">
+          {luckCta.headingLines.map((line, i) => (
+            <span key={line}>
+              {line}
+              {i < luckCta.headingLines.length - 1 && <br />}
+            </span>
+          ))}
         </h2>
 
         <p className="mt-[24px] max-w-[998px] text-[23px] leading-[29.9px] text-white">
