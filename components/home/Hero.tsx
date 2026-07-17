@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Container } from "@/components/Container";
 import { PillButton } from "@/components/PillButton";
 import { SiteHeader } from "@/components/SiteHeader";
-import { hero, serviceOverview } from "@/content/homepage";
+import { hero } from "@/content/homepage";
 import heroPhoto from "@/public/assets/hero-photo.webp";
 
 /**
@@ -98,7 +98,7 @@ export function Hero() {
       <div className="relative mt-[49px] min-h-[226px] w-full bg-rebm-band-info">
         <Container className="flex flex-col gap-[32px] pt-[67px] pb-[67px] lg:flex-row lg:gap-0">
           <p className="w-full text-[18px] leading-[23.4px] text-white lg:w-[782px] lg:shrink-0">
-            {serviceOverview.summary}
+            {hero.band.summary}
           </p>
 
           {/* Line 1: x=1054 (866 past the 188 gutter), 98 tall, starts 64 below
@@ -109,7 +109,7 @@ export function Hero() {
           />
 
           <ul className="min-w-0 flex-1 list-disc lg:ml-[50px] pl-[18px] text-[18px] leading-[23.4px] text-white marker:text-white">
-            {serviceOverview.points.map((point) => (
+            {hero.band.points.map((point) => (
               <li key={point}>{point}</li>
             ))}
           </ul>

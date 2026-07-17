@@ -63,11 +63,17 @@ export function Process() {
         <div className="mt-[39px] space-y-[24px]">
           {process.steps.map((step) => (
             <div key={step.label}>
-              <h3 className="text-[24px] leading-[31.2px] font-bold text-rebm-blue">
+              <h4 className="text-[24px] leading-[31.2px] font-bold text-rebm-blue">
                 {step.label}
-              </h3>
+              </h4>
               <p className="mt-[8px] text-[18px] leading-[23.4px] font-medium text-black">
-                {step.body}
+                {step.before}
+                {step.linkText && (
+                  <a href={step.linkHref} className="text-rebm-link">
+                    {step.linkText}
+                  </a>
+                )}
+                {step.after}
               </p>
             </div>
           ))}

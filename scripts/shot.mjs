@@ -41,6 +41,21 @@ if (!res?.ok()) {
 // Let webfonts settle so text metrics are stable before capture.
 await page.evaluate(() => document.fonts.ready);
 
+// Scroll through the page so lazy-loaded images/backgrounds decode before the
+// full-page capture, then wait for all images to finish.
+await page.evaluate(async () => {
+  const step = window.innerHeight;
+  for (let y = 0; y < document.body.scrollHeight; y += step) {
+    window.scrollTo(0, y);
+    await new Promise((r) => setTimeout(r, 60));
+  }
+  window.scrollTo(0, 0);
+  await Promise.all(
+    [...document.images].filter((i) => !i.complete).map((i) => i.decode().catch(() => {})),
+  );
+});
+await page.waitForTimeout(300);
+
 const out = join(OUT_DIR, `${name}.png`);
 await page.screenshot({ path: out, fullPage: true });
 
