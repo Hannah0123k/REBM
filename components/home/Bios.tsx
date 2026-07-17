@@ -46,7 +46,10 @@ export function Bios() {
               className="h-[248px] w-[285.7px] shrink-0 rounded-[30px] object-cover object-top sm:mr-[65px]"
             />
             <div className="min-w-0 flex-1">
-              <h3 className="mb-[20px] text-[40px] leading-[48px] font-black text-rebm-navy lg:text-[62px] lg:leading-[80.6px]">
+              {/* Line-height tightened to the font size so the name's cap sits
+                  at the top of its box, aligning with the headshot top (the
+                  extra leading otherwise dropped the cap ~9px below the photo). */}
+              <h3 className="mb-[20px] text-[40px] leading-[40px] font-black text-rebm-navy lg:text-[62px] lg:leading-[62px]">
                 {person.name}
               </h3>
               <p className="text-[23px] leading-[29.9px] text-black">{person.body}</p>
