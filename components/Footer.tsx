@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { Container } from "@/components/Container";
 import { SOCIAL_ICONS } from "@/components/icons/SocialIcons";
 import { COPYRIGHT, FOOTER_LINKS, PHONE_HREF, PHONE_NUMBER_INTL, SOCIAL_LINKS } from "@/lib/nav";
 import logo from "@/public/assets/rebm-logo-footer@2x.png";
@@ -41,21 +42,26 @@ import logo from "@/public/assets/rebm-logo-footer@2x.png";
 export function Footer() {
   return (
     <footer className="w-full bg-rebm-footer text-white">
-      <div className="mx-auto h-[507px] w-full max-w-[1920px] px-[188px] pt-[96px]">
-        <div className="flex">
-          {/* Brand column, anchored at x=188 */}
-          <div className="w-[652px] shrink-0">
+      <Container className="pt-[96px] pb-[96px]">
+        <div className="flex flex-col gap-[48px] lg:flex-row lg:gap-0">
+          {/* Brand column. Flexible, not a fixed 652: at 1920 the link columns
+              land at 840/1100/1360 (i.e. 653/913/1173 inside the container), but
+              a fixed 652 + 3×260 = 1432 overflows any container below ~1560 —
+              it was pinning scrollWidth at 1496 and pushing the page sideways at
+              1440 and below. Letting the brand column absorb the slack keeps the
+              link columns at their design widths and kills the overflow. */}
+          <div className="min-w-0 flex-1 lg:pr-[24px]">
             <Image
               src={logo}
               alt="Real Estate Broker Match"
               width={539}
               height={79}
-              className="h-[78.667px] w-[538.667px]"
+              className="h-auto w-full max-w-[538.667px]"
             />
             <p className="mt-[21px] text-[18px] leading-[23.4px]">
               Real Estate Foundation Inc.
             </p>
-            <p className="mt-[170px] text-[18px] leading-[23.4px]">{COPYRIGHT}</p>
+            <p className="mt-[48px] text-[18px] leading-[23.4px] lg:mt-[170px]">{COPYRIGHT}</p>
           </div>
 
           <FooterColumn heading="COMPANY">
@@ -106,7 +112,7 @@ export function Footer() {
             </li>
           </FooterColumn>
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }
@@ -122,7 +128,7 @@ function FooterColumn({
   children: React.ReactNode;
 }) {
   return (
-    <div className="w-[260px] shrink-0">
+    <div className="w-full shrink-0 lg:w-[260px]">
       <h2 className="text-[24px] leading-[31.2px]">{heading}</h2>
       <ul className="mt-[26px]">{children}</ul>
     </div>

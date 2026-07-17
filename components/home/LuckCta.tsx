@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { Container } from "@/components/Container";
 import { PillButton } from "@/components/PillButton";
 import { luckCta } from "@/content/homepage";
 import bandPhoto from "@/public/assets/band-photo.webp";
@@ -39,11 +40,11 @@ export function LuckCta() {
       </div>
 
       <div className="relative flex min-h-[448px] flex-col items-center pt-[100px] pb-[90px] text-center">
-        <h2 className="w-[668px] font-display text-[32px] leading-[41.6px] font-bold text-white">
+        <h2 className="max-w-[668px] font-display text-[32px] leading-[41.6px] font-bold text-white">
           {luckCta.heading}
         </h2>
 
-        <p className="mt-[24px] w-[988px] text-[24px] leading-[31.2px] text-white">
+        <p className="mt-[24px] max-w-[988px] text-[24px] leading-[31.2px] text-white">
           {luckCta.body}
         </p>
 

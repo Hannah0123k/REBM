@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { Container } from "@/components/Container";
 import { process } from "@/content/homepage";
 import processPhoto from "@/public/assets/process-photo.webp";
 
@@ -36,7 +37,7 @@ export function Process() {
       {/* Rectangle 7: x=-11, full section height, faded to white on the right. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-[-11px] h-full w-[1336px] select-none"
+        className="pointer-events-none absolute inset-y-0 left-[-11px] w-[69.6%] select-none"
       >
         <Image src={processPhoto} alt="" className="size-full object-cover" />
         <div
@@ -49,19 +50,20 @@ export function Process() {
       </div>
 
       {/* Group 34: x=1125, y=1121.5 → 109 below the section top. */}
-      <div className="relative min-h-[846px] pt-[109px] pl-[1125px]">
-        <h2 className="w-[605px] font-display text-[32px] leading-[41.6px] font-bold text-black">
+      <Container className="relative flex min-h-[846px] justify-end pt-[109px]">
+        <div className="w-full lg:w-[605px] lg:shrink-0">
+        <h2 className="text-[32px] leading-[41.6px] font-bold text-black">
           {process.heading}
         </h2>
 
-        <p className="mt-[24px] w-[568px] text-[24px] leading-[31.2px] text-black">
+        <p className="mt-[24px] text-[24px] leading-[31.2px] text-black">
           {process.intro}
         </p>
 
-        <div className="mt-[39px] w-[574px] space-y-[24px]">
+        <div className="mt-[39px] space-y-[24px]">
           {process.steps.map((step) => (
             <div key={step.label}>
-              <h3 className="font-display text-[24px] leading-[31.2px] font-bold text-rebm-blue">
+              <h3 className="text-[24px] leading-[31.2px] font-bold text-rebm-blue">
                 {step.label}
               </h3>
               <p className="mt-[8px] text-[18px] leading-[23.4px] font-medium text-black">
@@ -70,7 +72,8 @@ export function Process() {
             </div>
           ))}
         </div>
-      </div>
+        </div>
+      </Container>
     </section>
   );
 }

@@ -1,6 +1,7 @@
 import Image, { type StaticImageData } from "next/image";
 import { Fragment } from "react";
 
+import { Container } from "@/components/Container";
 import { INHERITED_PROPERTY_MATCH, bios } from "@/content/homepage";
 import alanPhoto from "@/public/assets/alan.webp";
 import rhettPhoto from "@/public/assets/rhett.webp";
@@ -69,8 +70,9 @@ function withOutboundLink(text: string) {
 export function Bios() {
   return (
     <section id="about" className="w-full bg-white pt-[150px] pb-[136px]">
-      <div className="pl-[596px]">
-        <h2 className="font-display text-[32px] leading-[41.6px] font-bold text-black">
+      <Container>
+      <div className="lg:pl-[409px]">
+        <h2 className="text-[32px] leading-[41.6px] font-bold text-black">
           {bios.kicker}
         </h2>
       </div>
@@ -80,19 +82,19 @@ export function Bios() {
         return (
           <div key={person.name} className={i === 0 ? "mt-[52px]" : "mt-[51px]"}>
             {/* name sits at x=596; photo column starts at x=300 */}
-            <div className="pl-[596px]">
-              <h3 className="font-display text-[62px] leading-[80.6px] font-black text-rebm-blue">
+            <div className="lg:pl-[409px]">
+              <h3 className="text-[62px] leading-[80.6px] font-black text-rebm-blue">
                 {person.name}
               </h3>
             </div>
 
-            <div className="mt-[24px] flex pl-[300px]">
+            <div className="mt-[24px] flex flex-col gap-[24px] lg:flex-row lg:pl-[113px]">
               <Image
                 src={photo.src}
                 alt={person.name}
                 className={`shrink-0 ${photo.className}`}
               />
-              <div className="ml-[55px] w-[1104px] space-y-[31.2px] text-[24px] leading-[31.2px] text-black">
+              <div className="min-w-0 flex-1 space-y-[31.2px] lg:ml-[55px] text-[24px] leading-[31.2px] text-black">
                 {person.paragraphs.map((p) => (
                   <p key={p}>{withOutboundLink(p)}</p>
                 ))}
@@ -101,6 +103,7 @@ export function Bios() {
           </div>
         );
       })}
+      </Container>
     </section>
   );
 }

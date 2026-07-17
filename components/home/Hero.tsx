@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { Container } from "@/components/Container";
 import { PillButton } from "@/components/PillButton";
 import { SiteHeader } from "@/components/SiteHeader";
 import { hero, serviceOverview } from "@/content/homepage";
@@ -52,7 +53,7 @@ export function Hero() {
           children are authored unmirrored. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-[-76.5px] left-[176px] h-[calc(100%+76.5px)] w-[1745px] -scale-x-100 select-none"
+        className="pointer-events-none absolute top-[-76.5px] right-0 left-[176px] h-[calc(100%+76.5px)] -scale-x-100 select-none"
       >
         <Image src={heroPhoto} alt="" priority className="size-full object-fill" />
         <div
@@ -74,13 +75,13 @@ export function Hero() {
       <SiteHeader />
 
       {/* Hero content — Frame 6 (95:22), x=188 y=149.5 */}
-      <div className="relative px-[187px] pt-[149.5px]">
-        <h1 className="w-[900px] text-[50px] leading-[70px] font-semibold text-white">
+      <Container className="relative pt-[149.5px]">
+        <h1 className="max-w-[900px] text-[50px] leading-[70px] font-semibold text-white">
           {hero.heading}
         </h1>
 
         {/* H1 box ends y=392.5, body starts y=424.5 → 32px gap */}
-        <div className="mt-[32px] w-[640px] space-y-[26px] text-[20px] leading-[26px] text-white">
+        <div className="mt-[32px] max-w-[640px] space-y-[26px] text-[20px] leading-[26px] text-white">
           {hero.paragraphs.map((p) => (
             <p key={p}>{p}</p>
           ))}
@@ -90,13 +91,13 @@ export function Hero() {
         <PillButton href={hero.cta.href} className="mt-[32px]">
           {hero.cta.label}
         </PillButton>
-      </div>
+      </Container>
 
       {/* Dark info band — Rectangle 5, y=786.5, 226 tall, over the photo.
           Frame 6 ends y=737.5 → 49px gap. */}
       <div className="relative mt-[49px] min-h-[226px] w-full bg-rebm-band-info">
-        <div className="flex px-[187px] pt-[67px]">
-          <p className="w-[782px] text-[18px] leading-[23.4px] text-white">
+        <Container className="flex flex-col gap-[32px] pt-[67px] pb-[67px] lg:flex-row lg:gap-0">
+          <p className="w-full text-[18px] leading-[23.4px] text-white lg:w-[782px] lg:shrink-0">
             {serviceOverview.summary}
           </p>
 
@@ -104,15 +105,15 @@ export function Hero() {
               the band top — i.e. 3px above the text baseline box. */}
           <div
             aria-hidden="true"
-            className="mt-[-3px] ml-[84px] h-[98px] w-px shrink-0 bg-white"
+            className="mt-[-3px] ml-[84px] hidden h-[98px] w-px shrink-0 bg-white lg:block"
           />
 
-          <ul className="ml-[50px] w-[617px] list-disc pl-[18px] text-[18px] leading-[23.4px] text-white marker:text-white">
+          <ul className="min-w-0 flex-1 list-disc lg:ml-[50px] pl-[18px] text-[18px] leading-[23.4px] text-white marker:text-white">
             {serviceOverview.points.map((point) => (
               <li key={point}>{point}</li>
             ))}
           </ul>
-        </div>
+        </Container>
       </div>
     </section>
   );

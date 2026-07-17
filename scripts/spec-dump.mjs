@@ -36,6 +36,21 @@ await page.evaluate(async () => {
   });
 });
 await page.waitForTimeout(2500);
+// un-lazy everything and wait for every <img> to actually decode, so naturalWidth is real
+await page.evaluate(async () => {
+  for (const img of document.querySelectorAll("img")) {
+    img.loading = "eager";
+    if (img.dataset.src && !img.src) img.src = img.dataset.src;
+  }
+  await Promise.all(
+    [...document.querySelectorAll("img")].map((img) =>
+      img.complete && img.naturalWidth
+        ? Promise.resolve()
+        : img.decode().catch(() => {}),
+    ),
+  );
+});
+await page.waitForTimeout(1500);
 await page.evaluate(() => scrollTo(0, 0));
 await page.waitForTimeout(800);
 
