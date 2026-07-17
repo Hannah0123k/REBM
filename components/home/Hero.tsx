@@ -71,14 +71,26 @@ export function Hero() {
         </PillButton>
       </Container>
 
-      {/* Info band — EXACT Figma design (Rectangle 5, 95:36): a full-width
-          translucent navy strip #0E384F @ 0.5 over the hero photo, 226 tall with
-          67px top/bottom padding. Left copy column 782 wide, a white vertical
-          divider 98 tall, then the right column 617 wide. All text Helvetica-
-          equivalent 18/23.4 white. Content is the live wording (source of truth);
-          geometry/typography are Figma. Stacks on mobile. */}
-      <div className="relative w-full bg-rebm-band-info">
-        <Container className="flex flex-col gap-[28px] py-[48px] lg:flex-row lg:gap-0 lg:py-[67px]">
+      {/* Info band — EXACT Figma design (Rectangle 5, 95:36). The Figma node is
+          FROSTED GLASS, not a flat overlay: fill #0E384F @ 0.5 PLUS a
+          BACKGROUND_BLUR effect (radius 66.67 in the 1920 frame). It sits over
+          the hero building photo, so the building shows through blurred and
+          navy-tinted — that's the depth.
+          Recreated as: a blurred, navy-tinted crop of the same building photo
+          filling the strip (own background rather than backdrop-filter, so it
+          reads identically regardless of how the hero photo above happens to
+          crop). 226 tall, 67px vertical padding, left copy 782 / white divider
+          98 / right copy 617, text 18/23.4 white. Live wording; Figma visuals. */}
+      <div className="relative w-full overflow-hidden">
+        {/* Frosted building behind the tint (blur ≈ 66.67 × render/1920). */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 scale-110 bg-[url('/assets/live/hero-bg.webp')] bg-[length:100%_auto] bg-[position:50%_100%] bg-no-repeat blur-[50px]"
+        />
+        {/* Navy tint #0E384F @ 0.5 over the frosted building. */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-rebm-band-info" />
+
+        <Container className="relative flex flex-col gap-[28px] py-[48px] lg:flex-row lg:gap-0 lg:py-[67px]">
           <p className="text-[18px] leading-[23.4px] text-white lg:w-[782px] lg:shrink-0">
             {hero.band.summary}
           </p>

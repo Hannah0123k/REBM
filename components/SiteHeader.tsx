@@ -47,9 +47,14 @@ export function SiteHeader() {
     <header
       className={`fixed inset-x-0 top-0 z-50 h-[var(--header-h)] transition-colors duration-300 ${
         scrolled
-          ? "border-b border-white/15 bg-rebm-navy/55 shadow-md backdrop-blur-md [-webkit-backdrop-filter:blur(12px)]"
+          ? "border-b border-white/25 shadow-md backdrop-blur-md [-webkit-backdrop-filter:blur(12px)]"
           : "bg-transparent"
       }`}
+      // Scrolled = a lightly-tinted BLUE glass. The tint is the hero blue
+      // (#689ECF) at 0.82 so it dominates and never darkens toward navy over
+      // dark sections — the background stays faintly visible through the blur,
+      // and the navy logo always keeps strong contrast on the light-blue.
+      style={scrolled ? { backgroundColor: "rgba(104, 158, 207, 0.82)" } : undefined}
     >
       <Container className="flex h-full items-center justify-between">
         <Link href="/" className="shrink-0">
