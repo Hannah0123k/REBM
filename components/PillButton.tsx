@@ -23,7 +23,7 @@ export function PillButton({
   return (
     <Link
       href={href}
-      className={`inline-flex items-center rounded-full bg-rebm-navy px-[32px] py-[16px] text-[24px] leading-[32px] whitespace-nowrap text-white transition-opacity hover:opacity-90 ${className}`}
+      className={`inline-flex items-center rounded-full bg-rebm-navy px-[32px] py-[16px] text-[22px] leading-[32px] whitespace-nowrap text-white transition-opacity hover:opacity-90 ${className}`}
     >
       {children}
     </Link>

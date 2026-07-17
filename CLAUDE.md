@@ -4,14 +4,42 @@
 
 Rebuild of realestatebrokermatch.com, migrating off WordPress to Next.js.
 
-## Two sources of truth
+## ⚠️ PIVOT (2026-07-16): the live site is the source of truth for EVERYTHING
 
-| Source | Governs |
-|---|---|
-| **Figma** — file `gde5QfMIOJoT15vDakKzpe`, **Page 1** (`0:1`) | All visual design: layout, spacing, typography, color, images, components, responsive behavior |
-| **https://realestatebrokermatch.com/** | All written copy: headings, paragraphs, CTAs, testimonials, contact info, nav/footer labels |
+The Figma file (`gde5QfMIOJoT15vDakKzpe`) turned out to be an **older, different
+design** than the live site — not a stale-in-places version, a different one:
 
-Where wording differs, **the live site wins**. Where it looks injected, off-brand, or machine-generated, **flag it — do not copy it** (see Security).
+| | Figma (old) | Live site (authority) |
+|---|---|---|
+| Font | Helvetica Neue / Now Display | **Inter** (free, open-source) |
+| Logo | serif, bordered, ".com" | **sans-serif, no border, no ".com"** |
+| Hero H1 | 62px / 80.6 / w700 | **50px / 70 / w600** |
+| Hero body | 24px / w500 | **20px / w400** |
+| Bio names | 62px `#689ECF` blue | 62px `#032C40` navy |
+| Property section | "Property Types", 7 cards | **"Markets We Serve"**, 6 cards |
+| CTA heading | "…the perfect broker…" | "…the right broker…" |
+| FAQ | none | 23-question accordion |
+
+**Build 1:1 against the LIVE SITE.** Read its computed styles with
+`scripts/live-styles.mjs` (Playwright → getComputedStyle). Figma is now only a
+rough structural reference, superseded by the live site on every conflict.
+
+**The font problem is gone.** The live site computes to **Inter** almost
+everywhere (it loads Helvetica @font-face but doesn't use it). Inter is free and
+open-source — self-host it, pixel-exact on every platform. The Helvetica `.otf`
+files and the whole font-stack compromise are moot.
+
+## Spacing rule when live content exceeds a placeholder (Hannah, 2026-07-16)
+
+Live copy is routinely longer than any placeholder. Never truncate, rewrite, or
+shrink text to fit. Instead **grow the container** and keep the design language:
+- Preserve the live content in full.
+- Keep text↔edge padding consistent with the design.
+- Keep the last-line↔container-bottom gap proportional.
+- Extend containers vertically; never compress text or kill whitespace.
+- If one card in a row grows, grow its siblings to match — rows stay aligned.
+- Preserve alignment, margins, gutters, and inter-section spacing after resizing.
+- Goal: it should look designed *around* the live content, not stuffed with it.
 
 ### Never guess a design value
 If Figma has the number, read it with `get_design_context` on that node. Do not estimate spacing, color, type size, or position from a screenshot. Screenshots are for structure; `get_design_context` is for values.

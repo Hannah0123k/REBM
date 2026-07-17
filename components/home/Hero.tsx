@@ -74,13 +74,13 @@ export function Hero() {
       <SiteHeader />
 
       {/* Hero content — Frame 6 (95:22), x=188 y=149.5 */}
-      <div className="relative px-[188px] pt-[149.5px]">
-        <h1 className="w-[775px] font-display text-[62px] leading-[80.6px] font-bold text-white">
+      <div className="relative px-[187px] pt-[149.5px]">
+        <h1 className="w-[900px] text-[50px] leading-[70px] font-semibold text-white">
           {hero.heading}
         </h1>
 
         {/* H1 box ends y=392.5, body starts y=424.5 → 32px gap */}
-        <div className="mt-[32px] w-[577px] space-y-[31.2px] text-[24px] leading-[31.2px] font-medium text-white">
+        <div className="mt-[32px] w-[640px] space-y-[26px] text-[20px] leading-[26px] text-white">
           {hero.paragraphs.map((p) => (
             <p key={p}>{p}</p>
           ))}
@@ -95,7 +95,7 @@ export function Hero() {
       {/* Dark info band — Rectangle 5, y=786.5, 226 tall, over the photo.
           Frame 6 ends y=737.5 → 49px gap. */}
       <div className="relative mt-[49px] min-h-[226px] w-full bg-rebm-band-info">
-        <div className="flex px-[188px] pt-[67px]">
+        <div className="flex px-[187px] pt-[67px]">
           <p className="w-[782px] text-[18px] leading-[23.4px] text-white">
             {serviceOverview.summary}
           </p>

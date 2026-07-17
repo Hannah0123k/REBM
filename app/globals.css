@@ -1,57 +1,34 @@
 @import "tailwindcss";
 
 /*
- * Design tokens derived from Figma (file gde5QfMIOJoT15vDakKzpe, Page 1).
- * The file defines no Figma variables, so every value here was read off a
- * layer with get_design_context. Only add a token once its exact value has
- * been read — never eyeballed from a screenshot.
+ * Design tokens read from the LIVE SITE's computed styles (scripts/live-styles.mjs),
+ * not Figma. The Figma file is an older, different design — see CLAUDE.md.
  *
- * The design is light-only. There is no dark-mode variant in Figma, so no
+ * The design is light-only; there is no dark-mode variant, so no
  * prefers-color-scheme handling belongs here.
  */
 @theme {
-  /* --- Typefaces -----------------------------------------------------------
-   * The design uses TWO families:
-   *   body     Helvetica Neue        (400 Regular, 500 Medium)
-   *   headings Helvetica Now Display (700 Bold, 900 Black)
-   *
-   * Neither is self-hosted — both are commercial Monotype faces and we hold no
-   * webfont licence (see CLAUDE.md → Typography).
-   *
-   * Helvetica Neue ships with macOS/iOS, so --font-sans renders the real face
-   * for Apple visitors and falls back to Arial elsewhere.
-   *
-   * Helvetica Now Display ships with NO operating system, so --font-display
-   * never resolves to the authored face for anyone. It degrades to Helvetica
-   * Neue on Apple (same family DNA, visibly tighter) and Arial elsewhere.
-   * This is a known, accepted fidelity gap on headings. */
-  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-display:
-    "Helvetica Now Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* The live site computes to Inter almost everywhere. It loads Helvetica Neue
+     and Helvetica Now Display via leftover @font-face rules but does not use
+     them. Inter is free and open-source; next/font self-hosts it. */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-  /* --- Colors --------------------------------------------------------------
-   * All read from the Figma REST API (file gde5QfMIOJoT15vDakKzpe, node 95:2).
-   * Exact authored values — nothing here is sampled or estimated. */
-  --color-rebm-navy: rgba(3, 44, 64, 0.9); /* buttons, phone pill (95:18, 131:8) */
-  --color-rebm-footer: #05212f; /* footer bg, card titles, legal band (95:135) */
-  --color-rebm-blue: #689ecf; /* frame fill; also the bio-name headings */
-  --color-rebm-card: #f9f9f9; /* property type card (Rectangle 19) */
-  --color-rebm-card-border: #d9d9d9; /* property card stroke */
-  --color-rebm-quote-border: #417aae; /* testimonial card stroke (Rectangle 28) */
-  --color-rebm-star: #fb9639; /* testimonial stars */
-  --color-rebm-link: #84c4ff; /* "View Legal Disclaimer" + its caret */
+  /* --- Colors, from the live site --------------------------------------- */
+  --color-rebm-navy: #032c40; /* headings, buttons, phone pill, bio names */
+  --color-rebm-blue: #689ecf; /* frame/hero blue, step labels, footer links */
+  --color-rebm-footer: #05212f; /* footer bg, card titles */
+  --color-rebm-link: #046bd2; /* live-site inline link blue */
+  --color-rebm-card: #f9f9f9; /* card fill */
+  --color-rebm-card-border: #d9d9d9;
+  --color-rebm-quote-border: #417aae;
+  --color-rebm-star: #fb9639;
 
-  /* Section bands. These sit over photos or the frame fill, so what you see on
-     screen is a composite — never sample them from a screenshot; these are the
-     authored fills.
-       Rectangle 5  → fill #0E384F at fill-opacity 0.5
-       Rectangle 31 → fill #05212F at NODE opacity 0.3; over the #689ECF frame
-                      fill that composites to #4B799F, which is what a sample
-                      of the legal band returns. */
-  --color-rebm-band-cta: #4c84b7; /* "Google Is Luck" band (Rectangle 9) */
-  --color-rebm-band-can: #4076a7; /* "REBM Can" band (Rectangle 29) */
-  --color-rebm-band-info: rgba(14, 56, 79, 0.5); /* dark info band (Rectangle 5) */
-  --color-rebm-band-legal: rgba(5, 33, 47, 0.3); /* legal band (Rectangle 31) */
+  /* Section bands. These sit over photos, so what you see on screen is a
+     composite — never sample them from a screenshot. */
+  --color-rebm-band-cta: #4c84b7; /* "Google Is Luck" band */
+  --color-rebm-band-can: #4076a7; /* "REBM can also introduce" band */
+  --color-rebm-band-info: rgba(14, 56, 79, 0.5); /* dark info band under hero */
+  --color-rebm-band-legal: rgba(5, 33, 47, 0.3); /* legal band */
 }
 
 html {

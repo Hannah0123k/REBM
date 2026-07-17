@@ -24,12 +24,16 @@ export const PHONE_HREF = "tel:+18008415033";
 
 export type NavLink = { label: string; href: string };
 
-/** Header nav. Figma order (Blog between Testimonials and Contact). */
+/**
+ * Header nav — the LIVE SITE's links and order. Figma omits FAQ entirely and is
+ * an older design (CLAUDE.md → the 2026-07-16 pivot), so it does not govern here.
+ */
 export const NAV_LINKS: NavLink[] = [
   { label: "Process", href: "/#process" },
   { label: "About", href: "/#about" },
   { label: "Property", href: "/#property" },
   { label: "Testimonials", href: "/#testimonials" },
+  { label: "FAQ", href: "/#faq" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact-us" },
 ];

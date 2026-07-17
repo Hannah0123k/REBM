@@ -1,0 +1,791 @@
+{
+  "typography": [
+    {
+      "tag": "a",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "26.4px",
+      "letterSpacing": "normal",
+      "color": "rgb(4, 107, 210)",
+      "textTransform": "none",
+      "sample": "Skip to content"
+    },
+    {
+      "tag": "a",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "18px",
+      "fontWeight": "400",
+      "lineHeight": "30px",
+      "letterSpacing": "normal",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none",
+      "sample": "Process"
+    },
+    {
+      "tag": "span",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "30px",
+      "letterSpacing": "normal",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none",
+      "sample": "(800) 841-5033"
+    },
+    {
+      "tag": "h1",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "50px",
+      "fontWeight": "600",
+      "lineHeight": "70px",
+      "letterSpacing": "-0.2px",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none",
+      "sample": "Real Estate Broker Match will match you with a real estate broker who "
+    },
+    {
+      "tag": "p",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "20px",
+      "fontWeight": "400",
+      "lineHeight": "26px",
+      "letterSpacing": "normal",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none",
+      "sample": "Alan and Rhett Fruitman have helped thousands of clients buy and sell "
+    },
+    {
+      "tag": "span",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "22px",
+      "fontWeight": "400",
+      "lineHeight": "32px",
+      "letterSpacing": "normal",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none",
+      "sample": "Contact REBM"
+    },
+    {
+      "tag": "p",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "18px",
+      "fontWeight": "400",
+      "lineHeight": "23.4px",
+      "letterSpacing": "normal",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none",
+      "sample": "REBM will recommend a broker with the experience, market specializatio"
+    },
+    {
+      "tag": "h3",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "62px",
+      "fontWeight": "900",
+      "lineHeight": "80.6px",
+      "letterSpacing": "normal",
+      "color": "rgb(3, 44, 64)",
+      "textTransform": "none",
+      "sample": "Alan Fruitman"
+    },
+    {
+      "tag": "p",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "23px",
+      "fontWeight": "400",
+      "lineHeight": "29.9px",
+      "letterSpacing": "normal",
+      "color": "rgb(0, 0, 0)",
+      "textTransform": "none",
+      "sample": "Since 1993, Alan has helped thousands of clients buy, sell, and lease "
+    },
+    {
+      "tag": "p",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "24px",
+      "fontWeight": "400",
+      "lineHeight": "39.6px",
+      "letterSpacing": "normal",
+      "color": "rgb(30, 41, 59)",
+      "textTransform": "none",
+      "sample": "Alan and Rhett also founded , a broker-matching platform built specifi"
+    },
+    {
+      "tag": "a",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "24px",
+      "fontWeight": "400",
+      "lineHeight": "39.6px",
+      "letterSpacing": "normal",
+      "color": "rgb(4, 107, 210)",
+      "textTransform": "none",
+      "sample": "Inherited Property Match"
+    },
+    {
+      "tag": "h2",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "32px",
+      "fontWeight": "700",
+      "lineHeight": "41.6px",
+      "letterSpacing": "normal",
+      "color": "rgb(3, 44, 64)",
+      "textTransform": "none",
+      "sample": "Real Estate Broker Match makes finding the right real estate broker si"
+    },
+    {
+      "tag": "p",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "24px",
+      "fontWeight": "400",
+      "lineHeight": "31.2px",
+      "letterSpacing": "normal",
+      "color": "rgb(0, 0, 0)",
+      "textTransform": "none",
+      "sample": "Attorneys are experts in law.  CPAs and accountants are experts in tax"
+    },
+    {
+      "tag": "h4",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "24px",
+      "fontWeight": "700",
+      "lineHeight": "31.2px",
+      "letterSpacing": "normal",
+      "color": "rgb(104, 158, 207)",
+      "textTransform": "none",
+      "sample": "Step 1"
+    },
+    {
+      "tag": "p",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "18px",
+      "fontWeight": "500",
+      "lineHeight": "23.4px",
+      "letterSpacing": "normal",
+      "color": "rgb(0, 0, 0)",
+      "textTransform": "none",
+      "sample": "Call or REBM to sell investment or personal property."
+    },
+    {
+      "tag": "a",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "18px",
+      "fontWeight": "500",
+      "lineHeight": "23.4px",
+      "letterSpacing": "normal",
+      "color": "rgb(4, 107, 210)",
+      "textTransform": "none",
+      "sample": "contact"
+    },
+    {
+      "tag": "h2",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "29px",
+      "fontWeight": "700",
+      "lineHeight": "37.7px",
+      "letterSpacing": "-0.2px",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none",
+      "sample": "Finding the right broker on Google is luck. Finding the right broker t"
+    },
+    {
+      "tag": "p",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "23px",
+      "fontWeight": "400",
+      "lineHeight": "29.9px",
+      "letterSpacing": "normal",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none",
+      "sample": "When you work with a REBM broker – someone who understands your proper"
+    },
+    {
+      "tag": "span",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "30px",
+      "fontWeight": "700",
+      "lineHeight": "39px",
+      "letterSpacing": "normal",
+      "color": "rgb(3, 44, 64)",
+      "textTransform": "none",
+      "sample": "Why Real Estate Broker Match"
+    },
+    {
+      "tag": "h2",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "62px",
+      "fontWeight": "700",
+      "lineHeight": "80.6px",
+      "letterSpacing": "normal",
+      "color": "rgb(3, 44, 64)",
+      "textTransform": "none",
+      "sample": "Markets We Serve"
+    },
+    {
+      "tag": "h3",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "24px",
+      "fontWeight": "400",
+      "lineHeight": "31.2px",
+      "letterSpacing": "normal",
+      "color": "rgb(5, 33, 47)",
+      "textTransform": "none",
+      "sample": "Apartment Buildings, Houses, Townhomes, Condos, Mixed-Use"
+    },
+    {
+      "tag": "h2",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "30px",
+      "fontWeight": "700",
+      "lineHeight": "39px",
+      "letterSpacing": "normal",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "capitalize",
+      "sample": "Real Estate Broker Match can also introduce you to:"
+    },
+    {
+      "tag": "p",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "30px",
+      "fontWeight": "400",
+      "lineHeight": "39px",
+      "letterSpacing": "normal",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none",
+      "sample": "Mortgage broker who can finance or refinance your property"
+    },
+    {
+      "tag": "div",
+      "fontFamily": "\"Helvetica Neue\", sans-serif",
+      "fontSize": "18px",
+      "fontWeight": "700",
+      "lineHeight": "23.4px",
+      "letterSpacing": "normal",
+      "color": "rgb(0, 0, 0)",
+      "textTransform": "none",
+      "sample": "Scott Lewis, PE & Oma Lewis, MPT"
+    },
+    {
+      "tag": "h2",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "48px",
+      "fontWeight": "700",
+      "lineHeight": "62.4px",
+      "letterSpacing": "normal",
+      "color": "rgb(3, 44, 64)",
+      "textTransform": "none",
+      "sample": "Frequently Asked Questions"
+    },
+    {
+      "tag": "div",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "18px",
+      "fontWeight": "600",
+      "lineHeight": "29.7px",
+      "letterSpacing": "normal",
+      "color": "rgb(31, 33, 36)",
+      "textTransform": "none",
+      "sample": "How much does your service cost?"
+    },
+    {
+      "tag": "span",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "15px",
+      "fontWeight": "400",
+      "lineHeight": "15px",
+      "letterSpacing": "normal",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none",
+      "sample": "Show More Frequently Asked Questions"
+    },
+    {
+      "tag": "span",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "26.4px",
+      "letterSpacing": "normal",
+      "color": "rgb(104, 158, 207)",
+      "textTransform": "none",
+      "sample": "LinkedIn"
+    },
+    {
+      "tag": "p",
+      "fontFamily": "Inter, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "26.4px",
+      "letterSpacing": "normal",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none",
+      "sample": "Copyright © 2026 Real Estate Foundation, Inc."
+    }
+  ],
+  "colors": {
+    "rgba(255, 255, 255, 0)": 4,
+    "rgb(104, 158, 207)": 3,
+    "rgba(3, 44, 64, 0.9)": 3,
+    "rgba(14, 56, 79, 0.5)": 1,
+    "rgb(245, 245, 245)": 2,
+    "rgb(249, 249, 249)": 6,
+    "rgb(255, 255, 255)": 13,
+    "rgb(5, 33, 47)": 1
+  },
+  "containers": [
+    {
+      "tag": "div",
+      "cls": "e-con-inner",
+      "width": 1547,
+      "left": 187,
+      "maxWidth": "1547px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-0e50e10 e-con-full e-fle",
+      "width": 1547,
+      "left": 187,
+      "maxWidth": "none",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-d069b40 e-con-full e-fle",
+      "width": 814,
+      "left": 920,
+      "maxWidth": "none",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-172ef5d e-con-full e-fle",
+      "width": 840,
+      "left": 187,
+      "maxWidth": "none",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-9642ce9 elementor-widget",
+      "width": 840,
+      "left": 187,
+      "maxWidth": "100%",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "e-con-inner",
+      "width": 1880,
+      "left": 20,
+      "maxWidth": "100%",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-d02f244 e-con-full e-fle",
+      "width": 813,
+      "left": 64,
+      "maxWidth": "none",
+      "paddingLeft": "0px",
+      "paddingRight": "84px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-7fe7369 elementor-widget",
+      "width": 727,
+      "left": 64,
+      "maxWidth": "100%",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-widget-container",
+      "width": 727,
+      "left": 64,
+      "maxWidth": "none",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-b24373e e-con-full e-fle",
+      "width": 704,
+      "left": 877,
+      "maxWidth": "none",
+      "paddingLeft": "50px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-e2492d8 elementor-widget",
+      "width": 654,
+      "left": 927,
+      "maxWidth": "100%",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-widget-container",
+      "width": 654,
+      "left": 927,
+      "maxWidth": "none",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "ul",
+      "cls": "",
+      "width": 654,
+      "left": 927,
+      "maxWidth": "none",
+      "paddingLeft": "20px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "li",
+      "cls": "",
+      "width": 634,
+      "left": 947,
+      "maxWidth": "none",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "e-con-inner",
+      "width": 1540,
+      "left": 190,
+      "maxWidth": "1540px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-937636d e-con-full e-fle",
+      "width": 1540,
+      "left": 190,
+      "maxWidth": "none",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-9286247 elementor-positi",
+      "width": 1540,
+      "left": 190,
+      "maxWidth": "100%",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-image-box-content",
+      "width": 1189,
+      "left": 541,
+      "maxWidth": "none",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "e-con-inner",
+      "width": 1542,
+      "left": 189,
+      "maxWidth": "1542px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-cbe1923 e-con-full e-fle",
+      "width": 605,
+      "left": 1126,
+      "maxWidth": "none",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-d9e5afc elementor-widget",
+      "width": 605,
+      "left": 1126,
+      "maxWidth": "100%",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "e-con-inner",
+      "width": 998,
+      "left": 461,
+      "maxWidth": "998px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-06eb1f6 e-con-full e-fle",
+      "width": 998,
+      "left": 461,
+      "maxWidth": "none",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-001bcca elementor-widget",
+      "width": 696,
+      "left": 612,
+      "maxWidth": "100%",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-widget-container",
+      "width": 696,
+      "left": 612,
+      "maxWidth": "none",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-7a4985d elementor-widget",
+      "width": 998,
+      "left": 461,
+      "maxWidth": "100%",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-1145bc9 e-con-full e-fle",
+      "width": 760,
+      "left": 190,
+      "maxWidth": "none",
+      "paddingLeft": "15px",
+      "paddingRight": "15px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-fb935e7 e-con-full e-fle",
+      "width": 728,
+      "left": 206,
+      "maxWidth": "none",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-a2804db elementor-widget",
+      "width": 728,
+      "left": 206,
+      "maxWidth": "100%",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "e-con-inner",
+      "width": 1460,
+      "left": 230,
+      "maxWidth": "1460px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-2a7b5ae e-con-full e-fle",
+      "width": 1460,
+      "left": 230,
+      "maxWidth": "none",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-7217a5e elementor-widget",
+      "width": 1460,
+      "left": 230,
+      "maxWidth": "100%",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-a03c2fa e-con-full e-fle",
+      "width": 1540,
+      "left": 190,
+      "maxWidth": "none",
+      "paddingLeft": "64px",
+      "paddingRight": "64px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-04bd442 elementor-widget",
+      "width": 1412,
+      "left": 254,
+      "maxWidth": "100%",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-widget-container",
+      "width": 1412,
+      "left": 254,
+      "maxWidth": "none",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "summary",
+      "cls": "e-n-accordion-item-title",
+      "width": 1412,
+      "left": 254,
+      "maxWidth": "none",
+      "paddingLeft": "12px",
+      "paddingRight": "12px"
+    },
+    {
+      "tag": "div",
+      "cls": "e-con-inner",
+      "width": 1370,
+      "left": 275,
+      "maxWidth": "1370px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    },
+    {
+      "tag": "div",
+      "cls": "elementor-element elementor-element-f44efa8 e-con-full e-fle",
+      "width": 1370,
+      "left": 275,
+      "maxWidth": "none",
+      "paddingLeft": "0px",
+      "paddingRight": "0px"
+    }
+  ],
+  "images": [
+    {
+      "src": "https://realestatebrokermatch.com/wp-content/uploads/2025/09/rebm-logo.svg",
+      "natural": "458×67",
+      "rendered": "458×67",
+      "alt": "Logo"
+    },
+    {
+      "src": "https://realestatebrokermatch.com/wp-content/uploads/2025/10/alan.png",
+      "natural": "723×945",
+      "rendered": "286×248",
+      "alt": "Team: Alan"
+    },
+    {
+      "src": "https://realestatebrokermatch.com/wp-content/uploads/2025/10/rhett2.png",
+      "natural": "723×945",
+      "rendered": "286×248",
+      "alt": ""
+    },
+    {
+      "src": "https://realestatebrokermatch.com/wp-content/uploads/2025/09/Rectangle-22.png",
+      "natural": "0×0",
+      "rendered": "354×257",
+      "alt": ""
+    },
+    {
+      "src": "https://realestatebrokermatch.com/wp-content/uploads/2025/09/Rectangle-23-3.png",
+      "natural": "0×0",
+      "rendered": "352×257",
+      "alt": ""
+    },
+    {
+      "src": "https://realestatebrokermatch.com/wp-content/uploads/2025/09/Group-32.svg",
+      "natural": "0×0",
+      "rendered": "120×24",
+      "alt": ""
+    },
+    {
+      "src": "https://realestatebrokermatch.com/wp-content/uploads/2025/09/Group-32.svg",
+      "natural": "0×0",
+      "rendered": "120×24",
+      "alt": ""
+    },
+    {
+      "src": "https://realestatebrokermatch.com/wp-content/uploads/2025/09/Group-32.svg",
+      "natural": "0×0",
+      "rendered": "120×24",
+      "alt": ""
+    },
+    {
+      "src": "https://realestatebrokermatch.com/wp-content/uploads/2025/09/Group-32.svg",
+      "natural": "0×0",
+      "rendered": "120×24",
+      "alt": ""
+    },
+    {
+      "src": "https://realestatebrokermatch.com/wp-content/uploads/2025/09/Group-32.svg",
+      "natural": "0×0",
+      "rendered": "120×24",
+      "alt": ""
+    },
+    {
+      "src": "https://realestatebrokermatch.com/wp-content/uploads/2025/09/Group-32.svg",
+      "natural": "0×0",
+      "rendered": "120×24",
+      "alt": ""
+    },
+    {
+      "src": "https://realestatebrokermatch.com/wp-content/uploads/2025/09/Group-32.svg",
+      "natural": "0×0",
+      "rendered": "120×24",
+      "alt": ""
+    },
+    {
+      "src": "https://realestatebrokermatch.com/wp-content/uploads/2025/09/Group-32.svg",
+      "natural": "0×0",
+      "rendered": "120×24",
+      "alt": ""
+    },
+    {
+      "src": "https://realestatebrokermatch.com/wp-content/uploads/2025/09/image-5.svg",
+      "natural": "458×67",
+      "rendered": "540×79",
+      "alt": "Real Estate Broker Match"
+    }
+  ],
+  "fonts": [
+    "eicons 400 normal",
+    "Helvetica Now Display 400 normal",
+    "Helvetica Now Display 700 normal",
+    "Helvetica Now Display 900 normal",
+    "Helvetica Neue 400 normal",
+    "Helvetica Neue 500 normal",
+    "Inter 100 italic",
+    "Inter 200 italic",
+    "Inter 300 italic",
+    "Inter 400 italic",
+    "Inter 500 italic",
+    "Inter 600 italic",
+    "Inter 700 italic",
+    "Inter 800 italic",
+    "Inter 900 italic",
+    "Inter 100 normal",
+    "Inter 200 normal",
+    "Inter 300 normal",
+    "Inter 400 normal",
+    "Inter 500 normal",
+    "Inter 600 normal",
+    "Inter 700 normal",
+    "Inter 800 normal",
+    "Inter 900 normal",
+    "Font Awesome 5 Free 900 normal",
+    "Font Awesome 5 Brands 400 normal"
+  ]
+}

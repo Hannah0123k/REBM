@@ -1,0 +1,37 @@
+{
+  "pageHeight": 9222,
+  "sections": [
+    {
+      "tag": "footer",
+      "id": null,
+      "cls": "elementor elementor-45 elementor-location-footer",
+      "geom": {
+        "top": 8786,
+        "bottom": 9222,
+        "left": 0,
+        "width": 1920,
+        "height": 437
+      },
+      "bg": {
+        "color": "rgba(0, 0, 0, 0)",
+        "image": null,
+        "size": "auto",
+        "position": "0% 0%",
+        "repeat": "repeat",
+        "attachment": "scroll"
+      },
+      "pad": "0px 0px 0px 0px",
+      "margin": "0px 0px 0px 0px",
+      "container": {
+        "width": 1370,
+        "left": 275,
+        "maxWidth": "1370px",
+        "pad": "0px 0px 0px 0px",
+        "display": "flex",
+        "gap": "0px"
+      },
+      "headings": [],
+      "text": "LinkedIn Twitter YouTube Copyright © 2026 Real Estate Foundation, Inc. Home Process About Property Testimonials FAQ Blog Contact Disclaimer +1 (800) 841-5033"
+    }
+  ]
+}
