@@ -65,6 +65,41 @@ export const process = {
   ],
 } as const;
 
+/**
+ * Bios. The live versions are substantially longer than Figma's and add material
+ * Figma never had — Alan's NNN book and national recognition, and Rhett's
+ * Inherited Property Match paragraph (which carries an outbound link). Live wins,
+ * so this block runs taller than the 1035px Figma drew.
+ */
+export const bios = {
+  kicker: "You will work with:",
+  people: [
+    {
+      name: "Alan Fruitman",
+      photo: "alan",
+      paragraphs: [
+        "Since 1993, Alan has helped thousands of clients buy, sell, and lease billions of dollars in real estate. He is a nationally recognized expert in investment real estate and 1031 exchanges, and the author of The NNN Triple Net Property Book. Alan has matched clients with trusted real estate brokers nationwide, and his proven track record makes him uniquely qualified to assist with the sale of your investment property.",
+        "Alan has been the trusted real estate broker for everyone ranging from first-time investors to billion-dollar property owners, attorneys, accountants, financial advisors, institutional fund managers, and family offices. He understands that while every client is unique, their goals are strikingly similar: to be heard and understood, to receive clear guidance, and to sell their property for the highest price with the smoothest process. Above all, Alan believes in giving clients realistic advice - not inflated projections or promises that can't be delivered.",
+      ],
+    },
+    {
+      name: "Rhett Fruitman",
+      photo: "rhett",
+      paragraphs: [
+        "Drawing on his experience at Citi, CBRE and 1031tax.com, Rhett applies investment-grade due diligence to ensure every broker introduction meets our exact standards. Rhett oversees our client and broker relationships with the kind of attention you'd expect from your family's trusted advisor - professional, thorough, and always looking out for your best interests.",
+        // "Inherited Property Match" links out on the live site — see BioBlock.
+        "Alan and Rhett also founded Inherited Property Match, a broker-matching platform built specifically for heirs, executors, and trustees selling inherited real estate.",
+      ],
+    },
+  ],
+} as const;
+
+/** Outbound link embedded in Rhett's second paragraph on the live site. */
+export const INHERITED_PROPERTY_MATCH = {
+  text: "Inherited Property Match",
+  href: "https://inheritedpropertymatch.com/",
+} as const;
+
 export const luckCta = {
   heading:
     "Finding the perfect broker on Google is luck. Finding one through us is strategy.",
