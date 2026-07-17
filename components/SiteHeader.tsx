@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Container } from "@/components/Container";
@@ -33,6 +34,7 @@ const SECTION_IDS = NAV_LINKS.map((l) => sectionId(l.href)).filter(
  * Nav shows from xl (1280) up; below that, the hamburger drawer.
  */
 export function SiteHeader() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const active = useActiveSection(SECTION_IDS);
 
@@ -42,6 +44,9 @@ export function SiteHeader() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // The public marketing header must not appear on the admin CMS routes.
+  if (pathname?.startsWith("/admin")) return null;
 
   return (
     <header

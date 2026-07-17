@@ -63,6 +63,14 @@ export function Footer() {
               Real Estate Foundation Inc.
             </p>
             <p className="mt-[48px] text-[18px] leading-[23.4px] lg:mt-[170px]">{COPYRIGHT}</p>
+            {/* Admin link — public URL is fine; security is enforced by auth, not
+                by hiding this link. */}
+            <Link
+              href="/admin/login"
+              className="mt-[10px] inline-block text-[13px] text-white/50 transition-colors hover:text-rebm-blue"
+            >
+              Admin
+            </Link>
           </div>
 
           <FooterColumn heading="COMPANY">
