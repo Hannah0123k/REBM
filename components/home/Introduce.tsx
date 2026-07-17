@@ -15,7 +15,7 @@ import { introduce } from "@/content/homepage";
  */
 export function Introduce() {
   return (
-    <section className="w-full bg-rebm-blue">
+    <section className="w-full bg-rebm-band-can">
       <Container className="flex flex-col items-center pt-[100px] pb-[90px] text-center">
         <h2 className="text-[30px] leading-[39px] font-bold text-white">
           {introduce.heading}

@@ -31,7 +31,8 @@ const page = await browser.newPage({
 });
 
 const url = `http://localhost:3000${path}`;
-const res = await page.goto(url, { waitUntil: "networkidle" });
+// 'load' not 'networkidle' — the dev server's HMR websocket never idles.
+const res = await page.goto(url, { waitUntil: "load", timeout: 45000 });
 if (!res?.ok()) {
   console.error(`! ${url} returned ${res?.status()}`);
   await browser.close();

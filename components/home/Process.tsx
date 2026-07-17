@@ -69,7 +69,10 @@ export function Process() {
               <p className="mt-[8px] text-[18px] leading-[23.4px] font-medium text-black">
                 {step.before}
                 {step.linkText && (
-                  <a href={step.linkHref} className="text-rebm-link">
+                  <a
+                    href={step.linkHref}
+                    className="text-rebm-link underline transition-opacity hover:opacity-70"
+                  >
                     {step.linkText}
                   </a>
                 )}

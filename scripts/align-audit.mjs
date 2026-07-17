@@ -86,7 +86,7 @@ const results = {};
 for (const t of TARGETS) {
   const page = await browser.newPage({ viewport: { width, height: 1000 } });
   try {
-    await page.goto(t.url, { waitUntil: "networkidle", timeout: 60000 });
+    await page.goto(t.url, { waitUntil: "load", timeout: 45000 });
     await page.evaluate(() => document.fonts.ready);
     results[t.name] = await page.evaluate(probe);
   } catch (err) {

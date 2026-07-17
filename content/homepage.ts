@@ -17,6 +17,12 @@ export const CONTACT_HREF = "https://realestatebrokermatch.com/contact-us/";
 export const hero = {
   heading:
     "Real Estate Broker Match will match you with a real estate broker who will sell your property.",
+  // Same words as `heading`; the desktop layout breaks exactly here (request).
+  headingLines: [
+    "Real Estate Broker Match will",
+    "match you with a real estate broker",
+    "who will sell your property.",
+  ],
   paragraphs: [
     "Alan and Rhett Fruitman have helped thousands of clients buy and sell billions of dollars of real estate since 1993.",
     "Real Estate Broker Match (REBM) personally connects you with a hand-selected broker from our nationwide network – vetted through more than 30 years of relationships built on trust, integrity, and performance.",

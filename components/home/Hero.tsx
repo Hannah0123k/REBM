@@ -1,114 +1,83 @@
-import Image from "next/image";
-
 import { Container } from "@/components/Container";
 import { PillButton } from "@/components/PillButton";
-import { SiteHeader } from "@/components/SiteHeader";
 import { hero } from "@/content/homepage";
-import heroPhoto from "@/public/assets/hero-photo.webp";
 
 /**
- * Hero + the dark info band beneath it (Figma frame 95:2, y 0 → 1012.5).
+ * Hero + dark info band. Live section 1 (y 0 → 982).
  *
- * Geometry, exact from Figma:
- *   photo   image 2 (116:2)  x=176  y=-76.5  1745×1091
- *   H1      95:23            x=188  y=149.5  775 wide   HND-Bd 62/80.6  #FFFFFF
- *   body    95:24            x=188  y=424.5  577 wide   HN-Medium 24/31.2
- *   button  131:5            x=188  y=673.5  225×64
- *   band    Rectangle 5      x=0    y=786.5  1920×226   #0E384F @ 0.5
- *   left    95:40            x=188  y=853.5  782 wide   HN 18/23.4
- *   rule    Line 1 (95:41)   x=1054 y=850.5  98 tall    white
- *   right   95:38            x=1104 y=853.5  617 wide   HN 18/23.4
+ * The live site paints the photo as a full-width BACKGROUND image on the hero:
+ *   background: #689ECF url(image-2-1.jpg) top-center / 100% auto no-repeat
+ * i.e. scaled to viewport width, anchored to the top, bottom cropped by the
+ * section height. Reproduced with a background layer rather than an absolutely
+ * positioned <img>, so the building never overlaps the headline (it sits behind,
+ * faded into blue on the left) and crops with the section like the live site.
  *
- * ── The mirror ─────────────────────────────────────────────────────────────
- * image 2 reports `rotation: π` from the REST API, but it is NOT rotated 180° —
- * it is mirrored horizontally. Figma decomposes a horizontal flip ambiguously
- * (180° rotation + vertical flip ≡ horizontal mirror), and taking the reported
- * rotation literally renders the building upside down.
+ * Live type:
+ *   H1     Inter 50/70 w600 #fff, ls -0.2px, 840 wide → 3 lines
+ *   body   Inter 20/26 w400 #fff, 580 wide, 26px between the two paragraphs
+ *   button primary pill → /contact-us/
  *
- * Ground truth: the source photo is upright with the building on the LEFT; the
- * design shows it upright with the building on the RIGHT. That is scaleX(-1).
- *
- * So the wrapper is mirrored and the children use Figma's authored values
- * verbatim. Figma's fills, in node space, bottom-most first:
- *   1. IMAGE, scaleMode FILL
- *   2. linear, bottom→top:  #80B3E2 alpha 0 @80%  → alpha 1 @100%
- *   3. linear, left→right:  #689ECF alpha 0 @25%  → alpha 1 @100%
- * Mirrored, #689ECF lands opaque on the left (confirmed by pixel-scanning the
- * Figma render) while #80B3E2 stays at the top, unaffected by a horizontal flip.
- *
- * Gradients are CSS rather than baked into the export because the section grows:
- * live copy is ~40% longer than Figma's placeholder (the H1 needs 4 lines where
- * Figma drew 3), and a baked gradient can't reflow — it left the dark band
- * hanging off the bottom of the photo.
- *
- * Vertical rhythm is flow-based, not absolute, for the same reason. Every gap
- * below is the exact Figma delta between adjacent boxes.
+ * The header is fixed/global (app/layout.tsx); the hero pads its content down by
+ * the header height so the headline clears it.
  */
 export function Hero() {
   return (
     <section className="relative w-full overflow-hidden bg-rebm-blue">
-      {/* image 2 (116:2): x=176, y=-76.5, 1745 wide, bleeding above the frame and
-          past its right edge. Height tracks the section so the dark band below
-          always lands on photo. -scale-x-100 is the node's mirror — see above;
-          children are authored unmirrored. */}
+      {/* Photo as a background layer — exactly the live treatment:
+          size 100% (width 100%, height auto) · position top-centre · no-repeat.
+          Set inline for reliability (the Tailwind arbitrary bg-size didn't apply). */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-[-76.5px] right-0 left-[176px] h-[calc(100%+76.5px)] -scale-x-100 select-none"
-      >
-        <Image src={heroPhoto} alt="" priority className="size-full object-fill" />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to top, rgba(128,179,226,0) 80%, rgba(128,179,226,1) 100%)",
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to right, rgba(104,158,207,0) 25%, rgba(104,158,207,1) 100%)",
-          }}
-        />
-      </div>
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: "url('/assets/live/hero-bg.webp')",
+          backgroundSize: "100% auto",
+          backgroundPosition: "50% 0%",
+          backgroundRepeat: "no-repeat",
+        }}
+      />
+      {/* Left-to-blue wash so the headline keeps contrast regardless of crop. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to right, #689ECF 0%, rgba(104,158,207,0.82) 34%, rgba(104,158,207,0) 66%)",
+        }}
+      />
 
-      <SiteHeader />
-
-      {/* Hero content — Frame 6 (95:22), x=188 y=149.5 */}
-      <Container className="relative pt-[149.5px]">
-        <h1 className="max-w-[900px] text-[50px] leading-[70px] font-semibold text-white">
-          {hero.heading}
+      {/* Content block: live is padding 150 top / 312 bottom → the tall bottom
+          pad is what makes the hero 982 and crops the building to match live. */}
+      <Container className="relative pt-[calc(var(--header-h)+42px)] pb-[60px] lg:pb-[44px]">
+        <h1 className="max-w-[840px] text-[34px] leading-[42px] font-semibold tracking-[-0.2px] text-white sm:text-[44px] sm:leading-[58px] lg:text-[50px] lg:leading-[70px]">
+          {hero.headingLines.map((line, i) => (
+            <span key={line}>
+              {line}
+              {/* Force the exact live break on desktop; wrap naturally below. */}
+              {i < hero.headingLines.length - 1 && <br className="hidden lg:inline" />}
+              {i < hero.headingLines.length - 1 && <span className="lg:hidden"> </span>}
+            </span>
+          ))}
         </h1>
 
-        {/* H1 box ends y=392.5, body starts y=424.5 → 32px gap */}
-        <div className="mt-[32px] max-w-[640px] space-y-[26px] text-[20px] leading-[26px] text-white">
+        <div className="mt-[32px] max-w-[580px] space-y-[26px] text-[20px] leading-[26px] text-white">
           {hero.paragraphs.map((p) => (
             <p key={p}>{p}</p>
           ))}
         </div>
 
-        {/* body box ends y=641.5, button starts y=673.5 → 32px gap */}
         <PillButton href={hero.cta.href} className="mt-[32px]">
           {hero.cta.label}
         </PillButton>
       </Container>
 
-      {/* Dark info band — Rectangle 5, y=786.5, 226 tall, over the photo.
-          Frame 6 ends y=737.5 → 49px gap. */}
-      <div className="relative mt-[49px] min-h-[226px] w-full bg-rebm-band-info">
-        <Container className="flex flex-col gap-[32px] pt-[67px] pb-[67px] lg:flex-row lg:gap-0">
-          <p className="w-full text-[18px] leading-[23.4px] text-white lg:w-[782px] lg:shrink-0">
+      {/* Dark info band — full-bleed strip over the bottom of the photo. */}
+      <div className="relative mt-[42px] w-full bg-rebm-band-info">
+        <Container className="flex flex-col gap-[32px] py-[56px] lg:flex-row lg:gap-[68px] lg:py-[67px]">
+          <p className="text-[18px] leading-[23.4px] text-white lg:w-1/2 lg:border-r lg:border-white lg:pr-[68px]">
             {hero.band.summary}
           </p>
-
-          {/* Line 1: x=1054 (866 past the 188 gutter), 98 tall, starts 64 below
-              the band top — i.e. 3px above the text baseline box. */}
-          <div
-            aria-hidden="true"
-            className="mt-[-3px] ml-[84px] hidden h-[98px] w-px shrink-0 bg-white lg:block"
-          />
-
-          <ul className="min-w-0 flex-1 list-disc lg:ml-[50px] pl-[18px] text-[18px] leading-[23.4px] text-white marker:text-white">
+          <ul className="list-disc pl-[20px] text-[18px] leading-[23.4px] text-white marker:text-white lg:w-1/2">
             {hero.band.points.map((point) => (
               <li key={point}>{point}</li>
             ))}
