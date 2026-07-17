@@ -48,14 +48,16 @@ export const FOOTER_LINKS: NavLink[] = [
 
 /**
  * Social links exist on the live site but appear nowhere in the Figma footer.
- * Design says omit, content says keep — flagged to Hannah, not yet resolved.
- * Defined here so they're ready the moment she decides; not yet rendered.
+ * Hannah confirmed (2026-07-16) they ship, so the icons are an addition to the
+ * design — see components/icons/SocialIcons.tsx.
  */
 export const SOCIAL_LINKS = [
   { label: "LinkedIn", href: "https://www.linkedin.com/company/realestatebrokermatch/" },
   { label: "Twitter", href: "https://x.com/REBrokerMatch" },
   { label: "YouTube", href: "https://www.youtube.com/@RealEstateBrokerMatch" },
 ] as const;
+
+export type SocialLabel = (typeof SOCIAL_LINKS)[number]["label"];
 
 /** Live site wording wins over Figma's "Copyright @ Real Estate Foundation Inc., 2024". */
 export const COPYRIGHT = "Copyright © 2026 Real Estate Foundation, Inc.";

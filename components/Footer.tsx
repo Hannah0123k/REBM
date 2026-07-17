@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { COPYRIGHT, FOOTER_LINKS, PHONE_HREF, PHONE_NUMBER_INTL } from "@/lib/nav";
+import { SOCIAL_ICONS } from "@/components/icons/SocialIcons";
+import { COPYRIGHT, FOOTER_LINKS, PHONE_HREF, PHONE_NUMBER_INTL, SOCIAL_LINKS } from "@/lib/nav";
 import logo from "@/public/assets/rebm-logo-footer@2x.png";
 
 /**
@@ -33,8 +34,9 @@ import logo from "@/public/assets/rebm-logo-footer@2x.png";
  * it is genuinely transparent. It is a different file from the header's image 5,
  * and neither is the A4 vector (a different mark entirely). See decision #5.
  *
- * ⚠️ Social icons (LinkedIn / X / YouTube) are on the live site but absent from
- * the Figma footer. Unresolved — see SOCIAL_LINKS in lib/nav.ts.
+ * Social icons are an ADDITION: they exist on the live site but nowhere in the
+ * Figma design. Hannah confirmed they ship (2026-07-16). Placed under CONTACT US
+ * and styled to the footer's existing language so they don't read as new design.
  */
 export function Footer() {
   return (
@@ -81,6 +83,26 @@ export function Footer() {
               <a href={PHONE_HREF} className={LINK_CLASS}>
                 {PHONE_NUMBER_INTL}
               </a>
+            </li>
+            {/* Not in Figma — the live site has these and Hannah asked to keep
+                them. Sized to the 24px link text so the row sits on the same
+                rhythm as the column above it. */}
+            <li className="mt-[16px] flex gap-[16px]">
+              {SOCIAL_LINKS.map(({ label, href }) => {
+                const Icon = SOCIAL_ICONS[label];
+                return (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    aria-label={label}
+                    className="text-rebm-blue transition-opacity hover:opacity-80"
+                  >
+                    <Icon className="size-[24px]" />
+                  </a>
+                );
+              })}
             </li>
           </FooterColumn>
         </div>
