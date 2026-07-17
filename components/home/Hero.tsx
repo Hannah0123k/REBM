@@ -71,23 +71,23 @@ export function Hero() {
         </PillButton>
       </Container>
 
-      {/* Info band — redesigned as a solid deep-navy strip, distinct from the
-          hero photo (no longer a translucent overlay), for clean contrast and
-          readability. Two columns split by a subtle rule; bullets get a small
-          blue tick accent. */}
-      <div className="relative w-full bg-rebm-footer">
-        <Container className="grid grid-cols-1 gap-[36px] py-[56px] lg:grid-cols-2 lg:gap-[72px] lg:py-[64px]">
-          <p className="max-w-[620px] text-[18px] leading-[26px] text-white/90 lg:border-r lg:border-white/20 lg:pr-[72px]">
+      {/* Info band — EXACT Figma design (Rectangle 5, 95:36): a full-width
+          translucent navy strip #0E384F @ 0.5 over the hero photo, 226 tall with
+          67px top/bottom padding. Left copy column 782 wide, a white vertical
+          divider 98 tall, then the right column 617 wide. All text Helvetica-
+          equivalent 18/23.4 white. Content is the live wording (source of truth);
+          geometry/typography are Figma. Stacks on mobile. */}
+      <div className="relative w-full bg-rebm-band-info">
+        <Container className="flex flex-col gap-[28px] py-[48px] lg:flex-row lg:gap-0 lg:py-[67px]">
+          <p className="text-[18px] leading-[23.4px] text-white lg:w-[782px] lg:shrink-0">
             {hero.band.summary}
           </p>
-          <ul className="flex flex-col gap-[14px]">
+          <div aria-hidden="true" className="hidden self-stretch lg:mx-[52px] lg:block lg:w-px lg:bg-white" />
+          <div className="flex flex-col gap-[4px] text-[18px] leading-[23.4px] text-white lg:w-[617px]">
             {hero.band.points.map((point) => (
-              <li key={point} className="flex items-start gap-[12px] text-[18px] leading-[24px] text-white/90">
-                <span aria-hidden="true" className="mt-[9px] size-[7px] shrink-0 rounded-full bg-rebm-blue" />
-                <span>{point}</span>
-              </li>
+              <p key={point}>{point}</p>
             ))}
-          </ul>
+          </div>
         </Container>
       </div>
     </section>

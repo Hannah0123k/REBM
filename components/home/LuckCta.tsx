@@ -1,27 +1,39 @@
+import Image from "next/image";
+
 import { Container } from "@/components/Container";
 import { PillButton } from "@/components/PillButton";
 import { luckCta } from "@/content/homepage";
+import bandPhoto from "@/public/assets/band-photo.webp";
 
 /**
- * "Finding the right broker on Google is luck…" CTA band. Live section 4
- * (y 2927 → 3394, height 467).
+ * "Finding the right broker on Google is luck…" bar — EXACT Figma design
+ * (Rectangle 9 + Frame 10, Figma frame 95:2 y 1858.5 → 2306.5).
  *
- * Live spec:
- *   bg      Group-51.png — reads as flat #689ECF; solid colour is identical
- *   content padding 100/90, narrow centred column (~998), everything centred
- *   H2      Inter 29/37.7 w700 #fff, ls -0.2px, CENTER
- *   body    Inter 23/29.9 w400 #fff, CENTER
- *   button  primary pill → /contact-us/
+ * Figma:
+ *   bg      Rectangle 9 (95:8)  1920×448  #4C84B7
+ *   photo   image 3 (95:9)      10% opacity behind
+ *   content Frame 10 centred; padding 100 top / 90 bottom; min-height 448
+ *   H2      95:48  HND-Bd 32/41.6  #FFFFFF  CENTER
+ *   body    95:49  HN 24/31.2  #FFFFFF  CENTER
+ *   gaps    H2→body 24 · body→button 24
+ *   button  95:50  225×64 radius 80  #032C40 @0.9
  *
- * Heading is centred (was drifting) and wide enough (760) to keep the "…is
- * strategy." clause on the same line as the sentence before it at desktop.
- * Vertical padding trimmed a touch so the band is shorter but not cramped.
+ * Content is the live wording (source of truth); the heading keeps the requested
+ * two-line break. Typography/proportions are Figma.
  */
 export function LuckCta() {
   return (
-    <section className="w-full bg-rebm-band-cta">
-      <Container className="flex flex-col items-center py-[76px] text-center">
-        <h2 className="max-w-[820px] text-[29px] leading-[37.7px] font-bold tracking-[-0.2px] text-white">
+    <section className="relative w-full overflow-hidden bg-rebm-band-cta">
+      {/* image 3 at 10% opacity (Figma). Stretched full width like the node. */}
+      <Image
+        src={bandPhoto}
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 size-full object-cover opacity-10 select-none"
+      />
+
+      <Container className="relative flex min-h-[448px] flex-col items-center pt-[100px] pb-[90px] text-center">
+        <h2 className="max-w-[720px] text-[32px] leading-[41.6px] font-bold text-white">
           {luckCta.headingLines.map((line, i) => (
             <span key={line}>
               {line}
@@ -30,7 +42,7 @@ export function LuckCta() {
           ))}
         </h2>
 
-        <p className="mt-[24px] max-w-[998px] text-[23px] leading-[29.9px] text-white">
+        <p className="mt-[24px] max-w-[988px] text-[24px] leading-[31.2px] text-white">
           {luckCta.body}
         </p>
 

@@ -8,7 +8,17 @@ import { Container } from "@/components/Container";
 import { MobileNav } from "@/components/MobileNav";
 import { PhonePill } from "@/components/PhonePill";
 import { NAV_LINKS } from "@/lib/nav";
+import { useActiveSection } from "@/lib/useActiveSection";
 import logo from "@/public/assets/rebm-logo.svg";
+
+/** Section id a nav link points at (`/#process` → `process`), else null. */
+function sectionId(href: string): string | null {
+  return href.startsWith("/#") ? href.slice(2) : null;
+}
+
+const SECTION_IDS = NAV_LINKS.map((l) => sectionId(l.href)).filter(
+  (id): id is string => id !== null,
+);
 
 /**
  * Sticky site header — shared by every page. Live site is fixed + transparent;
@@ -24,6 +34,7 @@ import logo from "@/public/assets/rebm-logo.svg";
  */
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
+  const active = useActiveSection(SECTION_IDS);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -35,34 +46,49 @@ export function SiteHeader() {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 h-[var(--header-h)] transition-colors duration-300 ${
-        scrolled ? "bg-rebm-blue shadow-md" : "bg-transparent"
+        scrolled
+          ? "border-b border-white/15 bg-rebm-navy/55 shadow-md backdrop-blur-md [-webkit-backdrop-filter:blur(12px)]"
+          : "bg-transparent"
       }`}
     >
       <Container className="flex h-full items-center justify-between">
         <Link href="/" className="shrink-0">
+          {/* Logo SVG cropped to its ink bounds (viewBox 0 17 458 35) so the
+              wordmark fills the box and reads larger than the untrimmed live
+              asset at the same width. Bigger than live where the nav has room;
+              1280 stays compact like live so the 7-link nav fits. */}
           <Image
             src={logo}
             alt="Real Estate Broker Match"
             width={458}
-            height={67}
+            height={35}
             priority
-            className="h-auto w-[260px] sm:w-[320px] xl:w-[340px] min-[1440px]:w-[458px] 2xl:w-[500px]"
+            className="h-auto w-[300px] sm:w-[360px] xl:w-[clamp(340px,calc(85.9vw-759.5px),560px)]"
           />
         </Link>
 
         {/* Live nav: 24px between links, 40px before the phone pill. */}
         <nav className="hidden items-center gap-[40px] xl:flex">
           <ul className="flex items-center gap-[20px] 2xl:gap-[24px]">
-            {NAV_LINKS.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="whitespace-nowrap text-[18px] leading-[30px] text-white transition-opacity hover:opacity-80"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+            {NAV_LINKS.map((link) => {
+              const isActive = sectionId(link.href) !== null && sectionId(link.href) === active;
+              return (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    aria-current={isActive ? "true" : undefined}
+                    // Every link is identical in family/size/weight/leading; the
+                    // active state changes COLOUR ONLY (navy) — never weight or
+                    // size. This also fixes "About looked bold/smaller".
+                    className={`whitespace-nowrap text-[18px] leading-[30px] font-normal transition-colors duration-300 ${
+                      isActive ? "text-rebm-navy" : "text-white hover:opacity-80"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
           <PhonePill />
         </nav>

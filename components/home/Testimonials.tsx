@@ -24,7 +24,7 @@ import { testimonials } from "@/content/homepage";
  */
 export function Testimonials() {
   return (
-    <section id="testamonial" className="w-full bg-rebm-blue">
+    <section id="testimonials" className="w-full bg-rebm-blue">
       <Container className="pt-[96px] pb-[125px]">
         <h2 className="text-[36px] leading-[44px] font-bold text-rebm-navy lg:text-[62px] lg:leading-[80.6px]">
           {testimonials.heading}

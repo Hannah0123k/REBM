@@ -35,7 +35,7 @@
    in-page jumps clear the header instead of hiding section headings under it.
    One source of truth — never patch anchor spacing per-section. */
 :root {
-  --header-h: 108px;
+  --header-h: 122px;
 }
 
 html {
