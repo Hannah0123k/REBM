@@ -38,7 +38,7 @@ export function Bios() {
         {bios.people.map((person, i) => (
           <div
             key={person.name}
-            className={`flex flex-col items-start gap-[24px] sm:flex-row ${i > 0 ? "mt-[51px]" : ""}`}
+            className={`flex flex-col items-start gap-[24px] sm:flex-row sm:gap-0 ${i > 0 ? "mt-[51px]" : ""}`}
           >
             <Image
               src={PHOTOS[person.photo]}
