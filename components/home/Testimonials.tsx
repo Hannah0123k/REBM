@@ -33,19 +33,16 @@ export function Testimonials() {
           </h2>
         </Reveal>
 
-        {/* Aligned grid (was a CSS-column masonry) so every card in a row shares
-            the same top line — the masonry let a column's first card drift
-            slightly lower depending on the browser's balancing. items-start keeps
-            each card its natural height, so shorter cards don't stretch. */}
-        <Reveal
-          className="mt-[32px] grid grid-cols-1 items-start gap-[20px] sm:grid-cols-2 lg:grid-cols-3"
-          stagger={0.05}
-          start="top 82%"
-        >
+        {/* Masonry via CSS `columns` — matches the live site: each column packs
+            its cards independently, so leftover space falls at the BOTTOM of a
+            column rather than under individual cards (Hannah's preference over an
+            aligned grid). break-inside-avoid keeps a card whole; mb gives the
+            vertical gap. No JS / no unpinned Masonry script (pre-launch flag). */}
+        <Reveal className="mt-[32px] gap-[20px] lg:columns-3" stagger={0.05} start="top 82%">
           {testimonials.items.map((t) => (
             <figure
               key={t.author}
-              className="rounded-[20px] bg-white p-[32px] sm:p-[48px] lg:p-[64px] lg:pr-[62px]"
+              className="mb-[20px] break-inside-avoid rounded-[20px] bg-white p-[32px] sm:p-[48px] lg:p-[64px] lg:pr-[62px]"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/assets/live/stars.svg" alt="5 out of 5 stars" width={120} height={24} />
