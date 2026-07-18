@@ -37,7 +37,7 @@ export const NAV_LINKS: NavLink[] = [
   { label: "Testimonials", href: "/#testimonials" },
   { label: "FAQ", href: "/#faq" },
   { label: "Blog", href: "/blog" },
-  { label: "Contact", href: "/contact-us" },
+  { label: "Contact", href: "/contact" },
 ];
 
 /** Footer COMPANY column — live site order, which adds Home and FAQ. */
@@ -49,7 +49,7 @@ export const FOOTER_LINKS: NavLink[] = [
   { label: "Testimonials", href: "/#testimonials" },
   { label: "FAQ", href: "/#faq" },
   { label: "Blog", href: "/blog" },
-  { label: "Contact", href: "/contact-us" },
+  { label: "Contact", href: "/contact" },
 ];
 
 /**

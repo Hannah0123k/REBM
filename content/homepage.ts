@@ -11,7 +11,7 @@
  * stripped (benign paste artifacts) and rendered as normal spaces.
  */
 
-export const CONTACT_HREF = "https://realestatebrokermatch.com/contact-us/";
+export const CONTACT_HREF = "/contact";
 
 /* 1 ── Hero + bottom info band ------------------------------------------------ */
 export const hero = {

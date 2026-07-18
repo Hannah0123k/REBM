@@ -81,7 +81,11 @@ export function SiteHeader() {
         <nav className="hidden items-center gap-[40px] xl:flex">
           <ul className="flex items-center gap-[20px] 2xl:gap-[24px]">
             {NAV_LINKS.map((link) => {
-              const isActive = sectionId(link.href) !== null && sectionId(link.href) === active;
+              // Active when its section is in view (homepage scrollspy) OR when
+              // the link is a standalone page and matches the current path.
+              const isActive =
+                (sectionId(link.href) !== null && sectionId(link.href) === active) ||
+                (!link.href.startsWith("/#") && pathname === link.href);
               return (
                 <li key={link.href}>
                   <Link
