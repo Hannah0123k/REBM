@@ -1,46 +1,90 @@
 import { Container } from "@/components/Container";
 import { Reveal } from "@/components/Reveal";
+import { VALUE_PROP_ICONS } from "@/components/icons/ValuePropIcons";
 import { valueProps } from "@/content/homepage";
 
 /**
- * "Why Real Estate Broker Match / Choosing The Right Expert / This Is Important
- * To Us" — 3-column feature band. Live section 5 (y 3394 → 4116).
+ * "Why We Do What We Do" — value-prop section (live section 5).
  *
- * Live spec:
- *   bg      solid #689ECF, content padding 123px top / 176px bottom
- *   title   Inter 30/39 w700 #032C40, margin-bottom 25px
- *   body    Inter 23/29.9 w400 #fff
+ * Redesigned per Hannah (2026-07-17): a centered header (kicker + navy heading +
+ * intro) over the brand-blue band, then three white cards with a navy icon badge
+ * straddling each card's top edge, a navy title, a short accent rule, and the
+ * body copy. Moving the body onto white cards also fixes the earlier white-on-
+ * #689ECF contrast failure — card copy is now dark navy on white.
  *
- * Two request-driven refinements:
- *   1. "Why Real Estate Broker Match" must stay on ONE line at desktop — the
- *      title is nowrap at lg and its size eases to 28px so it fits the column.
- *   2. Body paragraphs align across columns: a 3×2 grid puts all titles in row 1
- *      (shared height) and all bodies in row 2, so every paragraph starts at the
- *      same vertical position regardless of title length.
+ * Copy is unchanged (source-of-truth live wording); only the layout is new.
  */
 export function ValueProps() {
   return (
-    <section className="w-full bg-rebm-blue">
-      <Container className="pt-[123px] pb-[176px]">
-        {/* Columns reveal left-to-right (titles cascade, then bodies), ~20px rise. */}
+    <section className="relative w-full overflow-hidden bg-gradient-to-b from-[#74A6D5] via-rebm-blue to-[#5C92CB]">
+      {/* Subtle dotted corners, echoing the reference. Purely decorative. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-0 left-0 h-[240px] w-[240px] opacity-20"
+        style={{
+          backgroundImage: "radial-gradient(circle, #fff 1.3px, transparent 1.6px)",
+          backgroundSize: "16px 16px",
+          maskImage: "radial-gradient(circle at bottom left, #000, transparent 72%)",
+          WebkitMaskImage: "radial-gradient(circle at bottom left, #000, transparent 72%)",
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute right-0 bottom-0 h-[240px] w-[240px] opacity-20"
+        style={{
+          backgroundImage: "radial-gradient(circle, #fff 1.3px, transparent 1.6px)",
+          backgroundSize: "16px 16px",
+          maskImage: "radial-gradient(circle at bottom right, #000, transparent 72%)",
+          WebkitMaskImage: "radial-gradient(circle at bottom right, #000, transparent 72%)",
+        }}
+      />
+
+      <Container className="relative py-[96px]">
+        {/* Header */}
+        <Reveal className="mx-auto max-w-[820px] text-center" y={20} stagger={0.08}>
+          <p className="text-[14px] font-semibold tracking-[0.18em] text-white/90 uppercase">
+            {valueProps.kicker}
+          </p>
+          <span className="mx-auto mt-[14px] block h-[3px] w-[54px] rounded-full bg-white/70" />
+          <h2 className="mt-[20px] text-[38px] leading-[46px] font-bold tracking-[-0.5px] text-rebm-navy sm:text-[52px] sm:leading-[60px]">
+            {valueProps.heading}
+          </h2>
+          <p className="mx-auto mt-[22px] max-w-[720px] text-[19px] leading-[29px] text-white sm:text-[20px] sm:leading-[30px]">
+            {valueProps.intro.lead}
+            <br />
+            <span className="italic text-white/90">{valueProps.intro.emphasis}</span>
+          </p>
+        </Reveal>
+
+        {/* Cards */}
         <Reveal
-          className="grid grid-cols-1 gap-x-[64px] gap-y-[40px] lg:grid-cols-3 lg:grid-rows-[auto_1fr]"
-          y={20}
-          stagger={0.1}
+          className="mt-[72px] grid grid-cols-1 items-stretch gap-[32px] md:grid-cols-3 md:gap-[28px] lg:gap-[36px]"
+          y={24}
+          stagger={0.12}
+          start="top 85%"
         >
-          {valueProps.map((col) => (
-            <h3
-              key={col.title}
-              className="text-[26px] leading-[34px] font-bold text-rebm-navy lg:row-start-1 lg:mb-[25px] lg:text-[28px] lg:leading-[36px] lg:whitespace-nowrap"
-            >
-              {col.title}
-            </h3>
-          ))}
-          {valueProps.map((col) => (
-            <p key={col.title} className="text-[23px] leading-[29.9px] text-white lg:row-start-2">
-              {col.body}
-            </p>
-          ))}
+          {valueProps.cards.map((card) => {
+            const Icon = VALUE_PROP_ICONS[card.icon];
+            return (
+              <div
+                key={card.title}
+                className="relative flex flex-col items-center rounded-[22px] bg-white px-[32px] pt-[62px] pb-[44px] text-center shadow-[0_22px_48px_rgba(3,44,64,0.14)]"
+              >
+                {/* Navy icon badge straddling the card's top edge. */}
+                <div className="absolute -top-[38px] flex size-[76px] items-center justify-center rounded-full bg-rebm-navy text-white shadow-[0_10px_22px_rgba(3,44,64,0.28)]">
+                  <Icon className="size-[34px]" aria-hidden="true" />
+                </div>
+
+                <h3 className="text-[24px] leading-[30px] font-bold text-balance text-rebm-navy">
+                  {card.title}
+                </h3>
+                <span className="mt-[16px] block h-[3px] w-[46px] rounded-full bg-rebm-blue" />
+                <p className="mt-[22px] text-[16px] leading-[26px] text-[rgb(51,63,74)]">
+                  {card.body}
+                </p>
+              </div>
+            );
+          })}
         </Reveal>
       </Container>
     </section>

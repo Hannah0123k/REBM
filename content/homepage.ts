@@ -104,21 +104,32 @@ export const luckCta = {
   cta: { label: "Contact REBM", href: CONTACT_HREF },
 } as const;
 
-/* 5 ── Why / Choosing / Important (3-col) ------------------------------------ */
-export const valueProps = [
-  {
-    title: "Why Real Estate Broker Match",
-    body: "Alan and Rhett built Real Estate Broker Match because their clients asked for this nationwide service. Knowing the “right” broker is crucial to a successful sale. Too often, people make the mistake of conveniently choosing a friend, a neighbor, or whoever shows up in an advertisement or Google search.",
+/* 5 ── Why / Choosing / Important (3-col cards) ------------------------------ */
+export const valueProps = {
+  kicker: "OUR PURPOSE, YOUR PEACE OF MIND",
+  heading: "Why We Do What We Do",
+  intro: {
+    lead: "Real Estate Broker Match was created with one goal in mind:",
+    emphasis: "to connect you with the right broker for your most important decisions.",
   },
-  {
-    title: "Choosing The Right Expert",
-    body: "Choosing the right broker is just as important as selecting your attorney, tax or financial advisor. In real estate, you’re either on the inside - working with professionals who truly excel - or on the outside, hoping you guessed right. REBM ensures you’re always on the inside. Whether you're protecting clients' interests as a financial advisor or attorney, or making the biggest financial decision of your life as a property owner, you no longer have to guess.",
-  },
-  {
-    title: "This Is Important To Us",
-    body: "Real Estate Broker Match is a service we are proud to share with our family, friends, clients, and professional networks. Every broker we recommend is personally vetted and held to the same high standards we would apply if selecting for our own family. We put our name and thirty-year track record on the line with every broker match we make.",
-  },
-] as const;
+  cards: [
+    {
+      icon: "home",
+      title: "Why Real Estate Broker Match",
+      body: "Alan and Rhett built Real Estate Broker Match because their clients asked for this nationwide service. Knowing the “right” broker is crucial to a successful sale. Too often, people make the mistake of conveniently choosing a friend, a neighbor, or whoever shows up in an advertisement or Google search.",
+    },
+    {
+      icon: "expert",
+      title: "Choosing The Right Expert",
+      body: "Choosing the right broker is just as important as selecting your attorney, tax or financial advisor. In real estate, you’re either on the inside - working with professionals who truly excel - or on the outside, hoping you guessed right. REBM ensures you’re always on the inside. Whether you're protecting clients' interests as a financial advisor or attorney, or making the biggest financial decision of your life as a property owner, you no longer have to guess.",
+    },
+    {
+      icon: "handshake",
+      title: "This Is Important To Us",
+      body: "Real Estate Broker Match is a service we are proud to share with our family, friends, clients, and professional networks. Every broker we recommend is personally vetted and held to the same high standards we would apply if selecting for our own family. We put our name and thirty-year track record on the line with every broker match we make.",
+    },
+  ],
+} as const;
 
 /* 6 ── Markets We Serve ------------------------------------------------------ */
 export const markets = {
