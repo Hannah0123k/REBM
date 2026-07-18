@@ -153,8 +153,9 @@ export function Hero() {
         {/* Navy tint #0E384F @ 0.5 over the frosted building. */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-rebm-band-info" />
 
-        <Container className="relative flex flex-col gap-[28px] py-[48px] lg:flex-row lg:gap-0 lg:py-[67px]">
-          {/* First line stays visible immediately (no entrance animation). */}
+        <Container className="relative flex flex-col gap-[28px] py-[48px] lg:flex-row lg:items-center lg:gap-0 lg:py-[67px]">
+          {/* First line stays visible immediately (no entrance animation);
+              vertically centered within the band. */}
           <p className="text-[18px] leading-[23.4px] text-white lg:w-[782px] lg:shrink-0">
             {hero.band.summary}
           </p>
