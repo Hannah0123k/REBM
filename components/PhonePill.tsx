@@ -10,7 +10,7 @@ export function PhonePill({ className = "" }: { className?: string }) {
   return (
     <a
       href={PHONE_HREF}
-      className={`flex shrink-0 items-center gap-[8px] rounded-[20px] bg-rebm-navy px-[24px] py-[8px] whitespace-nowrap text-white transition-opacity hover:opacity-90 ${className}`}
+      className={`flex shrink-0 items-center gap-[8px] rounded-[20px] bg-rebm-navy px-[24px] py-[8px] whitespace-nowrap text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-rebm-navy focus-visible:outline-none ${className}`}
     >
       <PhoneIcon className="size-[16px] shrink-0" />
       <span className="text-[16px] leading-[30px]">{PHONE_NUMBER}</span>

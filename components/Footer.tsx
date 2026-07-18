@@ -101,7 +101,9 @@ export function Footer() {
             {/* Not in Figma — the live site has these and Hannah asked to keep
                 them. Sized to the 24px link text so the row sits on the same
                 rhythm as the column above it. */}
-            <li className="mt-[16px] flex gap-[16px]">
+            {/* 44px hit area for touch (glyph stays 24px). Negative margin keeps
+                the visual spacing tight despite the larger tap targets. */}
+            <li className="mt-[16px] -ml-[10px] flex items-center">
               {SOCIAL_LINKS.map(({ label, href }) => {
                 const Icon = SOCIAL_ICONS[label];
                 return (
@@ -111,7 +113,7 @@ export function Footer() {
                     target="_blank"
                     rel="noreferrer noopener"
                     aria-label={label}
-                    className="text-rebm-blue transition-opacity hover:opacity-80"
+                    className="inline-flex size-[44px] items-center justify-center rounded-full text-rebm-blue transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
                   >
                     <Icon className="size-[24px]" />
                   </a>
@@ -126,7 +128,7 @@ export function Footer() {
 }
 
 const LINK_CLASS =
-  "block text-[24px] leading-[43.2px] text-rebm-blue transition-opacity hover:opacity-80";
+  "inline-block rounded-[4px] text-[24px] leading-[43.2px] text-rebm-blue transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none";
 
 function FooterColumn({
   heading,

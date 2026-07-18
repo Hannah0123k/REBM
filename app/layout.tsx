@@ -43,6 +43,14 @@ export default function RootLayout({
               "if('scrollRestoration' in history){history.scrollRestoration='manual';}if(!location.hash){window.scrollTo(0,0);}",
           }}
         />
+        {/* Skip link — first focusable element, visually hidden until focused.
+            Lets keyboard users jump past the fixed header/nav to the page body. */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-[12px] focus:left-[12px] focus:z-[70] focus:rounded-[8px] focus:bg-rebm-navy focus:px-[16px] focus:py-[10px] focus:text-[15px] focus:font-medium focus:text-white focus:outline-none focus:ring-2 focus:ring-white"
+        >
+          Skip to main content
+        </a>
         <SiteHeader />
         {children}
       </body>

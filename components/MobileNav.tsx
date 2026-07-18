@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { PhonePill } from "@/components/PhonePill";
 import { NAV_LINKS } from "@/lib/nav";
@@ -11,18 +11,49 @@ import { NAV_LINKS } from "@/lib/nav";
  * desktop nav no longer fits. Not in Figma or the live design (both are
  * desktop-only frames) — a necessary responsive addition. Navy overlay, stacked
  * links, phone pill, matching the header's language.
+ *
+ * Treated as a dialog for keyboard/AT users: Escape closes it, body scroll is
+ * locked while open, focus moves into the drawer on open and returns to the
+ * hamburger on close.
  */
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const firstLinkRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    // Lock body scroll behind the overlay.
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    // Move focus into the drawer.
+    firstLinkRef.current?.focus();
+    // Escape closes.
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const close = () => {
+    setOpen(false);
+    // Return focus to the trigger for keyboard users.
+    buttonRef.current?.focus();
+  };
 
   return (
     <div className="xl:hidden">
       <button
+        ref={buttonRef}
         type="button"
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
-        className="relative z-[60] flex size-[44px] items-center justify-center"
+        onClick={() => (open ? close() : setOpen(true))}
+        className="relative z-[60] flex size-[44px] items-center justify-center rounded-[6px] focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
       >
         <span className="sr-only">Menu</span>
         <div className="flex w-[26px] flex-col gap-[6px]">
@@ -33,13 +64,19 @@ export function MobileNav() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[55] flex flex-col items-center justify-center gap-[28px] bg-rebm-navy/95 backdrop-blur">
-          {NAV_LINKS.map((link) => (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site menu"
+          className="fixed inset-0 z-[55] flex flex-col items-center justify-center gap-[20px] bg-rebm-navy/95 backdrop-blur"
+        >
+          {NAV_LINKS.map((link, i) => (
             <Link
               key={link.href}
+              ref={i === 0 ? firstLinkRef : undefined}
               href={link.href}
-              onClick={() => setOpen(false)}
-              className="text-[24px] leading-[32px] text-white transition-opacity hover:opacity-80"
+              onClick={close}
+              className="rounded-[4px] px-[12px] py-[6px] text-[24px] leading-[32px] text-white transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
             >
               {link.label}
             </Link>

@@ -22,14 +22,19 @@ import { ValueProps } from "@/components/home/ValueProps";
 export default function Home() {
   return (
     <>
-      <Hero />
-      <Bios />
-      <Process />
-      <LuckCta />
-      <ValueProps />
-      <Markets />
-      <Introduce />
-      <Testimonials />
+      {/* Primary-content landmark so assistive tech (and the skip link) can jump
+          past the fixed header straight to the page body. Footer is its own
+          <footer> landmark and stays outside. */}
+      <main id="main-content">
+        <Hero />
+        <Bios />
+        <Process />
+        <LuckCta />
+        <ValueProps />
+        <Markets />
+        <Introduce />
+        <Testimonials />
+      </main>
       <Footer />
     </>
   );

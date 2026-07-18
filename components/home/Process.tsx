@@ -40,9 +40,12 @@ export function Process() {
           <Reveal className="mt-[39px] space-y-[24px]" stagger={0.08} start="top 82%">
             {process.steps.map((step) => (
               <div key={step.label}>
-                <h4 className="text-[24px] leading-[31.2px] font-bold text-rebm-blue">
+                {/* h3, not h4 — the section heading above is an h2, so the step
+                    labels are the next level down; skipping to h4 broke the
+                    document outline. Visual styling is unchanged. */}
+                <h3 className="text-[24px] leading-[31.2px] font-bold text-rebm-blue">
                   {step.label}
-                </h4>
+                </h3>
                 <p className="mt-[8px] text-[18px] leading-[23.4px] font-medium text-black">
                   {step.before}
                   {step.linkText && (

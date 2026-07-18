@@ -8,6 +8,17 @@ import { contactSchema, type ContactInput } from "@/lib/contact/validation";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
+// Maps a field key to the id suffix of its focusable control, so a failed
+// submit can move focus to the first invalid one.
+const FIELD_IDS: Record<string, string> = {
+  firstName: "first",
+  lastName: "last",
+  email: "email",
+  phone: "phone",
+  isBroker: "isBroker",
+  message: "msg",
+};
+
 const EMPTY: ContactInput = {
   firstName: "",
   lastName: "",
@@ -43,6 +54,16 @@ export function ContactForm() {
         if (!fe[k]) fe[k] = i.message;
       }
       setErrors(fe);
+      // Move focus to the first invalid field so keyboard/AT users land on the
+      // error rather than having to hunt for it after pressing Send.
+      const order = ["firstName", "lastName", "email", "phone", "isBroker", "message"];
+      const firstBad = order.find((k) => fe[k]);
+      if (firstBad) {
+        const id = FIELD_IDS[firstBad];
+        requestAnimationFrame(() => {
+          document.getElementById(`${uid}-${id}`)?.focus();
+        });
+      }
       return;
     }
 
@@ -88,18 +109,22 @@ export function ContactForm() {
         <TextField id={`${uid}-phone`} label="Your Phone" required type="tel" value={values.phone} placeholder="(800) 841-5033" error={errors.phone} onChange={(v) => set("phone", v)} autoComplete="tel" />
       </div>
 
-      <fieldset className="mt-[24px]">
+      <fieldset
+        className="mt-[24px]"
+        aria-describedby={errors.isBroker ? `${uid}-isBroker-err` : undefined}
+      >
         <legend className="text-[15px] font-medium text-rebm-navy">
           Are you a real estate agent or broker? <span className="text-rebm-blue">*</span>
         </legend>
         <div className="mt-[10px] flex gap-[10px]">
-          {(["no", "yes"] as const).map((opt) => (
+          {(["no", "yes"] as const).map((opt, i) => (
             <button
               key={opt}
+              id={i === 0 ? `${uid}-isBroker` : undefined}
               type="button"
               aria-pressed={values.isBroker === opt}
               onClick={() => set("isBroker", opt)}
-              className={`rounded-full px-[26px] py-[10px] text-[15px] font-medium capitalize transition-[transform,background-color,box-shadow] duration-200 focus-visible:ring-2 focus-visible:ring-rebm-blue focus-visible:outline-none motion-reduce:transition-none ${
+              className={`rounded-full px-[26px] py-[11px] text-[15px] font-medium capitalize transition-[transform,background-color,box-shadow] duration-200 focus-visible:ring-2 focus-visible:ring-rebm-blue focus-visible:outline-none motion-reduce:transition-none ${
                 values.isBroker === opt
                   ? "bg-rebm-navy text-white"
                   : "bg-[#EEF1F4] text-rebm-navy hover:bg-[#E4E9EE]"
@@ -109,7 +134,11 @@ export function ContactForm() {
             </button>
           ))}
         </div>
-        {errors.isBroker && <p className="mt-[6px] text-[13px] text-red-600">{errors.isBroker}</p>}
+        {errors.isBroker && (
+          <p id={`${uid}-isBroker-err`} className="mt-[6px] text-[13px] text-red-600">
+            {errors.isBroker}
+          </p>
+        )}
       </fieldset>
 
       <div className="mt-[24px]">
@@ -196,6 +225,7 @@ function TextField({
         value={value}
         placeholder={placeholder}
         autoComplete={autoComplete}
+        aria-required={required ? "true" : undefined}
         aria-invalid={error ? "true" : undefined}
         aria-describedby={error ? `${id}-err` : undefined}
         onChange={(e) => onChange(e.target.value)}

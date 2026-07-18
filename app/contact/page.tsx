@@ -18,7 +18,7 @@ export const metadata: Metadata = {
  */
 export default function ContactPage() {
   return (
-    <main>
+    <main id="main-content">
       {/* Hero band */}
       <section className="w-full bg-rebm-blue pt-[calc(var(--header-h)+56px)] pb-[64px]">
         <Container>
@@ -36,7 +36,14 @@ export default function ContactPage() {
       {/* Form + info */}
       <section className="w-full bg-[#F5F5F5] py-[64px]">
         <Container className="grid gap-[32px] lg:grid-cols-[1.4fr_1fr]">
-          <ContactForm />
+          {/* Anchor the primary column with a mid-level heading so the hierarchy
+              steps H1 → this → the 13px info-card labels, instead of jumping. */}
+          <div>
+            <h2 className="mb-[16px] text-[22px] leading-[28px] font-semibold text-rebm-navy">
+              Send us a message
+            </h2>
+            <ContactForm />
+          </div>
 
           <aside className="flex flex-col gap-[16px]">
             <InfoCard title="Call us">
