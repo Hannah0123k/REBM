@@ -33,6 +33,16 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
+        {/* Reload opens at the TOP of the page: disable the browser's scroll
+            restoration before it can restore the previous position. Runs during
+            initial parse (before hydration), so there's no jump. A URL #hash is
+            still honored on load. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "if('scrollRestoration' in history){history.scrollRestoration='manual';}if(!location.hash){window.scrollTo(0,0);}",
+          }}
+        />
         <SiteHeader />
         {children}
       </body>
