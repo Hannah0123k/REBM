@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useId, useState } from "react";
 
 import { submitContact } from "@/app/contact/actions";
@@ -154,8 +155,10 @@ export function ContactForm() {
 
       <p className="mt-[16px] text-center text-[13px] text-[rgb(90,100,110)]">
         By submitting this form, you agree to our{" "}
-        <span className="text-rebm-navy">Privacy Policy</span>.{" "}
-        <span className="text-[rgb(150,158,166)]">{/* TODO: link when Privacy Policy exists */}</span>
+        <Link href="/privacy" className="text-rebm-navy underline">
+          Privacy Policy
+        </Link>
+        .
       </p>
     </form>
   );

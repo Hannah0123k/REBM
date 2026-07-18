@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -300,7 +301,11 @@ function DisclaimerContent() {
 
         <Section n="10" title="PRIVACY AND DATA">
           <p>
-            We collect and use personal information as described in our Privacy Policy. By using our
+            We collect and use personal information as described in our{" "}
+            <Link href="/privacy" className="text-rebm-link underline">
+              Privacy Policy
+            </Link>
+            . By using our
             services, you consent to our collection, use, and sharing of information necessary to
             provide referral services, which includes sharing your contact information, property
             preferences, and transaction details with Referred Professionals in our network.
