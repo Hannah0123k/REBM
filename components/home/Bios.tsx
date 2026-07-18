@@ -29,7 +29,7 @@ const PHOTOS: Record<string, StaticImageData> = { alan: alanPhoto, rhett: rhettP
 export function Bios() {
   return (
     <section id="about" className="w-full bg-[#F5F5F5]">
-      <Container className="pt-[202px] pb-[50px]">
+      <Container className="pt-[101px] pb-[50px]">
         {/* Kicker, then each profile row as a unit (Alan first, Rhett ~0.15s
             later), then the closing line — all fade up in sequence. */}
         <Reveal stagger={0.15}>
