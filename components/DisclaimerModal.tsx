@@ -54,7 +54,14 @@ export function DisclaimerModal({ triggerClassName = "" }: { triggerClassName?: 
             </div>
           </div>
         </div>
-      )}
+  );
+
+  return (
+    <>
+      <button type="button" onClick={() => setOpen(true)} className={triggerClassName}>
+        Disclaimer
+      </button>
+      {mounted && overlay ? createPortal(overlay, document.body) : null}
     </>
   );
 }
