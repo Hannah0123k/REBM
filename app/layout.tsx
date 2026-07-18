@@ -33,18 +33,23 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
-        {/* Reload opens at the TOP of the page. Disable the browser's own scroll
-            restoration and force the top on initial parse (before hydration, so
-            there's no jump). ALSO handle `pageshow`: Safari/Firefox serve a
-            reload or back-navigation from the back-forward cache, where this
-            script never re-runs — pageshow fires on those restores, so we
-            re-assert the top there too. A URL #hash is always honored. */}
+        {/* Reload opens at the TOP of the page. The nav uses in-page anchors
+            (About -> /#about, etc.), so after clicking one the URL carries a
+            hash and a plain reload would re-jump to that section (this is why
+            reload kept landing on "Meet Alan & Rhett"). We tell a RELOAD apart
+            from a fresh deep-link via the Navigation Timing API: on a reload we
+            strip the stale hash before the browser scrolls to it and force the
+            top; on a genuine navigation to /#section we leave the hash alone so
+            deep links still work. Runs at parse (before hydration and before the
+            #target is even in the DOM), and again on `pageshow` to cover the
+            Safari/Firefox back-forward cache. */}
         <script
           dangerouslySetInnerHTML={{
             __html:
               "if('scrollRestoration' in history){history.scrollRestoration='manual';}" +
-              "var toTop=function(){if(!location.hash){window.scrollTo(0,0);}};" +
-              "toTop();window.addEventListener('pageshow',toTop);",
+              "function __navType(){try{var n=performance.getEntriesByType('navigation')[0];if(n)return n.type;}catch(e){}return(performance.navigation&&performance.navigation.type===1)?'reload':'navigate';}" +
+              "function __toTop(){if(__navType()==='reload'&&location.hash){history.replaceState(null,'',location.pathname+location.search);}if(!location.hash){window.scrollTo(0,0);}}" +
+              "__toTop();window.addEventListener('pageshow',__toTop);",
           }}
         />
         {/* Skip link — first focusable element, visually hidden until focused.
