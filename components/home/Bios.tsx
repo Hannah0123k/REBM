@@ -26,6 +26,16 @@ import rhettPhoto from "@/public/assets/live/rhett.webp";
  */
 const PHOTOS: Record<string, StaticImageData> = { alan: alanPhoto, rhett: rhettPhoto };
 
+// The two cutouts carry different amounts of transparent headroom above the
+// head (Alan's head starts ~2% down the file, Rhett's ~7%). With object-cover
+// that pushed Rhett's head ~20px lower in the box than Alan's, so his head sat
+// well below his name. A per-photo object-position crops that extra headroom so
+// each head aligns to the top of its box (and therefore its name).
+const HEAD_POSITION: Record<string, string> = {
+  alan: "50% 0%",
+  rhett: "50% 16%",
+};
+
 export function Bios() {
   return (
     <section id="about" className="w-full bg-[#F5F5F5]">
@@ -47,7 +57,8 @@ export function Bios() {
             <Image
               src={PHOTOS[person.photo]}
               alt={person.alt}
-              className="h-[248px] w-[285.7px] shrink-0 rounded-[30px] object-cover object-top sm:mr-[65px]"
+              style={{ objectPosition: HEAD_POSITION[person.photo] ?? "50% 0%" }}
+              className="h-[248px] w-[285.7px] shrink-0 rounded-[30px] object-cover sm:mr-[65px]"
             />
             <div className="min-w-0 flex-1">
               {/* Line-height tightened to the font size so the name's cap sits

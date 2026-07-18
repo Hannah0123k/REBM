@@ -33,12 +33,19 @@ export function Testimonials() {
           </h2>
         </Reveal>
 
-        {/* Cards reveal in a quick stagger so reading isn't held up. */}
-        <Reveal className="mt-[32px] gap-[20px] lg:columns-3" stagger={0.05} start="top 82%">
+        {/* Aligned grid (was a CSS-column masonry) so every card in a row shares
+            the same top line — the masonry let a column's first card drift
+            slightly lower depending on the browser's balancing. items-start keeps
+            each card its natural height, so shorter cards don't stretch. */}
+        <Reveal
+          className="mt-[32px] grid grid-cols-1 items-start gap-[20px] sm:grid-cols-2 lg:grid-cols-3"
+          stagger={0.05}
+          start="top 82%"
+        >
           {testimonials.items.map((t) => (
             <figure
               key={t.author}
-              className="mb-[20px] break-inside-avoid rounded-[20px] bg-white p-[32px] sm:p-[48px] lg:p-[64px] lg:pr-[62px]"
+              className="rounded-[20px] bg-white p-[32px] sm:p-[48px] lg:p-[64px] lg:pr-[62px]"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/assets/live/stars.svg" alt="5 out of 5 stars" width={120} height={24} />
