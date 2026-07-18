@@ -33,6 +33,12 @@ export function Container({
   as?: "div" | "header" | "footer" | "section" | "nav";
 }) {
   return (
-    <Tag className={`mx-auto w-[min(1547px,100%-128px)] ${className}`}>{children}</Tag>
+    // Mobile uses a 32px gutter (100%-64px) per the design spec (CLAUDE.md →
+    // "Mobile: 32px gutters, 338 content width"); at sm+ it steps up to the
+    // measured 64px desktop gutter and caps at 1547. The flat 128px gutter left
+    // only ~192px of content at 320 and clipped the header logo/hamburger.
+    <Tag className={`mx-auto w-[min(1547px,100%-64px)] sm:w-[min(1547px,100%-128px)] ${className}`}>
+      {children}
+    </Tag>
   );
 }

@@ -155,14 +155,17 @@ export function Hero() {
 
         <Container className="relative flex flex-col gap-[28px] py-[48px] lg:flex-row lg:items-center lg:gap-0 lg:py-[67px]">
           {/* First line stays visible immediately (no entrance animation);
-              vertically centered within the band. */}
-          <p className="text-[18px] leading-[23.4px] text-white lg:w-[782px] lg:shrink-0">
+              vertically centered within the band. Columns share width in the
+              design's 56:44 ratio (grow, basis-0) with min-w-0 so they compress
+              together — the old fixed 782px shrink-0 left column crushed the
+              right column off-screen at 1024 and left it lopsided to ~1600px. */}
+          <p className="text-[18px] leading-[23.4px] text-white lg:min-w-0 lg:basis-0 lg:grow-[56]">
             {hero.band.summary}
           </p>
           <div aria-hidden="true" className="hidden self-stretch lg:mx-[52px] lg:block lg:w-px lg:bg-white" />
           {/* Only the bullets fade in as the user scrolls the band into view. */}
           <Reveal
-            className="flex flex-col gap-[4px] text-[18px] leading-[23.4px] text-white lg:w-[617px]"
+            className="flex flex-col gap-[4px] text-[18px] leading-[23.4px] text-white lg:min-w-0 lg:basis-0 lg:grow-[44]"
             stagger={0.12}
             start="top 88%"
           >

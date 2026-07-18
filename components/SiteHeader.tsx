@@ -62,7 +62,10 @@ export function SiteHeader() {
       style={scrolled ? { backgroundColor: "rgba(104, 158, 207, 0.82)" } : undefined}
     >
       <Container className="flex h-full items-center justify-between">
-        <Link href="/" className="shrink-0">
+        <Link
+          href="/"
+          className="shrink-0 rounded-[6px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rebm-navy focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+        >
           {/* Logo SVG cropped to its ink bounds (viewBox 0 17 458 35) so the
               wordmark fills the box and reads larger than the untrimmed live
               asset at the same width. Bigger than live where the nav has room;
@@ -73,7 +76,7 @@ export function SiteHeader() {
             width={458}
             height={35}
             priority
-            className="h-auto w-[300px] sm:w-[360px] xl:w-[clamp(340px,calc(85.9vw-759.5px),560px)]"
+            className="h-auto w-[clamp(180px,58vw,300px)] sm:w-[360px] xl:w-[clamp(340px,calc(85.9vw-759.5px),560px)]"
           />
         </Link>
 
@@ -94,7 +97,7 @@ export function SiteHeader() {
                     // Every link is identical in family/size/weight/leading; the
                     // active state changes COLOUR ONLY (navy) — never weight or
                     // size. This also fixes "About looked bold/smaller".
-                    className={`whitespace-nowrap text-[18px] leading-[30px] font-normal transition-colors duration-300 ${
+                    className={`rounded-[4px] whitespace-nowrap text-[18px] leading-[30px] font-normal transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-rebm-navy focus-visible:outline-none ${
                       isActive ? "text-rebm-navy" : "text-white hover:opacity-80"
                     }`}
                   >
