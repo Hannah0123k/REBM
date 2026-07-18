@@ -33,14 +33,18 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
-        {/* Reload opens at the TOP of the page: disable the browser's scroll
-            restoration before it can restore the previous position. Runs during
-            initial parse (before hydration), so there's no jump. A URL #hash is
-            still honored on load. */}
+        {/* Reload opens at the TOP of the page. Disable the browser's own scroll
+            restoration and force the top on initial parse (before hydration, so
+            there's no jump). ALSO handle `pageshow`: Safari/Firefox serve a
+            reload or back-navigation from the back-forward cache, where this
+            script never re-runs — pageshow fires on those restores, so we
+            re-assert the top there too. A URL #hash is always honored. */}
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "if('scrollRestoration' in history){history.scrollRestoration='manual';}if(!location.hash){window.scrollTo(0,0);}",
+              "if('scrollRestoration' in history){history.scrollRestoration='manual';}" +
+              "var toTop=function(){if(!location.hash){window.scrollTo(0,0);}};" +
+              "toTop();window.addEventListener('pageshow',toTop);",
           }}
         />
         {/* Skip link — first focusable element, visually hidden until focused.
