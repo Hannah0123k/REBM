@@ -33,7 +33,9 @@ export function LuckCta() {
         className="pointer-events-none absolute inset-0 size-full object-cover opacity-10 select-none"
       />
 
-      <Container className="relative min-h-[448px] pt-[100px] pb-[90px]">
+      {/* Vertically centred with equal top/bottom padding, so the space below
+          the content matches the space above it (symmetric band). */}
+      <Container className="relative flex min-h-[448px] flex-col justify-center py-[100px]">
         <Reveal className="flex flex-col items-center text-center" stagger={0.1}>
           <h2 className="max-w-[720px] text-[32px] leading-[41.6px] font-bold text-white">
             {luckCta.headingLines.map((line, i) => (
