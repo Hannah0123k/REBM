@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Container } from "@/components/Container";
+import { DisclaimerModal } from "@/components/DisclaimerModal";
 import { Reveal } from "@/components/Reveal";
 import { SOCIAL_ICONS } from "@/components/icons/SocialIcons";
 import { COPYRIGHT, FOOTER_LINKS, PHONE_HREF, PHONE_NUMBER_INTL, SOCIAL_LINKS } from "@/lib/nav";
@@ -85,11 +86,9 @@ export function Footer() {
 
           <FooterColumn heading="SERVICES">
             <li>
-              {/* Terms of Service opens as a popup, not a page — decision #14.
-                  Wired to the modal once that component exists. */}
-              <Link href="/#disclaimer" className={LINK_CLASS}>
-                Disclaimer
-              </Link>
+              {/* Terms of Service opens as a popup, not a page — matches the
+                  live site's Disclaimer behavior. */}
+              <DisclaimerModal triggerClassName={`${LINK_CLASS} text-left`} />
             </li>
           </FooterColumn>
 
