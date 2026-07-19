@@ -46,13 +46,18 @@ export const bios = {
       name: "Alan Fruitman",
       photo: "alan",
       alt: "Team: Alan",
-      body: "Since 1993, Alan has helped thousands of clients buy, sell, and lease billions of dollars in real estate. He is a nationally recognized expert in investment real estate and 1031 exchanges, and the author of The NNN Triple Net Property Book. Alan has matched clients with trusted real estate brokers nationwide, and his proven track record makes him uniquely qualified to assist with the sale of your investment property. Alan has been the trusted real estate broker for everyone ranging from first-time investors to billion-dollar property owners, attorneys, accountants, financial advisors, institutional fund managers, and family offices. He understands that while every client is unique, their goals are strikingly similar: to be heard and understood, to receive clear guidance, and to sell their property for the highest price with the smoothest process. Above all, Alan believes in giving clients realistic advice - not inflated projections or promises that can’t be delivered.",
+      body: [
+        "Since 1993, Alan has helped thousands of clients buy, sell, and lease billions of dollars in real estate. He is a nationally recognized expert in investment real estate and 1031 exchanges, and the author of The NNN Triple Net Property Book. Alan has matched clients with trusted real estate brokers nationwide, and his proven track record makes him uniquely qualified to assist with the sale of your investment property.",
+        "Alan has been the trusted real estate broker for everyone ranging from first-time investors to billion-dollar property owners, attorneys, accountants, financial advisors, institutional fund managers, and family offices. He understands that while every client is unique, their goals are strikingly similar: to be heard and understood, to receive clear guidance, and to sell their property for the highest price with the smoothest process. Above all, Alan believes in giving clients realistic advice - not inflated projections or promises that can’t be delivered.",
+      ],
     },
     {
       name: "Rhett Fruitman",
       photo: "rhett",
       alt: "",
-      body: "Drawing on his experience at Citi, CBRE and 1031tax.com, Rhett applies investment-grade due diligence to ensure every broker introduction meets our exact standards. Rhett oversees our client and broker relationships with the kind of attention you'd expect from your family's trusted advisor - professional, thorough, and always looking out for your best interests.",
+      body: [
+        "Drawing on his experience at Citi, CBRE and 1031tax.com, Rhett applies investment-grade due diligence to ensure every broker introduction meets our exact standards. Rhett oversees our client and broker relationships with the kind of attention you'd expect from your family's trusted advisor - professional, thorough, and always looking out for your best interests.",
+      ],
     },
   ],
   closing: {
@@ -110,7 +115,7 @@ export const valueProps = {
   heading: "Why We Do What We Do",
   intro: {
     lead: "Real Estate Broker Match was created with one goal in mind:",
-    emphasis: "to connect you with the right broker for your most important decisions.",
+    emphasis: "to connect you with the right broker.",
   },
   cards: [
     {

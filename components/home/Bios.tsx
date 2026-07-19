@@ -67,7 +67,11 @@ export function Bios() {
               <h3 className="mb-[20px] text-[40px] leading-[40px] font-black text-rebm-navy lg:text-[62px] lg:leading-[62px]">
                 {person.name}
               </h3>
-              <p className="text-[23px] leading-[29.9px] text-black">{person.body}</p>
+              <div className="space-y-[20px] text-[23px] leading-[29.9px] text-black">
+                {person.body.map((para) => (
+                  <p key={para}>{para}</p>
+                ))}
+              </div>
             </div>
           </div>
         ))}
