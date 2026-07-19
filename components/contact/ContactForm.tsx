@@ -4,11 +4,7 @@ import Link from "next/link";
 import { useId, useState } from "react";
 
 import { submitContact } from "@/app/contact/actions";
-import {
-  REASON_OPTIONS,
-  contactSchema,
-  type ContactFormValues,
-} from "@/lib/contact/validation";
+import { contactSchema, type ContactFormValues } from "@/lib/contact/validation";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -18,7 +14,6 @@ const EMPTY: ContactFormValues = {
   email: "",
   phone: "",
   company: "",
-  reason: "",
   isBroker: "",
   message: "",
   website: "",
@@ -32,10 +27,16 @@ const FIELD_IDS: Record<string, string> = {
   email: "email",
   phone: "phone",
   company: "company",
-  reason: "reason",
   isBroker: "isBroker",
   message: "msg",
 };
+
+// Shared input styling: a light blue-gray fill that brightens to white on focus
+// with a clear blue ring. Transition is transform/opacity-free (color + shadow).
+const FIELD_BASE =
+  "mt-[7px] w-full rounded-[14px] bg-[#F4F7FB] px-[15px] py-[13px] text-[15px] text-black outline-none transition-[background-color,box-shadow] duration-200 placeholder:text-[rgb(142,152,164)] focus:bg-white focus:ring-2 focus:ring-rebm-blue motion-reduce:transition-none";
+const LABEL = "text-[14px] font-medium text-rebm-navy";
+const ERR = "mt-[6px] text-[13px] text-red-600 rebm-fade-in";
 
 export function ContactForm() {
   const [values, setValues] = useState<ContactFormValues>(EMPTY);
@@ -62,7 +63,7 @@ export function ContactForm() {
         if (!fe[k]) fe[k] = i.message;
       }
       setErrors(fe);
-      const order = ["firstName", "lastName", "email", "phone", "company", "reason", "isBroker", "message"];
+      const order = ["firstName", "lastName", "email", "phone", "company", "isBroker", "message"];
       const firstBad = order.find((k) => fe[k]);
       if (firstBad) {
         const id = FIELD_IDS[firstBad];
@@ -85,12 +86,15 @@ export function ContactForm() {
 
   if (status === "success") {
     return (
-      <div role="status" className="rounded-[20px] bg-white p-[32px] text-center shadow-sm">
-        <div className="mx-auto mb-[14px] flex size-[48px] items-center justify-center rounded-full bg-[#E4F4EA] text-[24px] text-[#1B7A43]">
+      <div
+        role="status"
+        className="rebm-fade-in-slow rounded-[24px] bg-white p-[36px] text-center shadow-[0_18px_48px_-24px_rgba(3,44,64,0.30)]"
+      >
+        <div className="mx-auto mb-[16px] flex size-[52px] items-center justify-center rounded-full bg-[#E4F4EA] text-[26px] text-[#1B7A43]">
           ✓
         </div>
         <h2 className="text-[22px] font-bold text-rebm-navy">Thanks — message received</h2>
-        <p className="mx-auto mt-[8px] max-w-[420px] text-[15px] text-[rgb(60,70,80)]">
+        <p className="mx-auto mt-[10px] max-w-[420px] text-[15px] leading-[23px] text-[rgb(60,70,80)]">
           We’ll be in touch shortly. For anything urgent you can also call{" "}
           <a href="tel:+18008415033" className="text-rebm-link underline">
             (800) 841-5033
@@ -105,51 +109,23 @@ export function ContactForm() {
     <form
       onSubmit={onSubmit}
       noValidate
-      className="rounded-[24px] bg-white p-[20px] shadow-sm sm:p-[22px]"
+      className="rounded-[24px] bg-white p-[24px] shadow-[0_18px_48px_-24px_rgba(3,44,64,0.28)] sm:p-[32px]"
     >
-      <div className="grid gap-[12px] sm:grid-cols-2">
+      <div className="grid gap-[16px] sm:grid-cols-2">
         <TextField id={`${uid}-first`} label="First Name" required value={values.firstName} placeholder="John" error={errors.firstName} onChange={(v) => set("firstName", v)} autoComplete="given-name" />
         <TextField id={`${uid}-last`} label="Last Name" required value={values.lastName} placeholder="Doe" error={errors.lastName} onChange={(v) => set("lastName", v)} autoComplete="family-name" />
         <TextField id={`${uid}-email`} label="Email" required type="email" value={values.email} placeholder="john@example.com" error={errors.email} onChange={(v) => set("email", v)} autoComplete="email" />
         <TextField id={`${uid}-phone`} label="Phone" required type="tel" value={values.phone} placeholder="(800) 841-5033" error={errors.phone} onChange={(v) => set("phone", v)} autoComplete="tel" />
-        <TextField id={`${uid}-company`} label="Company or Brokerage" value={values.company} placeholder="Optional" error={errors.company} onChange={(v) => set("company", v)} autoComplete="organization" />
-        <div>
-          <label htmlFor={`${uid}-reason`} className="text-[14px] font-medium text-rebm-navy">
-            Reason for Contact <span className="text-rebm-blue">*</span>
-          </label>
-          <select
-            id={`${uid}-reason`}
-            value={values.reason}
-            onChange={(e) => set("reason", e.target.value as ContactFormValues["reason"])}
-            aria-required="true"
-            aria-invalid={errors.reason ? "true" : undefined}
-            aria-describedby={errors.reason ? `${uid}-reason-err` : undefined}
-            className={`mt-[6px] w-full rounded-[14px] bg-[#F1F5F9] px-[14px] py-[12px] text-[15px] text-black outline-none focus:ring-2 focus:ring-rebm-blue ${
-              values.reason === "" ? "text-[rgb(120,130,140)]" : ""
-            } ${errors.reason ? "ring-2 ring-red-400" : ""}`}
-          >
-            <option value="" disabled>
-              Select a reason…
-            </option>
-            {REASON_OPTIONS.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
-          {errors.reason && (
-            <p id={`${uid}-reason-err`} className="mt-[5px] text-[13px] text-red-600">
-              {errors.reason}
-            </p>
-          )}
+        <div className="sm:col-span-2">
+          <TextField id={`${uid}-company`} label="Company or Brokerage" value={values.company} placeholder="Optional" error={errors.company} onChange={(v) => set("company", v)} autoComplete="organization" />
         </div>
       </div>
 
       {/* Yes/No — pill-styled, but backed by real radio inputs for accessibility.
           The group is required; that's conveyed on the radiogroup, not each radio
-          (aria-required isn't valid on role=radio). */}
-      <fieldset className="mt-[12px]">
-        <legend className="text-[14px] font-medium text-rebm-navy">
+          (aria-required isn't valid on role=radio). Pills cross-fade on change. */}
+      <fieldset className="mt-[22px]">
+        <legend className={LABEL}>
           Are you a real estate agent or broker? <span className="text-rebm-blue">*</span>
         </legend>
         <div
@@ -157,7 +133,7 @@ export function ContactForm() {
           aria-label="Are you a real estate agent or broker?"
           aria-required="true"
           aria-describedby={errors.isBroker ? `${uid}-isBroker-err` : undefined}
-          className="mt-[8px] flex gap-[10px]"
+          className="mt-[9px] flex gap-[10px]"
         >
           {(["no", "yes"] as const).map((opt, i) => {
             const selected = values.isBroker === opt;
@@ -173,8 +149,10 @@ export function ContactForm() {
                   className="peer sr-only"
                 />
                 <span
-                  className={`block rounded-full px-[26px] py-[11px] text-[15px] font-medium capitalize transition-[background-color,box-shadow] duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-rebm-blue peer-focus-visible:ring-offset-2 motion-reduce:transition-none ${
-                    selected ? "bg-rebm-navy text-white" : "bg-[#EEF1F4] text-rebm-navy hover:bg-[#E4E9EE]"
+                  className={`block rounded-full px-[28px] py-[11px] text-[15px] font-medium capitalize transition-[background-color,color,box-shadow] duration-200 ease-out peer-focus-visible:ring-2 peer-focus-visible:ring-rebm-blue peer-focus-visible:ring-offset-2 motion-reduce:transition-none ${
+                    selected
+                      ? "bg-rebm-navy text-white shadow-[0_6px_16px_-6px_rgba(3,44,64,0.5)]"
+                      : "bg-[#EEF2F7] text-rebm-navy hover:bg-[#E4E9EF]"
                   }`}
                 >
                   {opt}
@@ -184,14 +162,14 @@ export function ContactForm() {
           })}
         </div>
         {errors.isBroker && (
-          <p id={`${uid}-isBroker-err`} className="mt-[5px] text-[13px] text-red-600">
+          <p id={`${uid}-isBroker-err`} className={ERR}>
             {errors.isBroker}
           </p>
         )}
       </fieldset>
 
-      <div className="mt-[12px]">
-        <label htmlFor={`${uid}-msg`} className="text-[14px] font-medium text-rebm-navy">
+      <div className="mt-[22px]">
+        <label htmlFor={`${uid}-msg`} className={LABEL}>
           Message <span className="text-rebm-blue">*</span>
         </label>
         <textarea
@@ -203,12 +181,10 @@ export function ContactForm() {
           aria-required="true"
           aria-invalid={errors.message ? "true" : undefined}
           aria-describedby={errors.message ? `${uid}-msg-err` : undefined}
-          className={`mt-[6px] w-full rounded-[14px] bg-[#F1F5F9] px-[14px] py-[12px] text-[15px] text-black outline-none focus:ring-2 focus:ring-rebm-blue ${
-            errors.message ? "ring-2 ring-red-400" : ""
-          }`}
+          className={`${FIELD_BASE} resize-none ${errors.message ? "ring-2 ring-red-400" : ""}`}
         />
         {errors.message && (
-          <p id={`${uid}-msg-err`} className="mt-[5px] text-[13px] text-red-600">
+          <p id={`${uid}-msg-err`} className={ERR}>
             {errors.message}
           </p>
         )}
@@ -228,7 +204,7 @@ export function ContactForm() {
       </div>
 
       {formError && (
-        <p role="alert" className="mt-[16px] rounded-[10px] bg-red-50 px-[14px] py-[10px] text-[14px] text-red-700">
+        <p role="alert" className="rebm-fade-in mt-[18px] rounded-[10px] bg-red-50 px-[14px] py-[10px] text-[14px] text-red-700">
           {formError}
         </p>
       )}
@@ -236,12 +212,12 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="mt-[14px] w-full rounded-full bg-rebm-navy px-[28px] py-[14px] text-[16px] font-semibold text-white transition-[transform,box-shadow] duration-200 ease-out hover:scale-[1.03] hover:shadow-lg focus-visible:ring-2 focus-visible:ring-rebm-blue focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] disabled:opacity-60 motion-reduce:transform-none motion-reduce:transition-none"
+        className="mt-[22px] w-full rounded-full bg-rebm-navy px-[28px] py-[15px] text-[16px] font-semibold text-white transition-[transform,box-shadow] duration-200 ease-out hover:scale-[1.03] hover:shadow-lg focus-visible:ring-2 focus-visible:ring-rebm-blue focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] disabled:opacity-60 motion-reduce:transform-none motion-reduce:transition-none"
       >
         {status === "submitting" ? "Sending…" : "Send Message"}
       </button>
 
-      <p className="mt-[10px] text-center text-[13px] text-[rgb(90,100,110)]">
+      <p className="mt-[12px] text-center text-[13px] text-[rgb(90,100,110)]">
         By submitting this form, you agree to our{" "}
         <Link href="/privacy" className="text-rebm-navy underline">
           Privacy Policy
@@ -275,7 +251,7 @@ function TextField({
 }) {
   return (
     <div>
-      <label htmlFor={id} className="text-[14px] font-medium text-rebm-navy">
+      <label htmlFor={id} className={LABEL}>
         {label} {required && <span className="text-rebm-blue">*</span>}
       </label>
       <input
@@ -288,12 +264,10 @@ function TextField({
         aria-invalid={error ? "true" : undefined}
         aria-describedby={error ? `${id}-err` : undefined}
         onChange={(e) => onChange(e.target.value)}
-        className={`mt-[6px] w-full rounded-[14px] bg-[#F1F5F9] px-[14px] py-[12px] text-[15px] text-black outline-none focus:ring-2 focus:ring-rebm-blue ${
-          error ? "ring-2 ring-red-400" : ""
-        }`}
+        className={`${FIELD_BASE} ${error ? "ring-2 ring-red-400" : ""}`}
       />
       {error && (
-        <p id={`${id}-err`} className="mt-[5px] text-[13px] text-red-600">
+        <p id={`${id}-err`} className={ERR}>
           {error}
         </p>
       )}

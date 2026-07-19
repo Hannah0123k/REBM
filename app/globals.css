@@ -53,8 +53,52 @@ body {
   color: #000000;
 }
 
+/* --- Motion utilities ------------------------------------------------------
+   Page-enter fade-up (contact heading + form panel) and subtle feedback fade-in
+   (form errors + success). Transform + opacity only; all disabled under
+   prefers-reduced-motion. */
+@keyframes rebm-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes rebm-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rebm-enter {
+  animation: rebm-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.rebm-enter-delayed {
+  animation: rebm-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both;
+}
+.rebm-fade-in {
+  animation: rebm-fade-in 0.25s ease-out both;
+}
+.rebm-fade-in-slow {
+  animation: rebm-fade-in 0.45s ease-out both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  .rebm-enter,
+  .rebm-enter-delayed,
+  .rebm-fade-in,
+  .rebm-fade-in-slow {
+    animation: none;
   }
 }

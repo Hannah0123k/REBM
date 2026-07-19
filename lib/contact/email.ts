@@ -36,7 +36,6 @@ function fields(data: ContactInput, meta: SubmissionMeta): [string, string][] {
     ["Email", data.email],
     ["Phone", data.phone],
     ["Company / Brokerage", data.company || "—"],
-    ["Reason for contact", data.reason],
     ["Agent or broker?", data.isBroker === "yes" ? "Yes" : "No"],
     ["Submitted", meta.submittedAt.toLocaleString("en-US", { timeZone: "America/Denver" }) + " (MT)"],
   ];
