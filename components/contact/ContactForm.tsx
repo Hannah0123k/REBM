@@ -146,7 +146,7 @@ export function ContactForm() {
             aria-describedby={errors.isBroker ? `${uid}-isBroker-err` : undefined}
             className="mt-[9px] flex gap-[10px]"
           >
-            {(["no", "yes"] as const).map((opt, i) => {
+            {(["yes", "no"] as const).map((opt, i) => {
               const selected = values.isBroker === opt;
               return (
                 <label key={opt} className="cursor-pointer">
