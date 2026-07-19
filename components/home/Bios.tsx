@@ -52,13 +52,18 @@ export function Bios() {
         {bios.people.map((person, i) => (
           <div
             key={person.name}
-            className={`flex flex-col items-start gap-[24px] sm:flex-row sm:gap-0 ${i > 0 ? "mt-[51px]" : ""}`}
+            className={`flex flex-col items-start gap-[24px] sm:flex-row sm:items-stretch sm:gap-0 ${i > 0 ? "mt-[51px]" : ""}`}
           >
+            {/* On desktop the photo stretches to the text column's height but is
+                capped at its 248px design height. So when the bio is SHORTER than
+                the photo (Rhett), the photo shrinks to the text's height and its
+                bottom lines up with the last line; when the bio is longer (Alan)
+                the photo stays 248 at the top as designed. */}
             <Image
               src={PHOTOS[person.photo]}
               alt={person.alt}
               style={{ objectPosition: HEAD_POSITION[person.photo] ?? "50% 0%" }}
-              className="h-[248px] w-[285.7px] shrink-0 rounded-[30px] object-cover sm:mr-[65px]"
+              className="h-[248px] w-[285.7px] shrink-0 rounded-[30px] object-cover sm:mr-[65px] sm:h-full sm:max-h-[248px]"
             />
             <div className="min-w-0 flex-1">
               {/* Line-height tightened to the font size so the name's cap sits
