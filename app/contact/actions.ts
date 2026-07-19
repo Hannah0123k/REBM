@@ -1,5 +1,8 @@
 "use server";
 
+import { headers } from "next/headers";
+
+import { sendContactEmail } from "@/lib/contact/email";
 import { contactSchema } from "@/lib/contact/validation";
 
 export type ContactResult =
@@ -7,19 +10,26 @@ export type ContactResult =
   | { ok: false; error: string; fieldErrors?: Record<string, string> };
 
 /**
- * Contact form submission. Validates server-side and screens the honeypot.
- *
- * ⚠️ EMAIL IS NOT SENT YET — the destination address and email provider haven't
- * been confirmed. This action validates, blocks spam, and is structured so a
- * provider call (Resend / SES / Postmark …) drops in at the marked spot. It
- * returns success so the UI flow can be tested end-to-end. No secrets are read
- * here; any provider key will be a server-only env var, never NEXT_PUBLIC_.
- *
- * TODO (to make submissions operational):
- *   1. Confirm the recipient email address.
- *   2. Choose an email provider + add its API key as a server-only env var.
- *   3. Send the email (and/or persist to a Supabase table) at the marked spot.
- *   4. Add real rate limiting (e.g. per-IP token bucket / provider throttle).
+ * Best-effort in-memory rate limit. This is PREPARATION only: the Map lives in a
+ * single server instance and resets on redeploy/scale-out, so it is not a real
+ * distributed limiter. For production, back this with a shared store (e.g.
+ * Upstash Redis / Vercel KV) keyed the same way.
+ */
+const RATE_WINDOW_MS = 10 * 60 * 1000;
+const RATE_MAX = 5;
+const hits = new Map<string, number[]>();
+
+function rateLimited(ip: string): boolean {
+  const now = Date.now();
+  const recent = (hits.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
+  recent.push(now);
+  hits.set(ip, recent);
+  return recent.length > RATE_MAX;
+}
+
+/**
+ * Contact form submission. Re-validates server-side, screens the honeypot,
+ * rate-limits per IP, then sends the notification email via Resend.
  */
 export async function submitContact(raw: unknown): Promise<ContactResult> {
   const parsed = contactSchema.safeParse(raw);
@@ -32,14 +42,33 @@ export async function submitContact(raw: unknown): Promise<ContactResult> {
     return { ok: false, error: "Please fix the errors below.", fieldErrors };
   }
 
-  // Honeypot: a filled "company" field means a bot. Silently succeed so the bot
-  // gets no signal, but do nothing.
-  if (parsed.data.company) return { ok: true };
+  // Honeypot: a filled "website" field means a bot. Silently succeed so the bot
+  // gets no signal, but send nothing.
+  if (parsed.data.website) return { ok: true };
 
-  // ── Send the message here once the destination + provider are confirmed. ──
-  // e.g. await sendEmail({ to: CONTACT_RECIPIENT, subject, text })
-  //      and/or await supabase.from("contact_messages").insert({ ... })
-  // Do NOT log full message bodies or PII.
+  const h = await headers();
+  const ip = (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+  if (rateLimited(ip)) {
+    return {
+      ok: false,
+      error: "Too many messages from this device. Please wait a few minutes and try again.",
+    };
+  }
+
+  const result = await sendContactEmail(parsed.data, { submittedAt: new Date(), ip });
+  if (!result.sent) {
+    if (result.reason === "unconfigured") {
+      // No secrets logged — just which env vars still need to be set.
+      console.warn(`[contact] email not configured — set: ${result.missing.join(", ")}`);
+    } else if (result.reason === "provider_error") {
+      console.error(`[contact] Resend send failed: ${result.detail}`);
+    }
+    return {
+      ok: false,
+      error:
+        "Sorry — we couldn’t send your message right now. Please call (800) 841-5033, or try again shortly.",
+    };
+  }
 
   return { ok: true };
 }

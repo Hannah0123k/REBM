@@ -4,9 +4,25 @@ import Link from "next/link";
 import { useId, useState } from "react";
 
 import { submitContact } from "@/app/contact/actions";
-import { contactSchema, type ContactInput } from "@/lib/contact/validation";
+import {
+  REASON_OPTIONS,
+  contactSchema,
+  type ContactFormValues,
+} from "@/lib/contact/validation";
 
 type Status = "idle" | "submitting" | "success" | "error";
+
+const EMPTY: ContactFormValues = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  company: "",
+  reason: "",
+  isBroker: "",
+  message: "",
+  website: "",
+};
 
 // Maps a field key to the id suffix of its focusable control, so a failed
 // submit can move focus to the first invalid one.
@@ -15,28 +31,20 @@ const FIELD_IDS: Record<string, string> = {
   lastName: "last",
   email: "email",
   phone: "phone",
+  company: "company",
+  reason: "reason",
   isBroker: "isBroker",
   message: "msg",
 };
 
-const EMPTY: ContactInput = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  phone: "",
-  isBroker: "no",
-  message: "",
-  company: "",
-};
-
 export function ContactForm() {
-  const [values, setValues] = useState<ContactInput>(EMPTY);
+  const [values, setValues] = useState<ContactFormValues>(EMPTY);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<Status>("idle");
   const [formError, setFormError] = useState<string | null>(null);
   const uid = useId();
 
-  const set = <K extends keyof ContactInput>(key: K, v: ContactInput[K]) => {
+  const set = <K extends keyof ContactFormValues>(key: K, v: ContactFormValues[K]) => {
     setValues((prev) => ({ ...prev, [key]: v }));
     if (errors[key]) setErrors((e) => ({ ...e, [key]: "" }));
   };
@@ -54,15 +62,11 @@ export function ContactForm() {
         if (!fe[k]) fe[k] = i.message;
       }
       setErrors(fe);
-      // Move focus to the first invalid field so keyboard/AT users land on the
-      // error rather than having to hunt for it after pressing Send.
-      const order = ["firstName", "lastName", "email", "phone", "isBroker", "message"];
+      const order = ["firstName", "lastName", "email", "phone", "company", "reason", "isBroker", "message"];
       const firstBad = order.find((k) => fe[k]);
       if (firstBad) {
         const id = FIELD_IDS[firstBad];
-        requestAnimationFrame(() => {
-          document.getElementById(`${uid}-${id}`)?.focus();
-        });
+        requestAnimationFrame(() => document.getElementById(`${uid}-${id}`)?.focus());
       }
       return;
     }
@@ -72,6 +76,7 @@ export function ContactForm() {
     if (res.ok) {
       setStatus("success");
     } else {
+      // Keep entered values so nothing is lost on failure.
       setStatus("error");
       setFormError(res.error);
       setErrors(res.fieldErrors ?? {});
@@ -80,11 +85,11 @@ export function ContactForm() {
 
   if (status === "success") {
     return (
-      <div role="status" className="rounded-[20px] bg-white p-[40px] text-center shadow-sm">
-        <div className="mx-auto mb-[16px] flex size-[52px] items-center justify-center rounded-full bg-[#E4F4EA] text-[26px] text-[#1B7A43]">
+      <div role="status" className="rounded-[20px] bg-white p-[32px] text-center shadow-sm">
+        <div className="mx-auto mb-[14px] flex size-[48px] items-center justify-center rounded-full bg-[#E4F4EA] text-[24px] text-[#1B7A43]">
           ✓
         </div>
-        <h2 className="text-[24px] font-bold text-rebm-navy">Thanks — message received</h2>
+        <h2 className="text-[22px] font-bold text-rebm-navy">Thanks — message received</h2>
         <p className="mx-auto mt-[8px] max-w-[420px] text-[15px] text-[rgb(60,70,80)]">
           We’ll be in touch shortly. For anything urgent you can also call{" "}
           <a href="tel:+18008415033" className="text-rebm-link underline">
@@ -100,76 +105,130 @@ export function ContactForm() {
     <form
       onSubmit={onSubmit}
       noValidate
-      className="rounded-[24px] bg-white p-[28px] shadow-sm sm:p-[40px]"
+      className="rounded-[24px] bg-white p-[20px] shadow-sm sm:p-[22px]"
     >
-      <div className="grid gap-[20px] sm:grid-cols-2">
+      <div className="grid gap-[12px] sm:grid-cols-2">
         <TextField id={`${uid}-first`} label="First Name" required value={values.firstName} placeholder="John" error={errors.firstName} onChange={(v) => set("firstName", v)} autoComplete="given-name" />
         <TextField id={`${uid}-last`} label="Last Name" required value={values.lastName} placeholder="Doe" error={errors.lastName} onChange={(v) => set("lastName", v)} autoComplete="family-name" />
-        <TextField id={`${uid}-email`} label="Your Email" required type="email" value={values.email} placeholder="johndoe@gmail.com" error={errors.email} onChange={(v) => set("email", v)} autoComplete="email" />
-        <TextField id={`${uid}-phone`} label="Your Phone" required type="tel" value={values.phone} placeholder="(800) 841-5033" error={errors.phone} onChange={(v) => set("phone", v)} autoComplete="tel" />
+        <TextField id={`${uid}-email`} label="Email" required type="email" value={values.email} placeholder="john@example.com" error={errors.email} onChange={(v) => set("email", v)} autoComplete="email" />
+        <TextField id={`${uid}-phone`} label="Phone" required type="tel" value={values.phone} placeholder="(800) 841-5033" error={errors.phone} onChange={(v) => set("phone", v)} autoComplete="tel" />
+        <TextField id={`${uid}-company`} label="Company or Brokerage" value={values.company} placeholder="Optional" error={errors.company} onChange={(v) => set("company", v)} autoComplete="organization" />
+        <div>
+          <label htmlFor={`${uid}-reason`} className="text-[14px] font-medium text-rebm-navy">
+            Reason for Contact <span className="text-rebm-blue">*</span>
+          </label>
+          <select
+            id={`${uid}-reason`}
+            value={values.reason}
+            onChange={(e) => set("reason", e.target.value as ContactFormValues["reason"])}
+            aria-required="true"
+            aria-invalid={errors.reason ? "true" : undefined}
+            aria-describedby={errors.reason ? `${uid}-reason-err` : undefined}
+            className={`mt-[6px] w-full rounded-[14px] bg-[#F1F5F9] px-[14px] py-[12px] text-[15px] text-black outline-none focus:ring-2 focus:ring-rebm-blue ${
+              values.reason === "" ? "text-[rgb(120,130,140)]" : ""
+            } ${errors.reason ? "ring-2 ring-red-400" : ""}`}
+          >
+            <option value="" disabled>
+              Select a reason…
+            </option>
+            {REASON_OPTIONS.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </select>
+          {errors.reason && (
+            <p id={`${uid}-reason-err`} className="mt-[5px] text-[13px] text-red-600">
+              {errors.reason}
+            </p>
+          )}
+        </div>
       </div>
 
-      <fieldset
-        className="mt-[24px]"
-        aria-describedby={errors.isBroker ? `${uid}-isBroker-err` : undefined}
-      >
-        <legend className="text-[15px] font-medium text-rebm-navy">
+      {/* Yes/No — pill-styled, but backed by real radio inputs for accessibility.
+          The group is required; that's conveyed on the radiogroup, not each radio
+          (aria-required isn't valid on role=radio). */}
+      <fieldset className="mt-[12px]">
+        <legend className="text-[14px] font-medium text-rebm-navy">
           Are you a real estate agent or broker? <span className="text-rebm-blue">*</span>
         </legend>
-        <div className="mt-[10px] flex gap-[10px]">
-          {(["no", "yes"] as const).map((opt, i) => (
-            <button
-              key={opt}
-              id={i === 0 ? `${uid}-isBroker` : undefined}
-              type="button"
-              aria-pressed={values.isBroker === opt}
-              onClick={() => set("isBroker", opt)}
-              className={`rounded-full px-[26px] py-[11px] text-[15px] font-medium capitalize transition-[transform,background-color,box-shadow] duration-200 focus-visible:ring-2 focus-visible:ring-rebm-blue focus-visible:outline-none motion-reduce:transition-none ${
-                values.isBroker === opt
-                  ? "bg-rebm-navy text-white"
-                  : "bg-[#EEF1F4] text-rebm-navy hover:bg-[#E4E9EE]"
-              }`}
-            >
-              {opt}
-            </button>
-          ))}
+        <div
+          role="radiogroup"
+          aria-label="Are you a real estate agent or broker?"
+          aria-required="true"
+          aria-describedby={errors.isBroker ? `${uid}-isBroker-err` : undefined}
+          className="mt-[8px] flex gap-[10px]"
+        >
+          {(["no", "yes"] as const).map((opt, i) => {
+            const selected = values.isBroker === opt;
+            return (
+              <label key={opt} className="cursor-pointer">
+                <input
+                  id={i === 0 ? `${uid}-isBroker` : undefined}
+                  type="radio"
+                  name={`${uid}-isBroker`}
+                  value={opt}
+                  checked={selected}
+                  onChange={() => set("isBroker", opt)}
+                  className="peer sr-only"
+                />
+                <span
+                  className={`block rounded-full px-[26px] py-[11px] text-[15px] font-medium capitalize transition-[background-color,box-shadow] duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-rebm-blue peer-focus-visible:ring-offset-2 motion-reduce:transition-none ${
+                    selected ? "bg-rebm-navy text-white" : "bg-[#EEF1F4] text-rebm-navy hover:bg-[#E4E9EE]"
+                  }`}
+                >
+                  {opt}
+                </span>
+              </label>
+            );
+          })}
         </div>
         {errors.isBroker && (
-          <p id={`${uid}-isBroker-err`} className="mt-[6px] text-[13px] text-red-600">
+          <p id={`${uid}-isBroker-err`} className="mt-[5px] text-[13px] text-red-600">
             {errors.isBroker}
           </p>
         )}
       </fieldset>
 
-      <div className="mt-[24px]">
-        <label htmlFor={`${uid}-msg`} className="text-[15px] font-medium text-rebm-navy">
-          Your Message
+      <div className="mt-[12px]">
+        <label htmlFor={`${uid}-msg`} className="text-[14px] font-medium text-rebm-navy">
+          Message <span className="text-rebm-blue">*</span>
         </label>
         <textarea
           id={`${uid}-msg`}
           value={values.message}
           onChange={(e) => set("message", e.target.value)}
-          rows={5}
+          rows={3}
           placeholder="How can we help you?"
-          className="mt-[8px] w-full rounded-[16px] bg-[#F4F6F8] px-[16px] py-[13px] text-[15px] text-black outline-none focus:ring-2 focus:ring-rebm-blue"
+          aria-required="true"
+          aria-invalid={errors.message ? "true" : undefined}
+          aria-describedby={errors.message ? `${uid}-msg-err` : undefined}
+          className={`mt-[6px] w-full rounded-[14px] bg-[#F1F5F9] px-[14px] py-[12px] text-[15px] text-black outline-none focus:ring-2 focus:ring-rebm-blue ${
+            errors.message ? "ring-2 ring-red-400" : ""
+          }`}
         />
+        {errors.message && (
+          <p id={`${uid}-msg-err`} className="mt-[5px] text-[13px] text-red-600">
+            {errors.message}
+          </p>
+        )}
       </div>
 
       {/* Honeypot — visually hidden and off the tab order; bots fill it. */}
       <div aria-hidden="true" className="absolute left-[-9999px]">
         <label>
-          Company
+          Website
           <input
             tabIndex={-1}
             autoComplete="off"
-            value={values.company}
-            onChange={(e) => set("company", e.target.value)}
+            value={values.website}
+            onChange={(e) => set("website", e.target.value)}
           />
         </label>
       </div>
 
       {formError && (
-        <p role="alert" className="mt-[18px] rounded-[10px] bg-red-50 px-[14px] py-[10px] text-[14px] text-red-700">
+        <p role="alert" className="mt-[16px] rounded-[10px] bg-red-50 px-[14px] py-[10px] text-[14px] text-red-700">
           {formError}
         </p>
       )}
@@ -177,12 +236,12 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="mt-[24px] w-full rounded-full bg-rebm-navy px-[28px] py-[14px] text-[16px] font-semibold text-white transition-[transform,box-shadow] duration-200 hover:scale-[1.02] hover:shadow-lg focus-visible:ring-2 focus-visible:ring-rebm-blue focus-visible:outline-none active:scale-[0.98] disabled:opacity-60 motion-reduce:transform-none motion-reduce:transition-none"
+        className="mt-[14px] w-full rounded-full bg-rebm-navy px-[28px] py-[14px] text-[16px] font-semibold text-white transition-[transform,box-shadow] duration-200 ease-out hover:scale-[1.03] hover:shadow-lg focus-visible:ring-2 focus-visible:ring-rebm-blue focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] disabled:opacity-60 motion-reduce:transform-none motion-reduce:transition-none"
       >
         {status === "submitting" ? "Sending…" : "Send Message"}
       </button>
 
-      <p className="mt-[16px] text-center text-[13px] text-[rgb(90,100,110)]">
+      <p className="mt-[10px] text-center text-[13px] text-[rgb(90,100,110)]">
         By submitting this form, you agree to our{" "}
         <Link href="/privacy" className="text-rebm-navy underline">
           Privacy Policy
@@ -216,7 +275,7 @@ function TextField({
 }) {
   return (
     <div>
-      <label htmlFor={id} className="text-[15px] font-medium text-rebm-navy">
+      <label htmlFor={id} className="text-[14px] font-medium text-rebm-navy">
         {label} {required && <span className="text-rebm-blue">*</span>}
       </label>
       <input
@@ -229,12 +288,12 @@ function TextField({
         aria-invalid={error ? "true" : undefined}
         aria-describedby={error ? `${id}-err` : undefined}
         onChange={(e) => onChange(e.target.value)}
-        className={`mt-[8px] w-full rounded-[16px] bg-[#F4F6F8] px-[16px] py-[13px] text-[15px] text-black outline-none focus:ring-2 focus:ring-rebm-blue ${
+        className={`mt-[6px] w-full rounded-[14px] bg-[#F1F5F9] px-[14px] py-[12px] text-[15px] text-black outline-none focus:ring-2 focus:ring-rebm-blue ${
           error ? "ring-2 ring-red-400" : ""
         }`}
       />
       {error && (
-        <p id={`${id}-err`} className="mt-[6px] text-[13px] text-red-600">
+        <p id={`${id}-err`} className="mt-[5px] text-[13px] text-red-600">
           {error}
         </p>
       )}
