@@ -22,7 +22,6 @@ const EMPTY: ContactFormValues = {
   lastName: "",
   email: "",
   phone: "",
-  company: "",
   isBroker: "",
   heardAbout: "",
   message: "",
@@ -36,7 +35,6 @@ const FIELD_IDS: Record<string, string> = {
   lastName: "last",
   email: "email",
   phone: "phone",
-  company: "company",
   isBroker: "isBroker",
   message: "msg",
 };
@@ -73,7 +71,7 @@ export function ContactForm() {
         if (!fe[k]) fe[k] = i.message;
       }
       setErrors(fe);
-      const order = ["firstName", "lastName", "email", "phone", "company", "isBroker", "message"];
+      const order = ["firstName", "lastName", "email", "phone", "isBroker", "message"];
       const firstBad = order.find((k) => fe[k]);
       if (firstBad) {
         const id = FIELD_IDS[firstBad];
@@ -126,9 +124,6 @@ export function ContactForm() {
         <TextField id={`${uid}-last`} label="Last Name" required value={values.lastName} placeholder="Doe" error={errors.lastName} onChange={(v) => set("lastName", v)} autoComplete="family-name" />
         <TextField id={`${uid}-email`} label="Email" required type="email" value={values.email} placeholder="john@example.com" error={errors.email} onChange={(v) => set("email", v)} autoComplete="email" />
         <TextField id={`${uid}-phone`} label="Phone" required type="tel" inputMode="tel" value={values.phone} placeholder="(800) 841-5033" error={errors.phone} onChange={(v) => set("phone", formatPhone(v))} autoComplete="tel" />
-        <div className="sm:col-span-2">
-          <TextField id={`${uid}-company`} label="Company or Brokerage" value={values.company} placeholder="Optional" error={errors.company} onChange={(v) => set("company", v)} autoComplete="organization" />
-        </div>
       </div>
 
       <div className="mt-[22px] grid gap-[16px] sm:grid-cols-2 sm:items-start">

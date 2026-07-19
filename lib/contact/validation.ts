@@ -63,8 +63,7 @@ export function isDisposableEmail(email: string): boolean {
  * spaces, parens, hyphens, +country code) and only requires at least 10 digits.
  *
  * `website` is a honeypot: it is visually hidden and off the tab order, so a
- * real user never fills it. `company` is a genuine optional field (Company or
- * Brokerage) — do NOT use it as the honeypot.
+ * real user never fills it.
  */
 export const contactSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required.").max(80),
@@ -102,7 +101,6 @@ export type ContactFormValues = {
   lastName: string;
   email: string;
   phone: string;
-  company: string;
   isBroker: "yes" | "no" | "";
   heardAbout: string;
   message: string;

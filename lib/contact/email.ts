@@ -35,7 +35,6 @@ function fields(data: ContactInput, meta: SubmissionMeta): [string, string][] {
     ["Name", `${data.firstName} ${data.lastName}`],
     ["Email", data.email],
     ["Phone", data.phone],
-    ["Company / Brokerage", data.company || "—"],
     ["Agent or broker?", data.isBroker === "yes" ? "Yes" : "No"],
     ["How they found us", data.heardAbout || "—"],
     ["Submitted", meta.submittedAt.toLocaleString("en-US", { timeZone: "America/Denver" }) + " (MT)"],
