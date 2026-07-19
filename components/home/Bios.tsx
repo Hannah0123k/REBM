@@ -54,17 +54,23 @@ export function Bios() {
             key={person.name}
             className={`flex flex-col items-start gap-[24px] sm:flex-row sm:items-stretch sm:gap-0 ${i > 0 ? "mt-[51px]" : ""}`}
           >
-            {/* On desktop the photo stretches to the text column's height but is
-                capped at its 248px design height. So when the bio is SHORTER than
-                the photo (Rhett), the photo shrinks to the text's height and its
-                bottom lines up with the last line; when the bio is longer (Alan)
-                the photo stays 248 at the top as designed. */}
-            <Image
-              src={PHOTOS[person.photo]}
-              alt={person.alt}
-              style={{ objectPosition: HEAD_POSITION[person.photo] ?? "50% 0%" }}
-              className="h-[248px] w-[285.7px] shrink-0 rounded-[30px] object-cover sm:mr-[65px] sm:h-full sm:max-h-[248px]"
-            />
+            {/* On desktop the photo tracks the text column's height, capped at
+                its 248px design height. The wrapper is the flex item so
+                align-items:stretch grows it to the row height (the text column),
+                while the image fills it absolutely — a percentage height on the
+                <img> itself would fall back to its intrinsic 248 and never
+                shrink. So a SHORTER bio (Rhett) pulls the photo down to the
+                text's height, bottom-aligned with the last line; a LONGER bio
+                (Alan) hits the 248 cap and stays top-aligned as designed. On
+                mobile the wrapper collapses and the image keeps its fixed 248. */}
+            <div className="w-[285.7px] shrink-0 sm:relative sm:mr-[65px] sm:max-h-[248px] sm:self-stretch">
+              <Image
+                src={PHOTOS[person.photo]}
+                alt={person.alt}
+                style={{ objectPosition: HEAD_POSITION[person.photo] ?? "50% 0%" }}
+                className="h-[248px] w-full rounded-[30px] object-cover sm:absolute sm:inset-0 sm:h-full"
+              />
+            </div>
             <div className="min-w-0 flex-1">
               {/* Line-height tightened to the font size so the name's cap sits
                   at the top of its box, aligning with the headshot top (the
