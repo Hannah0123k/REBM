@@ -126,7 +126,7 @@ export function ContactForm() {
         <TextField id={`${uid}-phone`} label="Phone" required type="tel" inputMode="tel" value={values.phone} placeholder="(800) 841-5033" error={errors.phone} onChange={(v) => set("phone", formatPhone(v))} autoComplete="tel" />
       </div>
 
-      <div className="mt-[22px] grid gap-[16px] sm:grid-cols-2 sm:items-start">
+      <div className="mt-[22px] grid gap-[16px] sm:grid-cols-2 sm:items-center">
         {/* Yes/No — pill-styled, but backed by real radio inputs for accessibility.
             The group is required; that's conveyed on the radiogroup, not each radio
             (aria-required isn't valid on role=radio). Pills cross-fade on change. */}
