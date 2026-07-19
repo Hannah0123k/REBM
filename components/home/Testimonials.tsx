@@ -69,7 +69,7 @@ export function Testimonials() {
               {col.map((t) => (
                 <figure
                   key={t.author}
-                  className="rounded-[20px] bg-white p-[32px] sm:p-[48px] lg:p-[64px] lg:pr-[62px]"
+                  className="rounded-[20px] bg-white p-[32px] shadow-[0_16px_40px_-20px_rgba(3,44,64,0.30)] sm:p-[48px] lg:p-[64px] lg:pr-[62px]"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/assets/live/stars.svg" alt="5 out of 5 stars" width={120} height={24} />

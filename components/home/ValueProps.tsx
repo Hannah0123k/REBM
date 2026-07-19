@@ -1,48 +1,26 @@
 import { Container } from "@/components/Container";
 import { Reveal } from "@/components/Reveal";
-import { VALUE_PROP_ICONS } from "@/components/icons/ValuePropIcons";
+import { ValuePropCards } from "@/components/home/ValuePropCards";
 import { valueProps } from "@/content/homepage";
 
 /**
  * "Why We Do What We Do" — value-prop section (live section 5).
  *
- * Redesigned per Hannah (2026-07-17): a centered header (kicker + navy heading +
- * intro) over the brand-blue band, then three white cards with a navy icon badge
- * straddling each card's top edge, a navy title, a short accent rule, and the
- * body copy. Moving the body onto white cards also fixes the earlier white-on-
- * #689ECF contrast failure — card copy is now dark navy on white.
+ * A centered navy heading + intro over the brand-blue band, then three white
+ * elevated cards with a deep-navy icon badge (white icon) straddling each card's
+ * top edge, a navy title, a short accent rule, and the body copy. No decorative
+ * artwork behind the cards. Moving the body onto white cards also fixes the
+ * earlier white-on-#689ECF contrast failure — card copy is dark navy on white.
  *
- * Copy is unchanged (source-of-truth live wording); only the layout is new.
+ * Copy is unchanged (source-of-truth live wording). The cards animate in with a
+ * staggered drop-in — see ValuePropCards.
  */
 export function ValueProps() {
   return (
-    <section className="relative w-full overflow-hidden bg-gradient-to-b from-[#74A6D5] via-rebm-blue to-[#5C92CB]">
-      {/* Subtle dotted corners, echoing the reference. Purely decorative. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 left-0 h-[240px] w-[240px] opacity-20"
-        style={{
-          backgroundImage: "radial-gradient(circle, #fff 1.3px, transparent 1.6px)",
-          backgroundSize: "16px 16px",
-          maskImage: "radial-gradient(circle at bottom left, #000, transparent 72%)",
-          WebkitMaskImage: "radial-gradient(circle at bottom left, #000, transparent 72%)",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute right-0 bottom-0 h-[240px] w-[240px] opacity-20"
-        style={{
-          backgroundImage: "radial-gradient(circle, #fff 1.3px, transparent 1.6px)",
-          backgroundSize: "16px 16px",
-          maskImage: "radial-gradient(circle at bottom right, #000, transparent 72%)",
-          WebkitMaskImage: "radial-gradient(circle at bottom right, #000, transparent 72%)",
-        }}
-      />
-
-      <Container className="relative pt-[72px] pb-[96px]">
-        {/* Header — the eyebrow ("OUR PURPOSE…") and its divider were removed
-            (Hannah), so the heading leads the section; top padding is trimmed so
-            it starts efficiently without a large blank band above it. */}
+    <section className="w-full bg-gradient-to-b from-[#74A6D5] via-rebm-blue to-[#5C92CB]">
+      <Container className="pt-[72px] pb-[100px]">
+        {/* Header — the heading leads the section; top padding is trimmed so it
+            starts efficiently without a large blank band above it. */}
         <Reveal className="mx-auto max-w-[820px] text-center" y={20} stagger={0.08}>
           <h2 className="text-[38px] leading-[46px] font-bold tracking-[-0.5px] text-rebm-navy sm:text-[52px] sm:leading-[60px]">
             {valueProps.heading}
@@ -54,36 +32,7 @@ export function ValueProps() {
           </p>
         </Reveal>
 
-        {/* Cards */}
-        <Reveal
-          className="mt-[72px] grid grid-cols-1 items-stretch gap-[32px] md:grid-cols-3 md:gap-[28px] lg:gap-[36px]"
-          y={24}
-          stagger={0.12}
-          start="top 85%"
-        >
-          {valueProps.cards.map((card) => {
-            const Icon = VALUE_PROP_ICONS[card.icon];
-            return (
-              <div
-                key={card.title}
-                className="relative flex flex-col items-center rounded-[22px] bg-white px-[32px] pt-[62px] pb-[44px] text-center shadow-[0_22px_48px_rgba(3,44,64,0.14)]"
-              >
-                {/* Navy icon badge straddling the card's top edge. */}
-                <div className="absolute -top-[38px] flex size-[76px] items-center justify-center rounded-full bg-rebm-navy text-white shadow-[0_10px_22px_rgba(3,44,64,0.28)]">
-                  <Icon className="size-[34px]" aria-hidden="true" />
-                </div>
-
-                <h3 className="text-[24px] leading-[30px] font-bold text-balance text-rebm-navy">
-                  {card.title}
-                </h3>
-                <span className="mt-[16px] block h-[3px] w-[46px] rounded-full bg-rebm-blue" />
-                <p className="mt-[22px] text-[16px] leading-[26px] text-[rgb(51,63,74)]">
-                  {card.body}
-                </p>
-              </div>
-            );
-          })}
-        </Reveal>
+        <ValuePropCards cards={valueProps.cards} />
       </Container>
     </section>
   );
