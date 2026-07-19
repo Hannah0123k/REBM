@@ -39,14 +39,12 @@ export function ValueProps() {
         }}
       />
 
-      <Container className="relative py-[96px]">
-        {/* Header */}
+      <Container className="relative pt-[72px] pb-[96px]">
+        {/* Header — the eyebrow ("OUR PURPOSE…") and its divider were removed
+            (Hannah), so the heading leads the section; top padding is trimmed so
+            it starts efficiently without a large blank band above it. */}
         <Reveal className="mx-auto max-w-[820px] text-center" y={20} stagger={0.08}>
-          <p className="text-[14px] font-semibold tracking-[0.18em] text-white/90 uppercase">
-            {valueProps.kicker}
-          </p>
-          <span className="mx-auto mt-[14px] block h-[3px] w-[54px] rounded-full bg-white/70" />
-          <h2 className="mt-[20px] text-[38px] leading-[46px] font-bold tracking-[-0.5px] text-rebm-navy sm:text-[52px] sm:leading-[60px]">
+          <h2 className="text-[38px] leading-[46px] font-bold tracking-[-0.5px] text-rebm-navy sm:text-[52px] sm:leading-[60px]">
             {valueProps.heading}
           </h2>
           <p className="mx-auto mt-[22px] max-w-[720px] text-[19px] leading-[29px] text-white sm:text-[20px] sm:leading-[30px]">

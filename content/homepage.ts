@@ -111,7 +111,6 @@ export const luckCta = {
 
 /* 5 ── Why / Choosing / Important (3-col cards) ------------------------------ */
 export const valueProps = {
-  kicker: "OUR PURPOSE, YOUR PEACE OF MIND",
   heading: "Why We Do What We Do",
   intro: {
     lead: "Real Estate Broker Match was created with one goal in mind:",
