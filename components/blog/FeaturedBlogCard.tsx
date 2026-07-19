@@ -9,10 +9,11 @@ import { formatPostDate, type BlogPlaceholder } from "@/content/blog-placeholder
  */
 export function FeaturedBlogCard({ post }: { post: BlogPlaceholder }) {
   return (
-    <article className="grid items-center gap-[28px] lg:grid-cols-2 lg:gap-[56px]">
-      <ThumbPlaceholder aspect="aspect-[5/4]" tone="blue" rounded="rounded-[24px]" />
+    <article className="grid gap-[28px] lg:grid-cols-2 lg:items-start lg:gap-[56px]">
+      {/* Square cover, matching the live site's Market Pulse box proportions. */}
+      <ThumbPlaceholder aspect="aspect-square" tone="blue" rounded="rounded-[24px]" />
 
-      <div>
+      <div className="lg:pt-[24px]">
         <h2 className="text-[30px] leading-[38px] font-bold text-balance text-rebm-navy sm:text-[40px] sm:leading-[48px]">
           {post.title}
         </h2>

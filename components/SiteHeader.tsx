@@ -48,11 +48,13 @@ export function SiteHeader() {
   // The public marketing header must not appear on the admin CMS routes.
   if (pathname?.startsWith("/admin")) return null;
 
-  // Transparent-over-hero only works on the homepage, whose hero is brand-blue.
-  // Every other page (blog, contact, privacy…) has a light or differently-
-  // colored top, where white nav text on a transparent header is illegible — so
-  // there the header wears its solid blue-glass treatment from the top.
-  const solid = scrolled || pathname !== "/";
+  // Pages that render a DARK hero band at the very top (the homepage's blue hero
+  // and the blog's photo hero) let the header stay transparent so the hero shows
+  // through it — it goes solid only on scroll, like the live site. Every other
+  // page (contact, privacy…) has a light top where white nav text on a
+  // transparent header is illegible, so there the header is solid from the top.
+  const hasHeroBackdrop = pathname === "/" || pathname === "/blog";
+  const solid = scrolled || !hasHeroBackdrop;
 
   return (
     <header
