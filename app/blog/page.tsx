@@ -13,13 +13,12 @@ export const metadata: Metadata = {
 
 /**
  * Public blog index. STRUCTURE mirrors the old live site (source of truth):
- *   "Our Blogs" heading → a large FEATURED post at the top (the latest Market
- *   Watch / "Market Pulse" item) → the remaining posts in a grid, newest first
- *   → a "View more articles" control.
+ *   photo hero band with a blue wash + centered "Our Blogs" → a large FEATURED
+ *   post (the latest Market Watch / "Market Pulse") → the remaining posts in a
+ *   grid, newest first → a "View more articles" control.
  *
- * STYLING is the current brand (navy/blue, Inter, shared Container + card
- * system). Content is placeholder only — see content/blog-placeholders.ts;
- * nothing links out yet, so there are no dead post routes.
+ * STYLING is the current brand. Content is placeholder only — see
+ * content/blog-placeholders.ts; nothing links out yet (no dead post routes).
  */
 export default function BlogPage() {
   const featured = getFeaturedPost();
@@ -27,35 +26,44 @@ export default function BlogPage() {
 
   return (
     <main id="main-content" className="bg-white">
-      {/* Hero */}
-      <section className="w-full pt-[calc(var(--header-h)+40px)] pb-[8px]">
-        <Container className="text-center">
-          <h1 className="text-[34px] leading-[40px] font-bold tracking-[-0.4px] text-rebm-navy sm:text-[46px] sm:leading-[54px]">
+      {/* Photo hero band with a brand-blue wash + centered white title. */}
+      <section className="relative flex min-h-[420px] w-full items-center justify-center overflow-hidden pt-[var(--header-h)]">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "url('/assets/live/hero-bg.webp')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
+        <div aria-hidden="true" className="absolute inset-0 bg-rebm-blue/75" />
+        <Container className="relative py-[48px] text-center">
+          <h1 className="text-[44px] leading-[52px] font-bold tracking-[-0.5px] text-white sm:text-[60px] sm:leading-[68px]">
             Our Blogs
           </h1>
-          <p className="mx-auto mt-[12px] max-w-[620px] text-[16px] leading-[24px] text-[rgb(60,72,84)]">
-            Insights on commercial real estate, market trends, and broker matching.
-          </p>
-          <p className="mx-auto mt-[8px] text-[13px] text-[rgb(140,150,162)]">
-            Placeholder layout — real articles are added during migration.
-          </p>
         </Container>
       </section>
 
-      <Container className="pt-[36px] pb-[80px]">
+      <Container className="pt-[72px] pb-[88px]">
         <div className="mx-auto max-w-[1200px]">
+          {/* Small placeholder note (removed once real posts are migrated). */}
+          <p className="mb-[36px] text-center text-[13px] text-[rgb(150,160,170)]">
+            Placeholder layout — real articles are added during migration.
+          </p>
+
           {/* Featured post (Market Watch leads, as on the live site) */}
           <FeaturedBlogCard post={featured} />
 
           {/* Post grid, newest first */}
-          <div className="mt-[48px] grid grid-cols-1 gap-x-[32px] gap-y-[40px] sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-[64px] grid grid-cols-1 gap-x-[36px] gap-y-[48px] sm:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
               <BlogCard key={post.id} post={post} />
             ))}
           </div>
 
           {/* "View more articles" — inert until pagination/real posts exist. */}
-          <div className="mt-[56px] flex justify-center">
+          <div className="mt-[64px] flex justify-center">
             <span
               className="inline-flex cursor-default items-center rounded-full border border-rebm-navy/25 px-[30px] py-[13px] text-[15px] font-semibold text-rebm-navy/70"
               title="Available after migration"

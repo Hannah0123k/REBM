@@ -1,49 +1,23 @@
-import type { BlogPostType } from "@/content/blog-placeholders";
-
 /**
- * Small category / post-type pill shown on a card. Market Watch is emphasized
- * (solid navy) so it reads as the distinct series it is on the live site;
- * articles use a lighter treatment.
- */
-export function CategoryBadge({ label, type }: { label: string; type: BlogPostType }) {
-  const tone =
-    type === "market-watch"
-      ? "bg-rebm-navy text-white"
-      : "bg-white/90 text-rebm-navy ring-1 ring-rebm-navy/10";
-  return (
-    <span
-      className={`inline-flex items-center rounded-full px-[12px] py-[5px] text-[12px] font-semibold tracking-[0.04em] uppercase ${tone}`}
-    >
-      {label}
-    </span>
-  );
-}
-
-/**
- * Placeholder thumbnail area — a soft brand-tinted panel with a landscape glyph
- * and a "Placeholder" caption, standing in for the future featured image. The
- * category badge sits over the top-left corner. `aspect` sets the image
- * proportions (grid ≈ 394×270, featured ≈ 668×473, from the Figma blog spec).
+ * Placeholder cover/thumbnail area standing in for a future post image.
+ * `tone="blue"` is a solid brand-blue panel (used for the featured Market
+ * Pulse-style cover); `tone="light"` is a soft tinted panel for article thumbs.
+ * Replace with real <Image> covers during migration.
  */
 export function ThumbPlaceholder({
   aspect,
-  label,
-  type,
-  rounded = "rounded-[16px]",
+  rounded = "rounded-[20px]",
+  tone = "light",
 }: {
   aspect: string;
-  label: string;
-  type: BlogPostType;
   rounded?: string;
+  tone?: "light" | "blue";
 }) {
+  const bg = tone === "blue" ? "bg-rebm-blue" : "bg-gradient-to-br from-[#DCE7F3] to-[#C3D6EA]";
+  const fg = tone === "blue" ? "text-white/75" : "text-rebm-navy/40";
   return (
-    <div
-      className={`relative w-full overflow-hidden bg-gradient-to-br from-[#DCE7F3] to-[#C3D6EA] ${aspect} ${rounded}`}
-    >
-      <div className="absolute top-[14px] left-[14px] z-10">
-        <CategoryBadge label={label} type={type} />
-      </div>
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-[8px] text-rebm-navy/40">
+    <div className={`relative w-full overflow-hidden ${bg} ${aspect} ${rounded}`}>
+      <div className={`absolute inset-0 flex flex-col items-center justify-center gap-[8px] ${fg}`}>
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -51,7 +25,7 @@ export function ThumbPlaceholder({
           strokeWidth={1.6}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="size-[34px]"
+          className="size-[36px]"
           aria-hidden="true"
         >
           <rect x="3" y="3" width="18" height="18" rx="2" />
