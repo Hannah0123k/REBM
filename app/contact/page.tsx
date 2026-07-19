@@ -26,7 +26,7 @@ export default function ContactPage() {
             <h1 className="text-[30px] leading-[36px] font-bold tracking-[-0.3px] text-rebm-navy sm:text-[38px] sm:leading-[44px]">
               Contact Us
             </h1>
-            <p className="mx-auto mt-[12px] max-w-[560px] text-[15px] leading-[22px] text-rebm-navy/80">
+            <p className="mx-auto mt-[12px] max-w-[560px] text-[15px] leading-[22px] text-white">
               Reach out about broker matching, partnerships, or general questions.
             </p>
           </div>
