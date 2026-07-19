@@ -4,7 +4,16 @@ import Link from "next/link";
 import { useId, useState } from "react";
 
 import { submitContact } from "@/app/contact/actions";
-import { HEARD_OPTIONS, contactSchema, type ContactFormValues } from "@/lib/contact/validation";
+import { contactSchema, type ContactFormValues } from "@/lib/contact/validation";
+
+/** Format digits as a US phone number: (XXX) XXX-XXXX, progressively as typed. */
+function formatPhone(input: string): string {
+  const d = input.replace(/\D/g, "").slice(0, 10);
+  if (d.length === 0) return "";
+  if (d.length < 4) return `(${d}`;
+  if (d.length < 7) return `(${d.slice(0, 3)}) ${d.slice(3)}`;
+  return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+}
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -36,8 +45,6 @@ const FIELD_IDS: Record<string, string> = {
 // with a clear blue ring. Transition is transform/opacity-free (color + shadow).
 const FIELD_BASE =
   "mt-[7px] w-full rounded-[14px] bg-[#F4F7FB] px-[15px] py-[13px] text-[15px] text-black outline-none transition-[background-color,box-shadow] duration-200 placeholder:text-[rgb(142,152,164)] focus:bg-white focus:ring-2 focus:ring-rebm-blue motion-reduce:transition-none";
-const SELECT_BASE =
-  "mt-[7px] w-full rounded-[14px] bg-[#F4F7FB] px-[15px] py-[13px] text-[15px] outline-none transition-[background-color,box-shadow] duration-200 focus:bg-white focus:ring-2 focus:ring-rebm-blue motion-reduce:transition-none";
 const LABEL = "text-[14px] font-medium text-rebm-navy";
 const ERR = "mt-[6px] text-[13px] text-red-600 rebm-fade-in";
 
@@ -118,7 +125,7 @@ export function ContactForm() {
         <TextField id={`${uid}-first`} label="First Name" required value={values.firstName} placeholder="John" error={errors.firstName} onChange={(v) => set("firstName", v)} autoComplete="given-name" />
         <TextField id={`${uid}-last`} label="Last Name" required value={values.lastName} placeholder="Doe" error={errors.lastName} onChange={(v) => set("lastName", v)} autoComplete="family-name" />
         <TextField id={`${uid}-email`} label="Email" required type="email" value={values.email} placeholder="john@example.com" error={errors.email} onChange={(v) => set("email", v)} autoComplete="email" />
-        <TextField id={`${uid}-phone`} label="Phone" required type="tel" value={values.phone} placeholder="(800) 841-5033" error={errors.phone} onChange={(v) => set("phone", v)} autoComplete="tel" />
+        <TextField id={`${uid}-phone`} label="Phone" required type="tel" inputMode="tel" value={values.phone} placeholder="(800) 841-5033" error={errors.phone} onChange={(v) => set("phone", formatPhone(v))} autoComplete="tel" />
         <div className="sm:col-span-2">
           <TextField id={`${uid}-company`} label="Company or Brokerage" value={values.company} placeholder="Optional" error={errors.company} onChange={(v) => set("company", v)} autoComplete="organization" />
         </div>
@@ -172,24 +179,14 @@ export function ContactForm() {
           )}
         </fieldset>
 
-        <div>
-          <label htmlFor={`${uid}-heard`} className={LABEL}>
-            How did you find Real Estate Broker Match?
-          </label>
-          <select
-            id={`${uid}-heard`}
-            value={values.heardAbout}
-            onChange={(e) => set("heardAbout", e.target.value as ContactFormValues["heardAbout"])}
-            className={`${SELECT_BASE} ${values.heardAbout === "" ? "text-[rgb(142,152,164)]" : "text-black"}`}
-          >
-            <option value="">Select an option…</option>
-            {HEARD_OPTIONS.map((h) => (
-              <option key={h} value={h}>
-                {h}
-              </option>
-            ))}
-          </select>
-        </div>
+        <TextField
+          id={`${uid}-heard`}
+          label="How did you find Real Estate Broker Match?"
+          value={values.heardAbout}
+          placeholder="e.g. Google, referral, social media"
+          error={errors.heardAbout}
+          onChange={(v) => set("heardAbout", v)}
+        />
       </div>
 
       <div className="mt-[22px]">
@@ -261,6 +258,7 @@ function TextField({
   error,
   required,
   type = "text",
+  inputMode,
   autoComplete,
 }: {
   id: string;
@@ -271,6 +269,7 @@ function TextField({
   error?: string;
   required?: boolean;
   type?: string;
+  inputMode?: React.ComponentProps<"input">["inputMode"];
   autoComplete?: string;
 }) {
   return (
@@ -281,6 +280,7 @@ function TextField({
       <input
         id={id}
         type={type}
+        inputMode={inputMode}
         value={value}
         placeholder={placeholder}
         autoComplete={autoComplete}

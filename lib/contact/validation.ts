@@ -1,20 +1,6 @@
 import { z } from "zod";
 
 /**
- * "How did you find Real Estate Broker Match?" options (optional field).
- */
-export const HEARD_OPTIONS = [
-  "Google search",
-  "Referral",
-  "Social media",
-  "Existing client",
-  "Advertisement",
-  "Other",
-] as const;
-
-export type HeardOption = (typeof HEARD_OPTIONS)[number];
-
-/**
  * Contact form validation, shared client + server (the server re-validates the
  * raw payload — never trust the client). Phone is intentionally lenient (accepts
  * spaces, parens, hyphens, +country code) and only requires at least 10 digits.
@@ -26,7 +12,13 @@ export type HeardOption = (typeof HEARD_OPTIONS)[number];
 export const contactSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required.").max(80),
   lastName: z.string().trim().min(1, "Last name is required.").max(80),
-  email: z.string().trim().min(1, "Email is required.").email("Enter a valid email address."),
+  email: z
+    .string()
+    .trim()
+    .min(1, "Email is required.")
+    .email("Enter a valid email address.")
+    // Require a proper domain with a 2+ character TLD (rejects "a@b", "a@b.c").
+    .refine((v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v), "Enter a valid email address."),
   phone: z
     .string()
     .trim()
@@ -34,7 +26,7 @@ export const contactSchema = z.object({
     .refine((v) => v.replace(/\D/g, "").length >= 10, "Enter a valid phone number."),
   company: z.string().trim().max(120).optional().or(z.literal("")),
   isBroker: z.enum(["yes", "no"], { message: "Please choose Yes or No." }),
-  heardAbout: z.enum(HEARD_OPTIONS).or(z.literal("")).optional(),
+  heardAbout: z.string().trim().max(160).optional().or(z.literal("")),
   message: z.string().trim().min(1, "Please enter a message.").max(4000),
   // Honeypot — must stay empty. Bots fill it; humans never see it.
   website: z.string().max(0).optional().or(z.literal("")),
@@ -54,7 +46,7 @@ export type ContactFormValues = {
   phone: string;
   company: string;
   isBroker: "yes" | "no" | "";
-  heardAbout: HeardOption | "";
+  heardAbout: string;
   message: string;
   website: string;
 };
