@@ -11,13 +11,14 @@ export function BlogCard({ post }: { post: BlogPlaceholder }) {
   const tone = post.type === "market-watch" ? "blue" : "light";
   return (
     <article className="flex flex-col">
-      <ThumbPlaceholder aspect="aspect-[16/11]" tone={tone} rounded="rounded-[18px]" />
+      {/* Landscape thumbnail (~3:2), matching the live grid. */}
+      <ThumbPlaceholder aspect="aspect-[3/2]" tone={tone} rounded="rounded-[16px]" />
 
-      <h3 className="mt-[18px] text-[21px] leading-[28px] font-bold text-balance text-rebm-navy">
+      <h3 className="mt-[20px] text-[25px] leading-[31px] font-bold text-balance text-rebm-navy">
         {post.title}
       </h3>
-      <p className="mt-[10px] text-[15px] leading-[23px] text-[rgb(70,82,94)]">{post.excerpt}</p>
-      <time dateTime={post.date} className="mt-[14px] block text-[14px] font-medium text-rebm-link">
+      <p className="mt-[12px] text-[16px] leading-[25px] text-[rgb(70,82,94)]">{post.excerpt}</p>
+      <time dateTime={post.date} className="mt-[18px] block text-[15px] font-medium text-rebm-link">
         {formatPostDate(post.date)}
       </time>
     </article>

@@ -56,7 +56,7 @@ export default function BlogPage() {
           <FeaturedBlogCard post={featured} />
 
           {/* Post grid, newest first */}
-          <div className="mt-[64px] grid grid-cols-1 gap-x-[36px] gap-y-[48px] sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-[64px] grid grid-cols-1 gap-x-[40px] gap-y-[56px] sm:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
               <BlogCard key={post.id} post={post} />
             ))}
