@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useId, useState } from "react";
 
 import { submitContact } from "@/app/contact/actions";
-import { contactSchema, type ContactFormValues } from "@/lib/contact/validation";
+import { HEARD_OPTIONS, contactSchema, type ContactFormValues } from "@/lib/contact/validation";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -15,6 +15,7 @@ const EMPTY: ContactFormValues = {
   phone: "",
   company: "",
   isBroker: "",
+  heardAbout: "",
   message: "",
   website: "",
 };
@@ -35,6 +36,8 @@ const FIELD_IDS: Record<string, string> = {
 // with a clear blue ring. Transition is transform/opacity-free (color + shadow).
 const FIELD_BASE =
   "mt-[7px] w-full rounded-[14px] bg-[#F4F7FB] px-[15px] py-[13px] text-[15px] text-black outline-none transition-[background-color,box-shadow] duration-200 placeholder:text-[rgb(142,152,164)] focus:bg-white focus:ring-2 focus:ring-rebm-blue motion-reduce:transition-none";
+const SELECT_BASE =
+  "mt-[7px] w-full rounded-[14px] bg-[#F4F7FB] px-[15px] py-[13px] text-[15px] outline-none transition-[background-color,box-shadow] duration-200 focus:bg-white focus:ring-2 focus:ring-rebm-blue motion-reduce:transition-none";
 const LABEL = "text-[14px] font-medium text-rebm-navy";
 const ERR = "mt-[6px] text-[13px] text-red-600 rebm-fade-in";
 
@@ -121,52 +124,73 @@ export function ContactForm() {
         </div>
       </div>
 
-      {/* Yes/No — pill-styled, but backed by real radio inputs for accessibility.
-          The group is required; that's conveyed on the radiogroup, not each radio
-          (aria-required isn't valid on role=radio). Pills cross-fade on change. */}
-      <fieldset className="mt-[22px]">
-        <legend className={LABEL}>
-          Are you a real estate agent or broker? <span className="text-rebm-blue">*</span>
-        </legend>
-        <div
-          role="radiogroup"
-          aria-label="Are you a real estate agent or broker?"
-          aria-required="true"
-          aria-describedby={errors.isBroker ? `${uid}-isBroker-err` : undefined}
-          className="mt-[9px] flex gap-[10px]"
-        >
-          {(["no", "yes"] as const).map((opt, i) => {
-            const selected = values.isBroker === opt;
-            return (
-              <label key={opt} className="cursor-pointer">
-                <input
-                  id={i === 0 ? `${uid}-isBroker` : undefined}
-                  type="radio"
-                  name={`${uid}-isBroker`}
-                  value={opt}
-                  checked={selected}
-                  onChange={() => set("isBroker", opt)}
-                  className="peer sr-only"
-                />
-                <span
-                  className={`block rounded-full px-[28px] py-[11px] text-[15px] font-medium capitalize transition-[background-color,color,box-shadow] duration-200 ease-out peer-focus-visible:ring-2 peer-focus-visible:ring-rebm-blue peer-focus-visible:ring-offset-2 motion-reduce:transition-none ${
-                    selected
-                      ? "bg-rebm-navy text-white shadow-[0_6px_16px_-6px_rgba(3,44,64,0.5)]"
-                      : "bg-[#EEF2F7] text-rebm-navy hover:bg-[#E4E9EF]"
-                  }`}
-                >
-                  {opt}
-                </span>
-              </label>
-            );
-          })}
+      <div className="mt-[22px] grid gap-[16px] sm:grid-cols-2 sm:items-start">
+        {/* Yes/No — pill-styled, but backed by real radio inputs for accessibility.
+            The group is required; that's conveyed on the radiogroup, not each radio
+            (aria-required isn't valid on role=radio). Pills cross-fade on change. */}
+        <fieldset>
+          <legend className={LABEL}>
+            Are you a real estate agent or broker? <span className="text-rebm-blue">*</span>
+          </legend>
+          <div
+            role="radiogroup"
+            aria-label="Are you a real estate agent or broker?"
+            aria-required="true"
+            aria-describedby={errors.isBroker ? `${uid}-isBroker-err` : undefined}
+            className="mt-[9px] flex gap-[10px]"
+          >
+            {(["no", "yes"] as const).map((opt, i) => {
+              const selected = values.isBroker === opt;
+              return (
+                <label key={opt} className="cursor-pointer">
+                  <input
+                    id={i === 0 ? `${uid}-isBroker` : undefined}
+                    type="radio"
+                    name={`${uid}-isBroker`}
+                    value={opt}
+                    checked={selected}
+                    onChange={() => set("isBroker", opt)}
+                    className="peer sr-only"
+                  />
+                  <span
+                    className={`block rounded-full px-[28px] py-[11px] text-[15px] font-medium capitalize transition-[background-color,color,box-shadow] duration-200 ease-out peer-focus-visible:ring-2 peer-focus-visible:ring-rebm-blue peer-focus-visible:ring-offset-2 motion-reduce:transition-none ${
+                      selected
+                        ? "bg-rebm-navy text-white shadow-[0_6px_16px_-6px_rgba(3,44,64,0.5)]"
+                        : "bg-[#EEF2F7] text-rebm-navy hover:bg-[#E4E9EF]"
+                    }`}
+                  >
+                    {opt}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+          {errors.isBroker && (
+            <p id={`${uid}-isBroker-err`} className={ERR}>
+              {errors.isBroker}
+            </p>
+          )}
+        </fieldset>
+
+        <div>
+          <label htmlFor={`${uid}-heard`} className={LABEL}>
+            How did you find Real Estate Broker Match?
+          </label>
+          <select
+            id={`${uid}-heard`}
+            value={values.heardAbout}
+            onChange={(e) => set("heardAbout", e.target.value as ContactFormValues["heardAbout"])}
+            className={`${SELECT_BASE} ${values.heardAbout === "" ? "text-[rgb(142,152,164)]" : "text-black"}`}
+          >
+            <option value="">Select an option…</option>
+            {HEARD_OPTIONS.map((h) => (
+              <option key={h} value={h}>
+                {h}
+              </option>
+            ))}
+          </select>
         </div>
-        {errors.isBroker && (
-          <p id={`${uid}-isBroker-err`} className={ERR}>
-            {errors.isBroker}
-          </p>
-        )}
-      </fieldset>
+      </div>
 
       <div className="mt-[22px]">
         <label htmlFor={`${uid}-msg`} className={LABEL}>

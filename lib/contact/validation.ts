@@ -1,6 +1,20 @@
 import { z } from "zod";
 
 /**
+ * "How did you find Real Estate Broker Match?" options (optional field).
+ */
+export const HEARD_OPTIONS = [
+  "Google search",
+  "Referral",
+  "Social media",
+  "Existing client",
+  "Advertisement",
+  "Other",
+] as const;
+
+export type HeardOption = (typeof HEARD_OPTIONS)[number];
+
+/**
  * Contact form validation, shared client + server (the server re-validates the
  * raw payload — never trust the client). Phone is intentionally lenient (accepts
  * spaces, parens, hyphens, +country code) and only requires at least 10 digits.
@@ -20,6 +34,7 @@ export const contactSchema = z.object({
     .refine((v) => v.replace(/\D/g, "").length >= 10, "Enter a valid phone number."),
   company: z.string().trim().max(120).optional().or(z.literal("")),
   isBroker: z.enum(["yes", "no"], { message: "Please choose Yes or No." }),
+  heardAbout: z.enum(HEARD_OPTIONS).or(z.literal("")).optional(),
   message: z.string().trim().min(1, "Please enter a message.").max(4000),
   // Honeypot — must stay empty. Bots fill it; humans never see it.
   website: z.string().max(0).optional().or(z.literal("")),
@@ -39,6 +54,7 @@ export type ContactFormValues = {
   phone: string;
   company: string;
   isBroker: "yes" | "no" | "";
+  heardAbout: HeardOption | "";
   message: string;
   website: string;
 };
