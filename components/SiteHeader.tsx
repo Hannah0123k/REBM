@@ -48,18 +48,24 @@ export function SiteHeader() {
   // The public marketing header must not appear on the admin CMS routes.
   if (pathname?.startsWith("/admin")) return null;
 
+  // Transparent-over-hero only works on the homepage, whose hero is brand-blue.
+  // Every other page (blog, contact, privacy…) has a light or differently-
+  // colored top, where white nav text on a transparent header is illegible — so
+  // there the header wears its solid blue-glass treatment from the top.
+  const solid = scrolled || pathname !== "/";
+
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 h-[var(--header-h)] transition-colors duration-300 ${
-        scrolled
+        solid
           ? "border-b border-white/25 shadow-md backdrop-blur-md [-webkit-backdrop-filter:blur(12px)]"
           : "bg-transparent"
       }`}
-      // Scrolled = a lightly-tinted BLUE glass. The tint is the hero blue
+      // Solid = a lightly-tinted BLUE glass. The tint is the hero blue
       // (#689ECF) at 0.82 so it dominates and never darkens toward navy over
       // dark sections — the background stays faintly visible through the blur,
       // and the navy logo always keeps strong contrast on the light-blue.
-      style={scrolled ? { backgroundColor: "rgba(104, 158, 207, 0.82)" } : undefined}
+      style={solid ? { backgroundColor: "rgba(104, 158, 207, 0.82)" } : undefined}
     >
       <Container className="flex h-full items-center justify-between">
         <Link
