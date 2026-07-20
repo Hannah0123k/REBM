@@ -10,8 +10,9 @@ import { formatPostDate, type BlogPlaceholder } from "@/content/blog-placeholder
 export function BlogCard({ post }: { post: BlogPlaceholder }) {
   const tone = post.type === "market-watch" ? "blue" : "light";
   return (
-    <article className="flex flex-col items-center text-center">
-      {/* Shorter landscape thumbnail (~16:9). */}
+    <article className="flex flex-col">
+      {/* Shorter landscape thumbnail (~16:9), left-aligned text below — matches
+          the live grid. */}
       <ThumbPlaceholder aspect="aspect-[16/9]" tone={tone} rounded="rounded-[16px]" />
 
       <h3 className="mt-[20px] text-[25px] leading-[31px] font-bold text-balance text-rebm-navy">

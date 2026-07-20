@@ -9,9 +9,10 @@ import { formatPostDate, type BlogPlaceholder } from "@/content/blog-placeholder
  */
 export function FeaturedBlogCard({ post }: { post: BlogPlaceholder }) {
   return (
-    <article className="grid items-center gap-[28px] lg:grid-cols-[3fr_2fr] lg:gap-[56px]">
-      {/* Wider landscape cover — the Market Pulse box gets more horizontal room. */}
-      <ThumbPlaceholder aspect="aspect-[16/9]" tone="blue" rounded="rounded-[24px]" />
+    <article className="grid items-center gap-[28px] lg:grid-cols-2 lg:gap-[56px]">
+      {/* Large ~3:2 cover in an even 50/50 split — the Market Pulse box as on
+          the live site (a big, tall-ish panel, not a short banner). */}
+      <ThumbPlaceholder aspect="aspect-[3/2]" tone="blue" rounded="rounded-[24px]" />
 
       <div>
         <h2 className="text-[32px] leading-[40px] font-bold text-balance text-rebm-navy sm:text-[46px] sm:leading-[54px]">
