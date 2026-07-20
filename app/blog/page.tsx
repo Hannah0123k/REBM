@@ -27,7 +27,7 @@ export default function BlogPage() {
   return (
     <main id="main-content" className="bg-white">
       {/* Photo hero band with a brand-blue wash + centered white title. */}
-      <section className="relative flex min-h-[420px] w-full items-center justify-center overflow-hidden pt-[var(--header-h)]">
+      <section className="relative flex min-h-[340px] w-full items-center justify-center overflow-hidden">
         <div
           aria-hidden="true"
           className="absolute inset-0"
