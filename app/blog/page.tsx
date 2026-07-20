@@ -62,10 +62,11 @@ export default function BlogPage() {
             ))}
           </div>
 
-          {/* "View more articles" — inert until pagination/real posts exist. */}
+          {/* "View more articles" — filled brand-blue pill (Figma). Inert until
+              pagination/real posts exist. */}
           <div className="mt-[64px] flex justify-center">
             <span
-              className="inline-flex cursor-default items-center rounded-full border border-rebm-navy/25 px-[30px] py-[13px] text-[15px] font-semibold text-rebm-navy/70"
+              className="inline-flex cursor-default items-center rounded-full bg-rebm-blue px-[32px] py-[13px] text-[15px] font-semibold text-white"
               title="Available after migration"
             >
               View more articles
