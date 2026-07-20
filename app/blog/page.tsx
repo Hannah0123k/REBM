@@ -69,7 +69,7 @@ export default async function BlogPage({
             aria-hidden="true"
             className="absolute inset-0"
             style={{
-              backgroundImage: "url('/assets/live/hero-bg.webp')",
+              backgroundImage: "url('/assets/live/blog-hero.png')",
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
