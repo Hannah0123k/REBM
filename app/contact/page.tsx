@@ -34,7 +34,7 @@ export default function ContactPage() {
             </h1>
           </div>
 
-          <div className="rebm-enter-delayed mx-auto mt-[24px] max-w-[680px]">
+          <div className="rebm-enter-delayed mx-auto mt-[36px] max-w-[680px]">
             <ContactForm />
           </div>
         </Container>
