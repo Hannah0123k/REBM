@@ -9,7 +9,7 @@ import { formatPostDate, type BlogPlaceholder } from "@/content/blog-placeholder
  */
 export function FeaturedBlogCard({ post }: { post: BlogPlaceholder }) {
   return (
-    <article className="flex min-h-[360px] w-full flex-col items-center justify-center overflow-hidden rounded-[24px] bg-rebm-blue px-[32px] py-[64px] text-center">
+    <article className="mx-auto flex min-h-[260px] w-full max-w-[820px] flex-col items-center justify-center overflow-hidden rounded-[24px] bg-rebm-blue px-[32px] py-[44px] text-center">
       <div className="max-w-[620px]">
         <h2 className="text-[32px] leading-[40px] font-bold text-balance text-rebm-navy sm:text-[46px] sm:leading-[54px]">
           {post.title}
