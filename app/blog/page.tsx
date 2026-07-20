@@ -74,7 +74,7 @@ export default async function BlogPage({
               backgroundPosition: "center",
             }}
           />
-          <div aria-hidden="true" className="absolute inset-0 bg-rebm-blue/80" />
+          <div aria-hidden="true" className="absolute inset-0 bg-rebm-blue/45" />
           <Container className="relative py-[48px] text-center">
             <h1 className="text-[46px] leading-[54px] font-bold tracking-[-0.5px] text-white sm:text-[64px] sm:leading-[72px]">
               Our Blogs
