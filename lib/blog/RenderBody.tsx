@@ -63,8 +63,10 @@ function renderNode(node: Node, key: number): ReactNode {
       return <p key={key}>{renderChildren(node.content)}</p>;
     case "heading": {
       const level = Number(node.attrs?.level);
-      const H = (level === 3 ? "h3" : level === 4 ? "h4" : "h2") as "h2" | "h3" | "h4";
-      return <H key={key}>{renderChildren(node.content)}</H>;
+      const children = renderChildren(node.content);
+      if (level === 3) return <h3 key={key}>{children}</h3>;
+      if (level === 4) return <h4 key={key}>{children}</h4>;
+      return <h2 key={key}>{children}</h2>;
     }
     case "bulletList":
       return <ul key={key}>{renderChildren(node.content)}</ul>;
