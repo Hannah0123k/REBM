@@ -2,6 +2,10 @@
 
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
+import { Table } from "@tiptap/extension-table";
+import { TableCell } from "@tiptap/extension-table-cell";
+import { TableHeader } from "@tiptap/extension-table-header";
+import { TableRow } from "@tiptap/extension-table-row";
 import { EditorContent, useEditor, type Content, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useRef, useState } from "react";
@@ -17,6 +21,12 @@ const extensions = [
   }),
   Image.configure({ inline: false, allowBase64: false }),
   Placeholder.configure({ placeholder: "Write the article…" }),
+  // Minimal table support (insert/edit rows & cells) for migrated financial /
+  // Market Watch posts. No resizing to keep the schema simple and stable.
+  Table.configure({ resizable: false }),
+  TableRow,
+  TableHeader,
+  TableCell,
 ];
 
 const EMPTY_DOC: TiptapDoc = { type: "doc", content: [{ type: "paragraph" }] };
@@ -38,7 +48,7 @@ export function TiptapEditor({
     editorProps: {
       attributes: {
         class:
-          "prose max-w-none min-h-[320px] px-[18px] py-[16px] outline-none [&_h2]:text-[24px] [&_h2]:font-bold [&_h3]:text-[20px] [&_h3]:font-semibold [&_p]:my-[10px] [&_ul]:list-disc [&_ul]:pl-[24px] [&_ol]:list-decimal [&_ol]:pl-[24px] [&_blockquote]:border-l-4 [&_blockquote]:border-rebm-card-border [&_blockquote]:pl-[14px] [&_blockquote]:italic [&_a]:text-rebm-link [&_a]:underline [&_img]:rounded-[8px]",
+          "prose max-w-none min-h-[320px] overflow-x-auto px-[18px] py-[16px] outline-none [&_h2]:text-[24px] [&_h2]:font-bold [&_h3]:text-[20px] [&_h3]:font-semibold [&_p]:my-[10px] [&_ul]:list-disc [&_ul]:pl-[24px] [&_ol]:list-decimal [&_ol]:pl-[24px] [&_blockquote]:border-l-4 [&_blockquote]:border-rebm-card-border [&_blockquote]:pl-[14px] [&_blockquote]:italic [&_a]:text-rebm-link [&_a]:underline [&_img]:rounded-[8px] [&_table]:my-[12px] [&_table]:border-collapse [&_td]:border [&_td]:border-rebm-card-border [&_td]:p-[8px] [&_td_p]:my-0 [&_th]:border [&_th]:border-rebm-card-border [&_th]:bg-[#EEF3F8] [&_th]:p-[8px] [&_th]:text-left [&_th]:font-semibold [&_th_p]:my-0",
       },
     },
     onUpdate: ({ editor }) => onChange(editor.getJSON() as TiptapDoc),
@@ -120,6 +130,18 @@ function Toolbar({ editor, onImageClick }: { editor: Editor; onImageClick: () =>
       <Sep />
       <button type="button" className={btn(editor.isActive("link"))} onClick={setLink} aria-label="Link">Link</button>
       <button type="button" className={btn(false)} onClick={onImageClick} aria-label="Insert image">Image</button>
+      <button
+        type="button"
+        className={btn(editor.isActive("table"))}
+        onClick={() =>
+          editor.isActive("table")
+            ? editor.chain().focus().deleteTable().run()
+            : editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
+        }
+        aria-label={editor.isActive("table") ? "Delete table" : "Insert table"}
+      >
+        Table
+      </button>
       <Sep />
       <button type="button" className={btn(false)} onClick={() => editor.chain().focus().undo().run()} aria-label="Undo">Undo</button>
       <button type="button" className={btn(false)} onClick={() => editor.chain().focus().redo().run()} aria-label="Redo">Redo</button>

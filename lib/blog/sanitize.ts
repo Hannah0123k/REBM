@@ -20,7 +20,24 @@ const ALLOWED_NODES = new Set([
   "horizontalRule",
   "hardBreak",
   "image",
+  "table",
+  "tableRow",
+  "tableHeader",
+  "tableCell",
 ]);
+
+/** Coerce a table cell span to a safe positive integer (default 1). */
+function safeSpan(v: unknown): number {
+  const n = Math.floor(Number(v));
+  return Number.isFinite(n) && n >= 1 && n <= 1000 ? n : 1;
+}
+
+/** Keep only a clean numeric colwidth array, or null. */
+function safeColwidth(v: unknown): number[] | null {
+  if (!Array.isArray(v)) return null;
+  const out = v.map((n) => Math.floor(Number(n))).filter((n) => Number.isFinite(n) && n > 0 && n <= 5000);
+  return out.length ? out : null;
+}
 
 const ALLOWED_MARKS = new Set(["bold", "italic", "strike", "code", "link"]);
 
@@ -56,7 +73,16 @@ function cleanNode(node: Node): Node | null {
         alt: typeof node.attrs.alt === "string" ? node.attrs.alt : null,
         title: typeof node.attrs.title === "string" ? node.attrs.title : null,
       };
+    } else if (node.type === "tableCell" || node.type === "tableHeader") {
+      // Whitelist only the structural span/width attrs — never styles/classes.
+      out.attrs = {
+        colspan: safeSpan(node.attrs.colspan),
+        rowspan: safeSpan(node.attrs.rowspan),
+        colwidth: safeColwidth(node.attrs.colwidth),
+      };
     }
+  } else if (node.type === "tableCell" || node.type === "tableHeader") {
+    out.attrs = { colspan: 1, rowspan: 1, colwidth: null };
   }
 
   if (Array.isArray(node.marks)) {
@@ -79,6 +105,21 @@ function cleanNode(node: Node): Node | null {
       .map(cleanNode)
       .filter((n): n is Node => n !== null);
     out.content = content;
+  }
+
+  // Table integrity: keep the structure valid so malformed source can't break
+  // the editor/renderer. A cell must hold at least one block; a row must hold
+  // cells; a table must hold rows (else drop it).
+  if (out.type === "tableCell" || out.type === "tableHeader") {
+    if (!out.content || out.content.length === 0) out.content = [{ type: "paragraph" }];
+  } else if (out.type === "tableRow") {
+    out.content = (out.content ?? []).filter(
+      (c) => c.type === "tableCell" || c.type === "tableHeader",
+    );
+    if (out.content.length === 0) return null;
+  } else if (out.type === "table") {
+    out.content = (out.content ?? []).filter((c) => c.type === "tableRow");
+    if (out.content.length === 0) return null;
   }
 
   return out;

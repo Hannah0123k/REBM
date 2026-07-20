@@ -55,6 +55,22 @@ function renderChildren(nodes: Node[] | undefined): ReactNode {
   return nodes.map((n, i) => renderNode(n, i));
 }
 
+/** colspan/rowspan as DOM attrs (omit when 1 to keep markup clean). */
+function cellSpans(node: Node): { colSpan?: number; rowSpan?: number } {
+  const c = Number(node.attrs?.colspan) || 1;
+  const r = Number(node.attrs?.rowspan) || 1;
+  return { colSpan: c > 1 ? c : undefined, rowSpan: r > 1 ? r : undefined };
+}
+
+/** Unwrap a lone paragraph inside a cell so cells don't carry block margins. */
+function cellContent(node: Node): ReactNode {
+  const content = node.content ?? [];
+  if (content.length === 1 && content[0].type === "paragraph") {
+    return renderChildren(content[0].content);
+  }
+  return renderChildren(content);
+}
+
 function renderNode(node: Node, key: number): ReactNode {
   switch (node.type) {
     case "text":
@@ -86,6 +102,44 @@ function renderNode(node: Node, key: number): ReactNode {
       return <hr key={key} />;
     case "hardBreak":
       return <br key={key} />;
+    case "table":
+      // Wrapper scrolls horizontally on small screens instead of overflowing.
+      return (
+        <div key={key} className="my-[20px] w-full overflow-x-auto">
+          <table className="w-full min-w-[480px] border-collapse text-left text-[15px]">
+            <tbody>{renderChildren(node.content)}</tbody>
+          </table>
+        </div>
+      );
+    case "tableRow":
+      return <tr key={key}>{renderChildren(node.content)}</tr>;
+    case "tableHeader": {
+      const { colSpan, rowSpan } = cellSpans(node);
+      return (
+        <th
+          key={key}
+          scope="col"
+          colSpan={colSpan}
+          rowSpan={rowSpan}
+          className="border border-rebm-card-border bg-[#EEF3F8] px-[12px] py-[8px] text-left align-top font-semibold text-rebm-navy"
+        >
+          {cellContent(node)}
+        </th>
+      );
+    }
+    case "tableCell": {
+      const { colSpan, rowSpan } = cellSpans(node);
+      return (
+        <td
+          key={key}
+          colSpan={colSpan}
+          rowSpan={rowSpan}
+          className="border border-rebm-card-border px-[12px] py-[8px] align-top"
+        >
+          {cellContent(node)}
+        </td>
+      );
+    }
     case "image": {
       const src = String(node.attrs?.src ?? "");
       if (!SAFE_HREF.test(src)) return null;

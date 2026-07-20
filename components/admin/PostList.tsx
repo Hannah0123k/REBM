@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { MigrationBadge, type MigrationFlags } from "@/components/admin/MigrationBadge";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import {
   archivePost,
@@ -14,15 +15,21 @@ import {
 } from "@/app/admin/posts/actions";
 import { displayStatus, type PostListItem } from "@/lib/blog/types";
 
-type Filter = "All" | "Draft" | "Published" | "Scheduled" | "Unpublished" | "Archived";
-const FILTERS: Filter[] = ["All", "Draft", "Published", "Scheduled", "Unpublished", "Archived"];
+type Filter = "All" | "Draft" | "Published" | "Scheduled" | "Unpublished" | "Archived" | "Needs review";
+const FILTERS: Filter[] = ["All", "Draft", "Published", "Scheduled", "Unpublished", "Archived", "Needs review"];
 
 function fmt(date: string | null): string {
   if (!date) return "—";
   return new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 }
 
-export function PostList({ initialPosts }: { initialPosts: PostListItem[] }) {
+export function PostList({
+  initialPosts,
+  migrationFlags = {},
+}: {
+  initialPosts: PostListItem[];
+  migrationFlags?: Record<string, MigrationFlags>;
+}) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("All");
@@ -34,7 +41,9 @@ export function PostList({ initialPosts }: { initialPosts: PostListItem[] }) {
     const q = query.trim().toLowerCase();
     return initialPosts.filter((p) => {
       const label = displayStatus(p).label;
-      if (filter === "Archived") {
+      if (filter === "Needs review") {
+        if (!migrationFlags[p.id]?.review_required) return false;
+      } else if (filter === "Archived") {
         if (label !== "Archived") return false;
       } else if (filter === "All") {
         if (label === "Archived") return false; // "All" excludes archived
@@ -44,7 +53,7 @@ export function PostList({ initialPosts }: { initialPosts: PostListItem[] }) {
       if (q && !`${p.title} ${p.slug}`.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [initialPosts, query, filter]);
+  }, [initialPosts, query, filter, migrationFlags]);
 
   const run = (id: string, fn: () => Promise<unknown>) => {
     setBusyId(id);
@@ -126,6 +135,11 @@ export function PostList({ initialPosts }: { initialPosts: PostListItem[] }) {
                         </span>
                       )}
                       <div className="text-[12px] text-[rgb(150,158,166)]">/{p.slug}</div>
+                      {migrationFlags[p.id] && (
+                        <div className="mt-[6px]">
+                          <MigrationBadge flags={migrationFlags[p.id]} />
+                        </div>
+                      )}
                     </td>
                     <td className="px-[12px] py-[12px]">
                       <StatusBadge status={p.status} published_at={p.published_at} archived_at={p.archived_at} />

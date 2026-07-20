@@ -117,3 +117,67 @@ test("readingTimeMinutes is >=1 for non-empty and 0 for empty", () => {
   assert.ok(readingTimeMinutes(doc) >= 2); // 450 words @200wpm ≈ 3
   assert.equal(readingTimeMinutes({ type: "doc", content: [] }), 0);
 });
+
+// ── tables (migration + editor) ──────────────────────────────────────────────
+const cell = (text: string, type = "tableCell", attrs = {}) => ({
+  type,
+  attrs,
+  content: [{ type: "paragraph", content: text ? [{ type: "text", text }] : [] }],
+});
+const row = (cells: unknown[]) => ({ type: "tableRow", content: cells });
+const tableDoc = (rows: unknown[]) => ({ type: "doc", content: [{ type: "table", content: rows }] });
+
+test("sanitizeDoc preserves a normal table with a header row", () => {
+  const clean = sanitizeDoc(
+    tableDoc([
+      row([cell("Rate", "tableHeader"), cell("Value", "tableHeader")]),
+      row([cell("10Y"), cell("4.1%")]),
+    ]),
+  );
+  const table = clean.content![0] as { type: string; content: { type: string; content: { type: string }[] }[] };
+  assert.equal(table.type, "table");
+  assert.equal(table.content.length, 2);
+  assert.equal(table.content[0].content[0].type, "tableHeader");
+  assert.equal(table.content[1].content[0].type, "tableCell");
+});
+
+test("sanitizeDoc strips unsafe cell attributes but keeps spans", () => {
+  const dirty = tableDoc([
+    row([
+      { type: "tableCell", attrs: { colspan: 2, rowspan: 3, style: "color:red", onclick: "x()", class: "evil", colwidth: [120, 80] }, content: [{ type: "paragraph", content: [{ type: "text", text: "merged" }] }] },
+    ]),
+  ]);
+  const c = (sanitizeDoc(dirty).content![0] as { content: { content: { attrs: Record<string, unknown> }[] }[] }).content[0].content[0];
+  assert.deepEqual(Object.keys(c.attrs).sort(), ["colspan", "colwidth", "rowspan"]); // style/onclick/class gone
+  assert.equal(c.attrs.colspan, 2);
+  assert.equal(c.attrs.rowspan, 3);
+  assert.deepEqual(c.attrs.colwidth, [120, 80]);
+});
+
+test("sanitizeDoc coerces malformed spans to safe integers", () => {
+  const dirty = tableDoc([row([{ type: "tableCell", attrs: { colspan: "-4", rowspan: 999999, colwidth: "bad" }, content: [] }])]);
+  const c = (sanitizeDoc(dirty).content![0] as { content: { content: { attrs: Record<string, unknown> }[] }[] }).content[0].content[0];
+  assert.equal(c.attrs.colspan, 1); // negative → 1
+  assert.equal(c.attrs.rowspan, 1); // out of range → 1
+  assert.equal(c.attrs.colwidth, null); // non-array → null
+});
+
+test("sanitizeDoc gives empty cells a paragraph (valid structure)", () => {
+  const clean = sanitizeDoc(tableDoc([row([{ type: "tableCell", attrs: {}, content: [] }])]));
+  const c = (clean.content![0] as { content: { content: { content: { type: string }[] }[] }[] }).content[0].content[0];
+  assert.deepEqual(c.content, [{ type: "paragraph" }]);
+});
+
+test("sanitizeDoc drops malformed tables (no rows / no cells) without throwing", () => {
+  assert.deepEqual(sanitizeDoc(tableDoc([])).content, []); // table with no rows → dropped
+  assert.deepEqual(sanitizeDoc(tableDoc([row([])])).content, []); // row with no cells → row+table dropped
+});
+
+test("sanitizeDoc drops disallowed nodes inside cells", () => {
+  const dirty = tableDoc([
+    row([{ type: "tableCell", attrs: {}, content: [{ type: "script", content: [{ type: "text", text: "x" }] }, { type: "paragraph", content: [{ type: "text", text: "ok" }] }] }]),
+  ]);
+  const c = (sanitizeDoc(dirty).content![0] as { content: { content: { content: { type: string }[] }[] }[] }).content[0].content[0];
+  assert.equal(c.content.length, 1); // script dropped, paragraph kept
+  assert.equal(c.content[0].type, "paragraph");
+});

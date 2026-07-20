@@ -44,3 +44,4 @@ next-env.d.ts
 figma-data/
 shots/
 .env.migration
+migration/
