@@ -39,7 +39,7 @@ export default function BlogPage() {
         />
         <div aria-hidden="true" className="absolute inset-0 bg-rebm-blue/75" />
         <Container className="relative py-[48px] text-center">
-          <h1 className="text-[44px] leading-[52px] font-bold tracking-[-0.5px] text-white sm:text-[60px] sm:leading-[68px]">
+          <h1 className="text-[32px] leading-[40px] font-bold tracking-[-0.5px] text-white sm:text-[38px] sm:leading-[46px]">
             Our Blogs
           </h1>
         </Container>
