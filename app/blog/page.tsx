@@ -64,7 +64,7 @@ export default async function BlogPage({
     <>
       <main id="main-content" className="bg-white">
         {/* Photo hero band with a brand-blue wash + centered white title. */}
-        <section className="relative flex min-h-[360px] w-full items-center justify-center overflow-hidden">
+        <section className="relative flex min-h-[300px] w-full items-center justify-center overflow-hidden">
           <div
             aria-hidden="true"
             className="absolute inset-0"
@@ -74,7 +74,7 @@ export default async function BlogPage({
               backgroundPosition: "center",
             }}
           />
-          <div aria-hidden="true" className="absolute inset-0 bg-rebm-blue/75" />
+          <div aria-hidden="true" className="absolute inset-0 bg-rebm-blue/80" />
           <Container className="relative py-[48px] text-center">
             <h1 className="text-[46px] leading-[54px] font-bold tracking-[-0.5px] text-white sm:text-[64px] sm:leading-[72px]">
               Our Blogs
@@ -84,7 +84,7 @@ export default async function BlogPage({
 
         <Container className="pt-[64px] pb-[88px]">
           {/* Featured Market Watch + grid share this one centered container. */}
-          <div className="mx-auto max-w-[1080px]">
+          <div className="mx-auto max-w-[1320px]">
             {isPlaceholder && (
               <p className="mb-[36px] text-center text-[13px] text-[rgb(150,160,170)]">
                 Placeholder layout — real articles are added during migration.

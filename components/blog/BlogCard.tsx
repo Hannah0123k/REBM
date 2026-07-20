@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { AuthorAvatar } from "@/components/blog/AuthorAvatar";
 import { ThumbPlaceholder } from "@/components/blog/PlaceholderMedia";
-import { cardFromPlaceholder, type CardPost } from "@/lib/blog/cardView";
+import { BLOG_COVER_ASPECT, cardFromPlaceholder, type CardPost } from "@/lib/blog/cardView";
 import { formatPublishedDate, isoDateTimeAttr } from "@/lib/blog/date";
 import type { BlogPlaceholder } from "@/content/blog-placeholders";
 
@@ -17,9 +17,9 @@ export function BlogCard({ post }: { post: CardPost | BlogPlaceholder }) {
 
   const cover = p.imageUrl ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={p.imageUrl} alt={p.imageAlt} loading="lazy" className="aspect-[16/9] w-full rounded-[16px] object-cover" />
+    <img src={p.imageUrl} alt={p.imageAlt} loading="lazy" className={`${BLOG_COVER_ASPECT} w-full rounded-[16px] object-cover`} />
   ) : (
-    <ThumbPlaceholder aspect="aspect-[16/9]" tone={p.isMarketWatch ? "blue" : "light"} rounded="rounded-[16px]" />
+    <ThumbPlaceholder aspect={BLOG_COVER_ASPECT} tone={p.isMarketWatch ? "blue" : "light"} rounded="rounded-[16px]" />
   );
 
   const body = (
@@ -27,10 +27,10 @@ export function BlogCard({ post }: { post: CardPost | BlogPlaceholder }) {
       {cover}
       <div className="mt-[18px] flex flex-1 flex-col">
         <span className="text-[12px] font-semibold tracking-[0.08em] text-rebm-link uppercase">{p.category}</span>
-        <h3 className="mt-[8px] text-[21px] leading-[27px] font-bold text-balance text-rebm-navy group-hover:underline">
+        <h3 className="mt-[10px] text-[23px] leading-[29px] font-bold text-balance text-rebm-navy group-hover:underline">
           {p.title}
         </h3>
-        <p className="mt-[10px] text-[15px] leading-[24px] text-[rgb(70,82,94)]">{p.excerpt}</p>
+        <p className="mt-[12px] text-[15px] leading-[24px] text-[rgb(70,82,94)]">{p.excerpt}</p>
 
         <div className="mt-auto pt-[18px]">
           <div className="flex items-center gap-[10px]">

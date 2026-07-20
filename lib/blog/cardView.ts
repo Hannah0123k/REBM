@@ -21,6 +21,14 @@ export type CardPost = {
   isMarketWatch: boolean;
 };
 
+/**
+ * Every blog cover (featured, grid card, post-page hero) reserves the EXACT
+ * aspect ratio of the finalized production artwork — 1564×942 (≈1.66:1) — so
+ * uploaded images drop in with essentially zero layout shift. One source of
+ * truth for the whole blog system.
+ */
+export const BLOG_COVER_ASPECT = "aspect-[1564/942]";
+
 const MARKET_WATCH = new Set(["market-watch", "market-pulse"]);
 
 export function cardFromPost(p: PublicPostCard): CardPost {

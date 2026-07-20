@@ -6,6 +6,7 @@ import { Container } from "@/components/Container";
 import { Footer } from "@/components/Footer";
 import { AuthorAvatar } from "@/components/blog/AuthorAvatar";
 import { ThumbPlaceholder } from "@/components/blog/PlaceholderMedia";
+import { BLOG_COVER_ASPECT } from "@/lib/blog/cardView";
 import { formatPublishedDate, isoDateTimeAttr } from "@/lib/blog/date";
 import { getPostBySlug, resolveOldSlug } from "@/lib/blog/queries";
 import { RenderBody, isBodyEmpty } from "@/lib/blog/RenderBody";
@@ -129,10 +130,10 @@ export default async function BlogPostPage({
                 <img
                   src={post.featured_image_url}
                   alt={post.featured_image_alt || post.title}
-                  className="w-full rounded-[20px] object-cover"
+                  className={`${BLOG_COVER_ASPECT} w-full rounded-[20px] object-cover`}
                 />
               ) : (
-                <ThumbPlaceholder aspect="aspect-[16/8]" tone="light" rounded="rounded-[20px]" />
+                <ThumbPlaceholder aspect={BLOG_COVER_ASPECT} tone="light" rounded="rounded-[20px]" />
               )}
             </div>
 

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { AuthorAvatar } from "@/components/blog/AuthorAvatar";
 import { ThumbPlaceholder } from "@/components/blog/PlaceholderMedia";
-import { cardFromPlaceholder, type CardPost } from "@/lib/blog/cardView";
+import { BLOG_COVER_ASPECT, cardFromPlaceholder, type CardPost } from "@/lib/blog/cardView";
 import { formatPublishedDate, isoDateTimeAttr } from "@/lib/blog/date";
 import type { BlogPlaceholder } from "@/content/blog-placeholders";
 
@@ -19,16 +19,16 @@ export function FeaturedBlogCard({ post }: { post: CardPost | BlogPlaceholder })
 
   const cover = p.imageUrl ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={p.imageUrl} alt={p.imageAlt} className="aspect-[16/10] w-full rounded-[22px] object-cover" />
+    <img src={p.imageUrl} alt={p.imageAlt} className={`${BLOG_COVER_ASPECT} w-full rounded-[22px] object-cover`} />
   ) : (
-    <ThumbPlaceholder aspect="aspect-[16/10]" tone="blue" rounded="rounded-[22px]" />
+    <ThumbPlaceholder aspect={BLOG_COVER_ASPECT} tone="blue" rounded="rounded-[22px]" />
   );
 
   const cta =
     "mt-[26px] inline-flex w-fit items-center gap-[8px] rounded-full bg-rebm-navy px-[26px] py-[13px] text-[16px] font-medium text-white shadow-sm transition-[transform,box-shadow] duration-200 ease-out hover:scale-[1.03] hover:shadow-lg focus-visible:ring-2 focus-visible:ring-rebm-blue focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] motion-reduce:transform-none motion-reduce:transition-none";
 
   return (
-    <article className="grid items-center gap-[28px] lg:grid-cols-[1.15fr_1fr] lg:gap-[48px]">
+    <article className="grid items-center gap-[28px] lg:grid-cols-[1.55fr_1fr] lg:gap-[56px]">
       {live ? (
         <Link href={p.href} className="block" aria-label={p.title}>
           {cover}
@@ -42,7 +42,7 @@ export function FeaturedBlogCard({ post }: { post: CardPost | BlogPlaceholder })
           {p.category}
         </span>
 
-        <h2 className="mt-[14px] text-[30px] leading-[38px] font-bold text-balance text-rebm-navy sm:text-[42px] sm:leading-[50px]">
+        <h2 className="mt-[16px] text-[32px] leading-[40px] font-bold text-balance text-rebm-navy sm:text-[44px] sm:leading-[52px]">
           {live ? (
             <Link href={p.href} className="hover:underline">
               {p.title}
