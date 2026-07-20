@@ -23,6 +23,7 @@ export const postInputSchema = z
     featured_image_url: z.string().url("Enter a valid image URL.").nullable().optional(),
     featured_image_alt: z.string().trim().max(300).nullable().optional(),
     author_name: z.string().trim().max(120).nullable().optional(),
+    author_image_url: z.string().url("Enter a valid image URL.").nullable().optional(),
     status: z.enum(["draft", "published", "scheduled", "unpublished"]),
     featured: z.boolean(),
     // Tag NAMES (slugs are derived server-side). Deduped/cleaned in the action.

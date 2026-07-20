@@ -1,17 +1,14 @@
 /**
- * TEMPORARY placeholder blog data — replace during the WordPress migration.
+ * TEMPORARY placeholder blog data — replaced during the WordPress migration.
  * =========================================================================
- * This file exists so the /blog LAYOUT can be built and reviewed before the
- * real articles are imported. Swap the entries (or point the selectors at the
- * real content store / Supabase) WITHOUT touching the page or card components.
+ * Lets the /blog LAYOUT be built and reviewed before real articles are
+ * imported. The public page reads Supabase first (lib/blog/queries.ts) and only
+ * falls back to this when nothing is published yet. Shape mirrors the live
+ * site's structure: one large FEATURED Market Watch item, then six regular
+ * article cards, then a "More Articles" control.
  *
- * Structure mirrors the OLD live site (source of truth for blog structure):
- *   "Our Blogs" heading → one large FEATURED post at the top (the latest
- *   Market Watch / "Market Pulse" item) → the remaining posts in a grid, newest
- *   first → a "View more articles" control.
- *
- * Nothing here is real copy. Titles/excerpts are obvious placeholders; dates are
- * plausible so ordering can be seen. `href` is "#" until real post routes exist.
+ * Content is placeholder but professional (no lorem ipsum) so the hierarchy and
+ * spacing read true. `href` is "#" until real post routes exist (no dead 404s).
  */
 
 export type BlogPostType = "article" | "market-watch";
@@ -23,100 +20,102 @@ export type BlogPlaceholder = {
   category: string;
   title: string;
   excerpt: string;
+  /** Author display name; photo falls back to initials on the public card. */
+  author: string;
   /** ISO date; used for ordering and the displayed published date. */
   date: string;
   /** Future post URL — "#" while migration is pending (no dead 404 route). */
   href: string;
 };
 
-const MIGRATION_EXCERPT = "Article content will be added during migration.";
+/** One prominent Market Watch feature. */
+export const FEATURED_PLACEHOLDER: BlogPlaceholder = {
+  id: "mw-latest",
+  type: "market-watch",
+  category: "Market Watch",
+  title: "REBM Market Pulse — February 2026",
+  excerpt:
+    "Our monthly read on commercial real estate: where interest rates, deal flow, and buyer demand are heading — and what it means for sellers this quarter.",
+  author: "Alan Fruitman",
+  date: "2026-02-03",
+  href: "#",
+};
 
-/**
- * One entry per future post. The single `market-watch` item with the newest
- * date becomes the featured post (matching the live site, where the latest
- * Market Pulse leads the page); older Market Watch items sit in the grid by date.
- */
-export const BLOG_PLACEHOLDERS: BlogPlaceholder[] = [
-  {
-    id: "mw-latest",
-    type: "market-watch",
-    category: "Market Watch",
-    title: "Market Watch Placeholder",
-    excerpt: MIGRATION_EXCERPT,
-    date: "2026-02-03",
-    href: "#",
-  },
+/** Six regular article placeholders, newest first. */
+export const ARTICLE_PLACEHOLDERS: BlogPlaceholder[] = [
   {
     id: "post-1",
     type: "article",
-    category: "Article",
-    title: "Blog Post Placeholder",
-    excerpt: MIGRATION_EXCERPT,
+    category: "Industrial",
+    title: "What Industrial Property Buyers Look For",
+    excerpt: "The location, logistics, and tenant factors driving demand for warehouse and distribution assets.",
+    author: "Rhett Fruitman",
     date: "2026-01-26",
     href: "#",
   },
   {
     id: "post-2",
     type: "article",
-    category: "Article",
-    title: "Blog Post Placeholder",
-    excerpt: MIGRATION_EXCERPT,
+    category: "Office",
+    title: "Selling Office Space in a Hybrid-Work Era",
+    excerpt: "How owners are repositioning office assets and pricing them for today's very different buyer pool.",
+    author: "Alan Fruitman",
     date: "2026-01-23",
     href: "#",
   },
   {
     id: "post-3",
     type: "article",
-    category: "Article",
-    title: "Blog Post Placeholder",
-    excerpt: MIGRATION_EXCERPT,
+    category: "Multifamily",
+    title: "How Multifamily Buyers Underwrite a Deal",
+    excerpt: "Rent rolls, cap rates, and expense assumptions — the numbers investors run before they make an offer.",
+    author: "Rhett Fruitman",
     date: "2026-01-22",
-    href: "#",
-  },
-  {
-    id: "mw-older",
-    type: "market-watch",
-    category: "Market Watch",
-    title: "Market Watch Placeholder",
-    excerpt: MIGRATION_EXCERPT,
-    date: "2026-01-06",
     href: "#",
   },
   {
     id: "post-4",
     type: "article",
-    category: "Article",
-    title: "Blog Post Placeholder",
-    excerpt: MIGRATION_EXCERPT,
+    category: "Financing",
+    title: "Interest Rates and Commercial Pricing",
+    excerpt: "A seller's guide to how the rate environment moves valuations up and down across asset classes.",
+    author: "Alan Fruitman",
     date: "2025-12-18",
     href: "#",
   },
   {
     id: "post-5",
     type: "article",
-    category: "Article",
-    title: "Blog Post Placeholder",
-    excerpt: MIGRATION_EXCERPT,
+    category: "Valuation",
+    title: "Understanding Cap Rates in Today's Market",
+    excerpt: "What a cap rate really tells you about risk, income, and the price a property should command.",
+    author: "Rhett Fruitman",
     date: "2025-12-09",
+    href: "#",
+  },
+  {
+    id: "post-6",
+    type: "article",
+    category: "Selling",
+    title: "Why Some Listings Sit Unsold for Months",
+    excerpt: "The pricing, marketing, and broker-fit mistakes that stall a sale — and how to avoid them.",
+    author: "Alan Fruitman",
+    date: "2025-11-20",
     href: "#",
   },
 ];
 
-const byDateDesc = (a: BlogPlaceholder, b: BlogPlaceholder) => b.date.localeCompare(a.date);
+/** All placeholders (featured first), newest-first for any generic use. */
+export const BLOG_PLACEHOLDERS: BlogPlaceholder[] = [FEATURED_PLACEHOLDER, ...ARTICLE_PLACEHOLDERS];
 
-/**
- * The featured post: the newest Market Watch item (matches the live site's
- * featured-Market-Pulse-on-top treatment). Falls back to the newest post.
- */
+/** The featured Market Watch item at the top of the index. */
 export function getFeaturedPost(): BlogPlaceholder {
-  const marketWatch = BLOG_PLACEHOLDERS.filter((p) => p.type === "market-watch").sort(byDateDesc);
-  return marketWatch[0] ?? [...BLOG_PLACEHOLDERS].sort(byDateDesc)[0];
+  return FEATURED_PLACEHOLDER;
 }
 
-/** Every other post, newest first, for the grid below the featured post. */
+/** The six regular article cards beneath the feature, newest first. */
 export function getGridPosts(): BlogPlaceholder[] {
-  const featuredId = getFeaturedPost().id;
-  return BLOG_PLACEHOLDERS.filter((p) => p.id !== featuredId).sort(byDateDesc);
+  return ARTICLE_PLACEHOLDERS;
 }
 
 /** Format an ISO date as the live site shows it, e.g. "February 3, 2026". */

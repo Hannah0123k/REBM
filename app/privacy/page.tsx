@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Container } from "@/components/Container";
+import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — Real Estate Broker Match",
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
  */
 export default function PrivacyPage() {
   return (
+    <>
     <main className="bg-white pt-[calc(var(--header-h)+56px)] pb-[80px]">
       <Container className="max-w-[820px]">
         <div className="text-rebm-navy">
@@ -224,6 +226,8 @@ export default function PrivacyPage() {
         </div>
       </Container>
     </main>
+      <Footer />
+    </>
   );
 }
 

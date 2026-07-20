@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Container } from "@/components/Container";
+import { Footer } from "@/components/Footer";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { BlogPagination } from "@/components/blog/BlogPagination";
 import { cardFromPost } from "@/lib/blog/cardView";
@@ -44,6 +45,7 @@ export default async function TagPage({
   if (posts.length === 0) notFound();
 
   return (
+    <>
     <main id="main-content" className="bg-white">
       <section className="relative flex min-h-[300px] w-full items-center justify-center overflow-hidden">
         <div
@@ -78,5 +80,7 @@ export default async function TagPage({
         </div>
       </Container>
     </main>
+      <Footer />
+    </>
   );
 }

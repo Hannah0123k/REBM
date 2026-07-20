@@ -34,6 +34,7 @@ export type PublicPostCard = {
   featured_image_url: string | null;
   featured_image_alt: string | null;
   author_name: string | null;
+  author_image_url: string | null;
   published_at: string;
   reading_time_minutes: number;
   featured: boolean;
@@ -47,7 +48,7 @@ export type PublicPost = PublicPostCard & {
 };
 
 const CARD_COLUMNS =
-  "id, title, slug, excerpt, featured_image_url, featured_image_alt, author_name, published_at, reading_time_minutes, featured, blog_post_tags(tags(name, slug))";
+  "id, title, slug, excerpt, featured_image_url, featured_image_alt, author_name, author_image_url, published_at, reading_time_minutes, featured, blog_post_tags(tags(name, slug))";
 const FULL_COLUMNS = `${CARD_COLUMNS}, body, seo_title, meta_description`;
 
 const DEFAULT_PAGE_SIZE = 12;
@@ -80,6 +81,7 @@ function toCard(row: RawRow): PublicPostCard {
     featured_image_url: (row.featured_image_url as string | null) ?? null,
     featured_image_alt: (row.featured_image_alt as string | null) ?? null,
     author_name: (row.author_name as string | null) ?? null,
+    author_image_url: (row.author_image_url as string | null) ?? null,
     published_at: row.published_at as string,
     reading_time_minutes: (row.reading_time_minutes as number) ?? 0,
     featured: Boolean(row.featured),
@@ -125,6 +127,8 @@ export async function getPublishedPosts(opts?: {
   pageSize?: number;
   tagSlug?: string;
   search?: string;
+  /** Omit a specific post (e.g. the featured one shown separately on page 1). */
+  excludeId?: string;
 }): Promise<PostPage> {
   const page = Math.max(1, Math.floor(opts?.page ?? 1));
   const pageSize = Math.max(1, Math.min(50, Math.floor(opts?.pageSize ?? DEFAULT_PAGE_SIZE)));
@@ -143,6 +147,7 @@ export async function getPublishedPosts(opts?: {
 
   let query = onlyVisible(supabase.from("blog_posts").select(columns, { count: "exact" }));
 
+  if (opts?.excludeId) query = query.neq("id", opts.excludeId);
   if (opts?.tagSlug) query = query.eq("blog_post_tags.tags.slug", opts.tagSlug);
   if (opts?.search?.trim()) {
     const q = opts.search.trim().replace(/[%_,]/g, " ");

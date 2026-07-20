@@ -3,6 +3,9 @@ import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 
 import { Container } from "@/components/Container";
+import { Footer } from "@/components/Footer";
+import { AuthorAvatar } from "@/components/blog/AuthorAvatar";
+import { ThumbPlaceholder } from "@/components/blog/PlaceholderMedia";
 import { formatPublishedDate, isoDateTimeAttr } from "@/lib/blog/date";
 import { getPostBySlug, resolveOldSlug } from "@/lib/blog/queries";
 import { RenderBody, isBodyEmpty } from "@/lib/blog/RenderBody";
@@ -85,6 +88,7 @@ export default async function BlogPostPage({
   };
 
   return (
+    <>
     <main id="main-content" className="bg-white">
       <script
         type="application/ld+json"
@@ -102,22 +106,35 @@ export default async function BlogPostPage({
               {post.title}
             </h1>
 
-            <div className="mt-[16px] flex flex-wrap items-center gap-x-[16px] gap-y-[6px] text-[15px] text-[rgb(90,102,114)]">
-              {post.author_name && <span>{post.author_name}</span>}
+            <div className="mt-[18px] flex flex-wrap items-center gap-x-[12px] gap-y-[8px] text-[15px] text-[rgb(90,102,114)]">
+              {post.author_name && (
+                <AuthorAvatar name={post.author_name} src={post.author_image_url} size={38} />
+              )}
+              {post.author_name && <span className="font-medium text-rebm-navy">{post.author_name}</span>}
+              <span aria-hidden="true" className="text-[rgb(180,190,200)]">·</span>
               <time dateTime={isoDateTimeAttr(post.published_at)} className="text-rebm-link">
                 {formatPublishedDate(post.published_at)}
               </time>
-              {post.reading_time_minutes > 0 && <span>{post.reading_time_minutes} min read</span>}
+              {post.reading_time_minutes > 0 && (
+                <>
+                  <span aria-hidden="true" className="text-[rgb(180,190,200)]">·</span>
+                  <span>{post.reading_time_minutes} min read</span>
+                </>
+              )}
             </div>
 
-            {post.featured_image_url && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={post.featured_image_url}
-                alt={post.featured_image_alt || post.title}
-                className="mt-[28px] w-full rounded-[20px] object-cover"
-              />
-            )}
+            <div className="mt-[28px]">
+              {post.featured_image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={post.featured_image_url}
+                  alt={post.featured_image_alt || post.title}
+                  className="w-full rounded-[20px] object-cover"
+                />
+              ) : (
+                <ThumbPlaceholder aspect="aspect-[16/8]" tone="light" rounded="rounded-[20px]" />
+              )}
+            </div>
 
             {isBodyEmpty(post.body) ? (
               <p className="mt-[32px] text-[18px] text-[rgb(90,102,114)]">
@@ -146,5 +163,7 @@ export default async function BlogPostPage({
         </Container>
       </article>
     </main>
+      <Footer />
+    </>
   );
 }

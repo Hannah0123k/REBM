@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { Container } from "@/components/Container";
+import { Footer } from "@/components/Footer";
 import { ContactForm } from "@/components/contact/ContactForm";
 
 export const metadata: Metadata = {
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
  */
 export default function ContactPage() {
   return (
+    <>
     <main id="main-content" className="flex min-h-screen w-full flex-col bg-rebm-blue">
       <section className="flex w-full flex-1 flex-col justify-center pt-[var(--header-h)] pb-[24px]">
         <Container>
@@ -40,5 +42,7 @@ export default function ContactPage() {
         </Container>
       </section>
     </main>
+      <Footer />
+    </>
   );
 }

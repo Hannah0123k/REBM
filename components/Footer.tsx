@@ -38,37 +38,58 @@ import logo from "@/public/assets/rebm-logo-footer@2x.png";
  * and neither is the A4 vector (a different mark entirely). See decision #5.
  *
  * Social icons are an ADDITION: they exist on the live site but nowhere in the
- * Figma design. Hannah confirmed they ship (2026-07-16). Placed under CONTACT US
- * and styled to the footer's existing language so they don't read as new design.
+ * Figma design. Hannah confirmed they ship (2026-07-16). Now placed vertically
+ * under "Real Estate Foundation Inc." in the brand column.
+ *
+ * Compact revision (Hannah): smaller logo, headings, links and spacing; columns
+ * brought closer. Kept readable, hierarchy intact, footer reads as secondary.
  */
+const SOCIAL_LABEL: Record<string, string> = { Twitter: "X" };
+
 export function Footer() {
   return (
     <footer className="w-full bg-rebm-footer text-white">
-      <Container className="pt-[96px] pb-[96px]">
-        <Reveal className="flex flex-col gap-[48px] lg:flex-row lg:gap-0" stagger={0.08}>
-          {/* Brand column. Flexible, not a fixed 652: at 1920 the link columns
-              land at 840/1100/1360 (i.e. 653/913/1173 inside the container), but
-              a fixed 652 + 3×260 = 1432 overflows any container below ~1560 —
-              it was pinning scrollWidth at 1496 and pushing the page sideways at
-              1440 and below. Letting the brand column absorb the slack keeps the
-              link columns at their design widths and kills the overflow. */}
+      <Container className="pt-[56px] pb-[44px]">
+        <Reveal className="flex flex-col gap-[36px] lg:flex-row lg:gap-[40px]" stagger={0.08}>
+          {/* Brand column absorbs slack so the link columns keep their widths
+              and never overflow the container (see prior overflow fix). */}
           <div className="min-w-0 flex-1 lg:pr-[24px]">
             <Image
               src={logo}
               alt="Real Estate Broker Match"
               width={539}
               height={79}
-              className="h-auto w-full max-w-[538.667px]"
+              className="h-auto w-full max-w-[300px]"
             />
-            <p className="mt-[21px] text-[18px] leading-[23.4px]">
-              Real Estate Foundation Inc.
-            </p>
-            <p className="mt-[48px] text-[18px] leading-[23.4px] lg:mt-[170px]">{COPYRIGHT}</p>
-            {/* Admin link — public URL is fine; security is enforced by auth, not
-                by hiding this link. */}
+            <p className="mt-[16px] text-[15px] leading-[20px]">Real Estate Foundation Inc.</p>
+
+            {/* Social links — vertical row directly under the company name. */}
+            <ul className="mt-[14px] flex flex-col gap-[8px]">
+              {SOCIAL_LINKS.map(({ label, href }) => {
+                const Icon = SOCIAL_ICONS[label];
+                const name = SOCIAL_LABEL[label] ?? label;
+                return (
+                  <li key={label}>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      aria-label={name}
+                      className="inline-flex items-center gap-[10px] rounded-[4px] text-[14px] text-rebm-blue transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+                    >
+                      <Icon className="size-[17px]" />
+                      <span>{name}</span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <p className="mt-[26px] text-[14px] leading-[19px] text-white/85">{COPYRIGHT}</p>
+            {/* Admin link — public URL is fine; security is enforced by auth. */}
             <Link
               href="/admin/login"
-              className="mt-[10px] inline-block text-[13px] text-white/50 transition-colors hover:text-rebm-blue"
+              className="mt-[8px] inline-block text-[12px] text-white/50 transition-colors hover:text-rebm-blue"
             >
               Admin
             </Link>
@@ -86,8 +107,6 @@ export function Footer() {
 
           <FooterColumn heading="SERVICES">
             <li>
-              {/* Terms of Service opens as a popup, not a page — matches the
-                  live site's Disclaimer behavior. */}
               <DisclaimerModal triggerClassName={`${LINK_CLASS} text-left`} />
             </li>
           </FooterColumn>
@@ -98,28 +117,6 @@ export function Footer() {
                 {PHONE_NUMBER_INTL}
               </a>
             </li>
-            {/* Not in Figma — the live site has these and Hannah asked to keep
-                them. Sized to the 24px link text so the row sits on the same
-                rhythm as the column above it. */}
-            {/* 44px hit area for touch (glyph stays 24px). Negative margin keeps
-                the visual spacing tight despite the larger tap targets. */}
-            <li className="mt-[16px] -ml-[10px] flex items-center">
-              {SOCIAL_LINKS.map(({ label, href }) => {
-                const Icon = SOCIAL_ICONS[label];
-                return (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    aria-label={label}
-                    className="inline-flex size-[44px] items-center justify-center rounded-full text-rebm-blue transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
-                  >
-                    <Icon className="size-[24px]" />
-                  </a>
-                );
-              })}
-            </li>
           </FooterColumn>
         </Reveal>
       </Container>
@@ -128,7 +125,7 @@ export function Footer() {
 }
 
 const LINK_CLASS =
-  "inline-block rounded-[4px] text-[24px] leading-[43.2px] text-rebm-blue transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none";
+  "inline-block rounded-[4px] text-[15px] leading-[30px] text-rebm-blue transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none";
 
 function FooterColumn({
   heading,
@@ -138,9 +135,9 @@ function FooterColumn({
   children: React.ReactNode;
 }) {
   return (
-    <div className="w-full shrink-0 lg:w-[260px]">
-      <h2 className="text-[24px] leading-[31.2px]">{heading}</h2>
-      <ul className="mt-[26px]">{children}</ul>
+    <div className="w-full shrink-0 lg:w-[180px]">
+      <h2 className="text-[14px] leading-[19px] font-semibold tracking-[0.04em] text-white">{heading}</h2>
+      <ul className="mt-[14px]">{children}</ul>
     </div>
   );
 }

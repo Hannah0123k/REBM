@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 
+import { AuthorPhotoField } from "@/components/admin/AuthorPhotoField";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { TiptapEditor } from "@/components/admin/TiptapEditor";
 import { autosavePost, createPost, updatePost } from "@/app/admin/posts/actions";
@@ -49,6 +50,7 @@ export function PostEditor({ post, initialTags = [] }: { post?: BlogPost; initia
   const [featuredUrl, setFeaturedUrl] = useState<string | null>(post?.featured_image_url ?? null);
   const [featuredAlt, setFeaturedAlt] = useState(post?.featured_image_alt ?? "");
   const [author, setAuthor] = useState(post?.author_name ?? "");
+  const [authorImageUrl, setAuthorImageUrl] = useState<string | null>(post?.author_image_url ?? null);
   const [status, setStatus] = useState<PostStatus>(post?.status ?? "draft");
   const [featured, setFeatured] = useState(post?.featured ?? false);
   const [publishedLocal, setPublishedLocal] = useState(isoToLocalInput(post?.published_at ?? null));
@@ -89,7 +91,7 @@ export function PostEditor({ post, initialTags = [] }: { post?: BlogPost; initia
       return;
     }
     setSaveState("unsaved");
-  }, [title, slug, excerpt, body, featuredUrl, featuredAlt, author, status, featured, publishedLocal, seoTitle, metaDescription, tags]);
+  }, [title, slug, excerpt, body, featuredUrl, featuredAlt, author, authorImageUrl, status, featured, publishedLocal, seoTitle, metaDescription, tags]);
 
   // Warn before leaving the tab with unsaved changes.
   useEffect(() => {
@@ -112,6 +114,7 @@ export function PostEditor({ post, initialTags = [] }: { post?: BlogPost; initia
       featured_image_url: featuredUrl,
       featured_image_alt: featuredAlt || null,
       author_name: author || null,
+      author_image_url: authorImageUrl,
       status,
       featured,
       published_at: localInputToIso(publishedLocal),
@@ -119,7 +122,7 @@ export function PostEditor({ post, initialTags = [] }: { post?: BlogPost; initia
       meta_description: metaDescription || null,
       tags,
     }),
-    [title, slug, excerpt, body, featuredUrl, featuredAlt, author, status, featured, publishedLocal, seoTitle, metaDescription, tags],
+    [title, slug, excerpt, body, featuredUrl, featuredAlt, author, authorImageUrl, status, featured, publishedLocal, seoTitle, metaDescription, tags],
   );
 
   // Autosave (edit mode, content only). Debounced; single in-flight across
@@ -326,6 +329,9 @@ export function PostEditor({ post, initialTags = [] }: { post?: BlogPost; initia
                   className="w-full rounded-[10px] border border-rebm-card-border px-[12px] py-[9px] text-[14px] outline-none focus:border-rebm-blue"
                 />
               )}
+            </Field>
+            <Field label="Author photo">
+              <AuthorPhotoField url={authorImageUrl} authorName={author} onChange={setAuthorImageUrl} />
             </Field>
           </Panel>
 

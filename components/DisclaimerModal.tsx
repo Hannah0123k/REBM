@@ -11,9 +11,6 @@ import { createPortal } from "react-dom";
  */
 export function DisclaimerModal({ triggerClassName = "" }: { triggerClassName?: string }) {
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!open) return;
@@ -29,6 +26,8 @@ export function DisclaimerModal({ triggerClassName = "" }: { triggerClassName?: 
 
   // Portal to <body> so the fixed overlay isn't trapped by the footer's GSAP
   // transform (a transformed ancestor becomes the containing block for fixed).
+  // `open` starts false, so the portal (and its document.body access) only runs
+  // after a client click — no SSR/hydration guard needed.
   const overlay = open && (
     <div
           role="dialog"
@@ -62,7 +61,7 @@ export function DisclaimerModal({ triggerClassName = "" }: { triggerClassName?: 
       <button type="button" onClick={() => setOpen(true)} className={triggerClassName}>
         Disclaimer
       </button>
-      {mounted && overlay ? createPortal(overlay, document.body) : null}
+      {overlay ? createPortal(overlay, document.body) : null}
     </>
   );
 }

@@ -11,6 +11,7 @@ export type PostListItem = {
   title: string;
   slug: string;
   author_name: string | null;
+  author_image_url: string | null;
   status: PostStatus;
   featured: boolean;
   reading_time_minutes: number;
