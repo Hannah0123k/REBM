@@ -14,11 +14,17 @@ export const metadata: Metadata = {
  * (the same #689ECF used across the homepage sections), navy heading, no side
  * column. Compact by design (Hannah) so the whole page fits a laptop viewport
  * without scrolling. Header comes from the root layout.
+ *
+ * The heading + form are centered BOTH ways: the section is a full-height flex
+ * column that vertically centers its content in the space below the (overlaid)
+ * header, so the empty blue space is balanced top and bottom. When the content
+ * is taller than the viewport (mobile), min-height lets the page grow and
+ * scroll top-anchored instead of clipping.
  */
 export default function ContactPage() {
   return (
-    <main id="main-content" className="min-h-screen w-full bg-rebm-blue">
-      <section className="w-full pt-[calc(var(--header-h)+12px)] pb-[24px]">
+    <main id="main-content" className="flex min-h-screen w-full flex-col bg-rebm-blue">
+      <section className="flex w-full flex-1 flex-col justify-center pt-[var(--header-h)] pb-[24px]">
         <Container>
           {/* Heading fades up on load; the form panel follows ~180ms later.
               Disabled under prefers-reduced-motion (globals.css). */}
