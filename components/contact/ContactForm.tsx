@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { submitContact } from "@/app/contact/actions";
 import { contactSchema, type ContactFormValues } from "@/lib/contact/validation";
@@ -52,6 +52,13 @@ export function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [formError, setFormError] = useState<string | null>(null);
   const uid = useId();
+  const successRef = useRef<HTMLHeadingElement>(null);
+
+  // Move focus to the confirmation once it renders, so keyboard/screen-reader
+  // users land on it (the form is gone) instead of being stranded.
+  useEffect(() => {
+    if (status === "success") successRef.current?.focus();
+  }, [status]);
 
   const set = <K extends keyof ContactFormValues>(key: K, v: ContactFormValues[K]) => {
     setValues((prev) => ({ ...prev, [key]: v }));
@@ -101,7 +108,9 @@ export function ContactForm() {
         <div className="mx-auto mb-[16px] flex size-[52px] items-center justify-center rounded-full bg-[#E4F4EA] text-[26px] text-[#1B7A43]">
           ✓
         </div>
-        <h2 className="text-[22px] font-bold text-rebm-navy">Thanks — message received</h2>
+        <h2 ref={successRef} tabIndex={-1} className="text-[22px] font-bold text-rebm-navy outline-none">
+          Thanks — message received
+        </h2>
         <p className="mx-auto mt-[10px] max-w-[420px] text-[15px] leading-[23px] text-[rgb(60,70,80)]">
           We’ll be in touch shortly. For anything urgent you can also call{" "}
           <a href="tel:+18008415033" className="text-rebm-link underline">

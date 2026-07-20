@@ -2,7 +2,8 @@
 
 import { headers } from "next/headers";
 
-import { sendContactEmail } from "@/lib/contact/email";
+import { sendContactEmail, sendVisitorConfirmation } from "@/lib/contact/email";
+import { createRateLimiter } from "@/lib/contact/rateLimit";
 import { contactSchema } from "@/lib/contact/validation";
 
 export type ContactResult =
@@ -10,22 +11,10 @@ export type ContactResult =
   | { ok: false; error: string; fieldErrors?: Record<string, string> };
 
 /**
- * Best-effort in-memory rate limit. This is PREPARATION only: the Map lives in a
- * single server instance and resets on redeploy/scale-out, so it is not a real
- * distributed limiter. For production, back this with a shared store (e.g.
- * Upstash Redis / Vercel KV) keyed the same way.
+ * Best-effort per-IP rate limit (see lib/contact/rateLimit — in-memory, not
+ * distributed; back with a shared store for production hardening).
  */
-const RATE_WINDOW_MS = 10 * 60 * 1000;
-const RATE_MAX = 5;
-const hits = new Map<string, number[]>();
-
-function rateLimited(ip: string): boolean {
-  const now = Date.now();
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
-  recent.push(now);
-  hits.set(ip, recent);
-  return recent.length > RATE_MAX;
-}
+const limiter = createRateLimiter({ windowMs: 10 * 60 * 1000, max: 5 });
 
 /**
  * Contact form submission. Re-validates server-side, screens the honeypot,
@@ -48,14 +37,24 @@ export async function submitContact(raw: unknown): Promise<ContactResult> {
 
   const h = await headers();
   const ip = (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
-  if (rateLimited(ip)) {
+  if (limiter.check(ip)) {
     return {
       ok: false,
       error: "Too many messages from this device. Please wait a few minutes and try again.",
     };
   }
 
-  const result = await sendContactEmail(parsed.data, { submittedAt: new Date(), ip });
+  // Submission source, server-derived (never trust the browser for this): the
+  // page the form was submitted from, taken from the Referer.
+  const referer = h.get("referer") ?? "";
+  let source = "/contact";
+  try {
+    if (referer) source = new URL(referer).pathname || source;
+  } catch {
+    /* malformed referer — keep the default */
+  }
+
+  const result = await sendContactEmail(parsed.data, { submittedAt: new Date(), ip, source });
   if (!result.sent) {
     if (result.reason === "unconfigured") {
       // No secrets logged — just which env vars still need to be set.
@@ -68,6 +67,18 @@ export async function submitContact(raw: unknown): Promise<ContactResult> {
       error:
         "Sorry — we couldn’t send your message right now. Please call (800) 841-5033, or try again shortly.",
     };
+  }
+
+  // Visitor auto-reply is BEST-EFFORT and secondary: the lead has already been
+  // delivered, so a confirmation failure must never fail the submission. It's a
+  // no-op unless CONTACT_CONFIRMATION_ENABLED=true.
+  try {
+    const confirm = await sendVisitorConfirmation(parsed.data);
+    if (!confirm.sent && confirm.reason === "provider_error") {
+      console.error(`[contact] visitor confirmation failed (non-fatal): ${confirm.detail}`);
+    }
+  } catch (e) {
+    console.error(`[contact] visitor confirmation threw (non-fatal): ${e instanceof Error ? e.message : "unknown"}`);
   }
 
   return { ok: true };
