@@ -5,10 +5,12 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { Container } from "@/components/Container";
 import { Footer } from "@/components/Footer";
 import { AuthorAvatar } from "@/components/blog/AuthorAvatar";
-import { ThumbPlaceholder } from "@/components/blog/PlaceholderMedia";
+import { CoverImage } from "@/components/blog/CoverImage";
+import { NewsletterSection } from "@/components/blog/NewsletterSection";
+import { RelatedPosts } from "@/components/blog/RelatedPosts";
 import { BLOG_COVER_ASPECT } from "@/lib/blog/cardView";
 import { formatPublishedDate, isoDateTimeAttr } from "@/lib/blog/date";
-import { getPostBySlug, resolveOldSlug } from "@/lib/blog/queries";
+import { getPostBySlug, getRelatedPosts, resolveOldSlug } from "@/lib/blog/queries";
 import { RenderBody, isBodyEmpty } from "@/lib/blog/RenderBody";
 import { SITE_NAME, absoluteUrl } from "@/lib/site";
 
@@ -76,6 +78,14 @@ export default async function BlogPostPage({
   const post = await load(slug);
   if (!post) notFound();
 
+  // Related published posts (drafts excluded, current excluded). Non-fatal.
+  let related: Awaited<ReturnType<typeof getRelatedPosts>> = [];
+  try {
+    related = await getRelatedPosts(post.id, 3);
+  } catch {
+    related = [];
+  }
+
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -108,11 +118,16 @@ export default async function BlogPostPage({
             </h1>
 
             <div className="mt-[18px] flex flex-wrap items-center gap-x-[12px] gap-y-[8px] text-[15px] text-[rgb(90,102,114)]">
+              {/* Author block only when real author data exists — never faked. */}
               {post.author_name && (
-                <AuthorAvatar name={post.author_name} src={post.author_image_url} size={38} />
+                <>
+                  <span className="flex items-center gap-[10px]">
+                    <AuthorAvatar name={post.author_name} src={post.author_image_url} size={38} />
+                    <span className="font-medium text-rebm-navy">{post.author_name}</span>
+                  </span>
+                  <span aria-hidden="true" className="text-[rgb(180,190,200)]">·</span>
+                </>
               )}
-              {post.author_name && <span className="font-medium text-rebm-navy">{post.author_name}</span>}
-              <span aria-hidden="true" className="text-[rgb(180,190,200)]">·</span>
               <time dateTime={isoDateTimeAttr(post.published_at)} className="text-rebm-link">
                 {formatPublishedDate(post.published_at)}
               </time>
@@ -125,16 +140,14 @@ export default async function BlogPostPage({
             </div>
 
             <div className="mt-[28px]">
-              {post.featured_image_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={post.featured_image_url}
-                  alt={post.featured_image_alt || post.title}
-                  className={`${BLOG_COVER_ASPECT} w-full rounded-[20px] object-cover`}
-                />
-              ) : (
-                <ThumbPlaceholder aspect={BLOG_COVER_ASPECT} tone="light" rounded="rounded-[20px]" />
-              )}
+              <CoverImage
+                url={post.featured_image_url}
+                alt={post.featured_image_alt || post.title}
+                aspect={BLOG_COVER_ASPECT}
+                tone="light"
+                rounded="rounded-[20px]"
+                eager
+              />
             </div>
 
             {isBodyEmpty(post.body) ? (
@@ -163,6 +176,8 @@ export default async function BlogPostPage({
           </div>
         </Container>
       </article>
+      <RelatedPosts posts={related} />
+      <NewsletterSection />
     </main>
       <Footer />
     </>

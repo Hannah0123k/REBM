@@ -1,59 +1,54 @@
 import Link from "next/link";
 
-import { AuthorAvatar } from "@/components/blog/AuthorAvatar";
-import { ThumbPlaceholder } from "@/components/blog/PlaceholderMedia";
-import { BLOG_COVER_ASPECT, cardFromPlaceholder, type CardPost } from "@/lib/blog/cardView";
+import { CoverImage } from "@/components/blog/CoverImage";
+import { cardFromPlaceholder, type CardPost } from "@/lib/blog/cardView";
 import { formatPublishedDate, isoDateTimeAttr } from "@/lib/blog/date";
 import type { BlogPlaceholder } from "@/content/blog-placeholders";
 
 /**
- * Regular article card for the grid. Cover (real image or placeholder), a small
- * category label, title, excerpt, then an author + date row and a Read More
- * cue pinned to the bottom so cards in a row keep equal height. Whole card links
- * to the post unless it's an inert placeholder.
+ * Regular article card for the grid. A shorter (16:9) cover, then the title and
+ * excerpt, with the publication date in brand teal at the bottom. No category or
+ * author on the public listing (per the approved design). The whole card links
+ * to the post; hover/focus lift it and nudge the cover, respecting reduced
+ * motion. A broken cover falls back to the placeholder (CoverImage) — never a
+ * broken icon.
  */
 export function BlogCard({ post }: { post: CardPost | BlogPlaceholder }) {
   const p = "href" in post && "dateIso" in post ? post : cardFromPlaceholder(post as BlogPlaceholder);
 
-  const cover = p.imageUrl ? (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={p.imageUrl} alt={p.imageAlt} loading="lazy" className={`${BLOG_COVER_ASPECT} w-full rounded-[16px] object-cover`} />
-  ) : (
-    <ThumbPlaceholder aspect={BLOG_COVER_ASPECT} tone={p.isMarketWatch ? "blue" : "light"} rounded="rounded-[16px]" />
-  );
-
   const body = (
     <article className="flex h-full flex-col">
-      {cover}
+      <div className="overflow-hidden rounded-[16px]">
+        <div className="transition-transform duration-300 ease-out group-hover:scale-[1.03] motion-reduce:transform-none motion-reduce:transition-none">
+          <CoverImage
+            url={p.imageUrl}
+            alt={p.imageAlt}
+            aspect="aspect-[16/9]"
+            tone={p.isMarketWatch ? "blue" : "light"}
+            rounded="rounded-[16px]"
+          />
+        </div>
+      </div>
       <div className="mt-[18px] flex flex-1 flex-col">
-        <span className="text-[12px] font-semibold tracking-[0.08em] text-rebm-link uppercase">{p.category}</span>
-        <h3 className="mt-[10px] text-[23px] leading-[29px] font-bold text-balance text-rebm-navy group-hover:underline">
+        <h3 className="line-clamp-3 text-[22px] leading-[28px] font-bold text-balance text-rebm-navy group-hover:underline">
           {p.title}
         </h3>
-        <p className="mt-[12px] text-[15px] leading-[24px] text-[rgb(70,82,94)]">{p.excerpt}</p>
-
-        <div className="mt-auto pt-[18px]">
-          <div className="flex items-center gap-[10px]">
-            <AuthorAvatar name={p.authorName || "REBM"} src={p.authorImageUrl} size={32} />
-            <div className="min-w-0 text-[13px] leading-[18px]">
-              {p.authorName && <span className="block font-medium text-rebm-navy">{p.authorName}</span>}
-              <time dateTime={isoDateTimeAttr(p.dateIso)} className="block text-[rgb(120,132,144)]">
-                {formatPublishedDate(p.dateIso)}
-              </time>
-            </div>
-          </div>
-          <span className="mt-[12px] inline-flex items-center gap-[4px] text-[14px] font-semibold text-rebm-link group-hover:gap-[8px]">
-            Read More
-            <span aria-hidden="true" className="transition-all">→</span>
-          </span>
-        </div>
+        {p.excerpt && (
+          <p className="mt-[10px] line-clamp-2 text-[15px] leading-[24px] text-[rgb(70,82,94)]">{p.excerpt}</p>
+        )}
+        <time dateTime={isoDateTimeAttr(p.dateIso)} className="mt-auto pt-[16px] text-[14px] font-semibold text-rebm-link">
+          {formatPublishedDate(p.dateIso)}
+        </time>
       </div>
     </article>
   );
 
   if (p.href === "#") return body;
   return (
-    <Link href={p.href} className="group block h-full">
+    <Link
+      href={p.href}
+      className="group block h-full rounded-[18px] transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-[3px] hover:drop-shadow-[0_12px_24px_rgba(3,44,64,0.10)] focus-visible:ring-2 focus-visible:ring-rebm-blue focus-visible:ring-offset-4 focus-visible:outline-none motion-reduce:transform-none motion-reduce:transition-none"
+    >
       {body}
     </Link>
   );

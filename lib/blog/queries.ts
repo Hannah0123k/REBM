@@ -227,6 +227,21 @@ export async function resolveOldSlug(oldSlug: string): Promise<string | null> {
   return (post?.slug as string | undefined) ?? null;
 }
 
+/**
+ * Related published posts for the "You May Also Like" section — newest first,
+ * EXCLUDING the current post and (via onlyVisible + RLS) any draft/unpublished.
+ */
+export async function getRelatedPosts(excludeId: string, limit = 3): Promise<PublicPostCard[]> {
+  const supabase = await createClient();
+  const { data, error } = await onlyVisible(supabase.from("blog_posts").select(CARD_COLUMNS))
+    .neq("id", excludeId)
+    .order("published_at", { ascending: false })
+    .order("id", { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(`getRelatedPosts: ${error.message}`);
+  return (data ?? []).map((r) => toCard(r as unknown as RawRow));
+}
+
 /** All slugs of currently-visible posts — for generateStaticParams / sitemaps. */
 export async function getAllPublishedSlugs(): Promise<string[]> {
   const supabase = await createClient();

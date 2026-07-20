@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { FeaturedBlogCard } from "@/components/blog/FeaturedBlogCard";
 import { MoreArticles } from "@/components/blog/MoreArticles";
+import { NewsletterSection } from "@/components/blog/NewsletterSection";
 import {
   getFeaturedPost as getPlaceholderFeatured,
   getGridPosts as getPlaceholderGrid,
@@ -39,7 +40,6 @@ export default async function BlogPage({
   let featured: CardPost | null = null;
   let posts: CardPost[] = [];
   let moreHref: string | undefined;
-  let isPlaceholder = false;
 
   try {
     const featuredReal = await getFeaturedPost();
@@ -53,8 +53,8 @@ export default async function BlogPage({
     posts = gridPosts.map(cardFromPost);
     moreHref = page < totalPages ? `/blog?page=${page + 1}` : undefined;
   } catch {
-    // Empty store or a transient read error → placeholder layout, not a 500.
-    isPlaceholder = true;
+    // Nothing published yet (or a transient read error) → show the reviewable
+    // placeholder layout rather than a blank page or a 500.
     featured = cardFromPlaceholder(getPlaceholderFeatured());
     posts = getPlaceholderGrid().map(cardFromPlaceholder);
     moreHref = undefined; // no real page 2 yet
@@ -63,18 +63,19 @@ export default async function BlogPage({
   return (
     <>
       <main id="main-content" className="bg-white">
-        {/* Photo hero band with a brand-blue wash + centered white title. */}
-        <section className="relative flex min-h-[300px] w-full items-center justify-center overflow-hidden">
+        {/* Photo hero band: cropped-in building photo + brand-blue wash strong
+            enough to keep the white title highly readable. */}
+        <section className="relative flex min-h-[420px] w-full items-center justify-center overflow-hidden">
           <div
             aria-hidden="true"
             className="absolute inset-0"
             style={{
               backgroundImage: "url('/assets/live/blog-hero.png')",
               backgroundSize: "cover",
-              backgroundPosition: "center",
+              backgroundPosition: "center 42%",
             }}
           />
-          <div aria-hidden="true" className="absolute inset-0 bg-rebm-blue/45" />
+          <div aria-hidden="true" className="absolute inset-0 bg-rebm-blue/65" />
           <Container className="relative py-[48px] text-center">
             <h1 className="text-[46px] leading-[54px] font-bold tracking-[-0.5px] text-white sm:text-[64px] sm:leading-[72px]">
               Our Blogs
@@ -82,15 +83,9 @@ export default async function BlogPage({
           </Container>
         </section>
 
-        <Container className="pt-[64px] pb-[88px]">
-          {/* Featured Market Watch + grid share this one centered container. */}
-          <div className="mx-auto max-w-[1320px]">
-            {isPlaceholder && (
-              <p className="mb-[36px] text-center text-[13px] text-[rgb(150,160,170)]">
-                Placeholder layout — real articles are added during migration.
-              </p>
-            )}
-
+        <Container className="pt-[56px] pb-[80px]">
+          {/* Featured Market Pulse + grid share this one centered container. */}
+          <div className="mx-auto max-w-[1400px]">
             {featured && <FeaturedBlogCard post={featured} />}
 
             {posts.length > 0 && (
@@ -108,6 +103,7 @@ export default async function BlogPage({
             </div>
           </div>
         </Container>
+        <NewsletterSection />
       </main>
       <Footer />
     </>
