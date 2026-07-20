@@ -1,14 +1,14 @@
 import { Container } from "@/components/Container";
 import { BlogCard } from "@/components/blog/BlogCard";
-import { cardFromPost } from "@/lib/blog/cardView";
-import type { PublicPostCard } from "@/lib/blog/queries";
+import type { CardPost } from "@/lib/blog/cardView";
 
 /**
- * "You May Also Like" — related published posts under an article. Reuses the
- * clickable BlogCard. Renders nothing when there are no other published posts,
- * so a thin catalogue never shows an empty band.
+ * "You May Also Like" — related posts under an article. Takes already-normalized
+ * CardPosts so it renders the SAME clickable BlogCard for real DB posts and
+ * pre-migration placeholders alike. Renders nothing when empty, so a thin
+ * catalogue never shows an empty band.
  */
-export function RelatedPosts({ posts }: { posts: PublicPostCard[] }) {
+export function RelatedPosts({ posts }: { posts: CardPost[] }) {
   if (posts.length === 0) return null;
   return (
     <section aria-labelledby="related-title" className="border-t border-rebm-card-border bg-[#FAFBFC]">
@@ -19,7 +19,7 @@ export function RelatedPosts({ posts }: { posts: PublicPostCard[] }) {
           </h2>
           <div className="mt-[32px] grid grid-cols-1 gap-x-[40px] gap-y-[48px] sm:grid-cols-2 lg:grid-cols-3">
             {posts.map((p) => (
-              <BlogCard key={p.id} post={cardFromPost(p)} />
+              <BlogCard key={p.id} post={p} />
             ))}
           </div>
         </div>

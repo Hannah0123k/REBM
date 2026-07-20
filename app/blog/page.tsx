@@ -5,7 +5,6 @@ import { Footer } from "@/components/Footer";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { FeaturedBlogCard } from "@/components/blog/FeaturedBlogCard";
 import { MoreArticles } from "@/components/blog/MoreArticles";
-import { NewsletterSection } from "@/components/blog/NewsletterSection";
 import {
   getFeaturedPost as getPlaceholderFeatured,
   getGridPosts as getPlaceholderGrid,
@@ -63,9 +62,11 @@ export default async function BlogPage({
   return (
     <>
       <main id="main-content" className="bg-white">
-        {/* Photo hero band: cropped-in building photo + brand-blue wash strong
-            enough to keep the white title highly readable. */}
-        <section className="relative flex min-h-[420px] w-full items-center justify-center overflow-hidden">
+        {/* Photo hero band. Same brand palette as the homepage hero (navy #032C40
+            + brand blue #689ECF): a deeper navy→blue gradient gives real contrast
+            and depth so the building photo stays visible under readable white
+            text — no flat, foggy wash. */}
+        <section className="relative flex min-h-[380px] w-full items-center justify-center overflow-hidden bg-rebm-navy">
           <div
             aria-hidden="true"
             className="absolute inset-0"
@@ -75,9 +76,19 @@ export default async function BlogPage({
               backgroundPosition: "center 42%",
             }}
           />
-          <div aria-hidden="true" className="absolute inset-0 bg-rebm-blue/65" />
+          {/* Depth gradient (navy → brand blue) for contrast + readability. */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(3,44,64,0.80) 0%, rgba(14,56,79,0.66) 50%, rgba(3,44,64,0.82) 100%)",
+            }}
+          />
+          {/* Brand-blue cast so it reads unmistakably REBM. */}
+          <div aria-hidden="true" className="absolute inset-0 bg-rebm-blue/15" />
           <Container className="relative py-[48px] text-center">
-            <h1 className="text-[46px] leading-[54px] font-bold tracking-[-0.5px] text-white sm:text-[64px] sm:leading-[72px]">
+            <h1 className="text-[32px] leading-[40px] font-semibold tracking-[-0.2px] text-white sm:text-[42px] sm:leading-[50px] lg:text-[50px] lg:leading-[58px]">
               Our Blogs
             </h1>
           </Container>
@@ -98,12 +109,13 @@ export default async function BlogPage({
               </div>
             )}
 
-            <div className="mt-[56px] flex justify-center">
-              <MoreArticles href={moreHref} />
-            </div>
+            {moreHref && (
+              <div className="mt-[56px] flex justify-center">
+                <MoreArticles href={moreHref} />
+              </div>
+            )}
           </div>
         </Container>
-        <NewsletterSection />
       </main>
       <Footer />
     </>
