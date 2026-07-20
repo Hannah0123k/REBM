@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
 import { SiteHeader } from "@/components/SiteHeader";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 /**
@@ -20,6 +21,7 @@ const inter = Inter({
 // PROVISIONAL — the live site has no meta description anywhere and no SEO
 // plugin, so these are written fresh. See CLAUDE.md → Before launch.
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Real Estate Broker Match",
   description:
     "Real Estate Broker Match will match you with a real estate broker who will sell your property. Alan and Rhett Fruitman have helped clients buy and sell billions of dollars of real estate since 1993.",

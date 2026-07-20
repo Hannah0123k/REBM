@@ -48,6 +48,14 @@ export function TiptapEditor({
 
   async function handleFile(file: File) {
     setUploadError(null);
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setUploadError("Unsupported file type. Use JPEG, PNG or WebP.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError("Image is larger than 5 MB. Please compress it first.");
+      return;
+    }
     const form = new FormData();
     form.set("file", file);
     const res = await uploadImage(form);
@@ -55,7 +63,9 @@ export function TiptapEditor({
       setUploadError(res.error);
       return;
     }
-    editor?.chain().focus().setImage({ src: res.url }).run();
+    // Collect alt text so in-body images aren't invisible to screen readers.
+    const alt = window.prompt("Describe this image for screen readers (alt text):", "")?.trim() ?? "";
+    editor?.chain().focus().setImage({ src: res.url, alt }).run();
   }
 
   return (

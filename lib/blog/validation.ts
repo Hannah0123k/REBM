@@ -25,6 +25,8 @@ export const postInputSchema = z
     author_name: z.string().trim().max(120).nullable().optional(),
     status: z.enum(["draft", "published", "scheduled", "unpublished"]),
     featured: z.boolean(),
+    // Tag NAMES (slugs are derived server-side). Deduped/cleaned in the action.
+    tags: z.array(z.string().trim().min(1).max(60)).max(30).optional().default([]),
     published_at: z.string().datetime({ offset: true }).nullable().optional(),
     seo_title: z.string().trim().max(70, "SEO title must be 70 characters or fewer.").nullable().optional(),
     meta_description: z

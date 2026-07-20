@@ -25,9 +25,24 @@ export function ImageUploadField({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [broken, setBroken] = useState(false);
+
+  // Mirror the server-side limits (upload.ts) so bad files fail instantly,
+  // before a multi-MB round trip.
+  const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
+  const MAX_BYTES = 5 * 1024 * 1024;
 
   async function upload(file: File) {
+    if (busy) return; // one upload at a time
     setError(null);
+    if (!ALLOWED.includes(file.type)) {
+      setError("Unsupported file type. Use JPEG, PNG or WebP.");
+      return;
+    }
+    if (file.size > MAX_BYTES) {
+      setError("Image is larger than 5 MB. Please compress it first.");
+      return;
+    }
     setBusy(true);
     const form = new FormData();
     form.set("file", file);
@@ -37,6 +52,7 @@ export function ImageUploadField({
       setError(res.error);
       return;
     }
+    setBroken(false);
     onChange({ url: res.url, alt });
   }
 
@@ -44,8 +60,22 @@ export function ImageUploadField({
     <div>
       {url ? (
         <div className="overflow-hidden rounded-[12px] border border-rebm-card-border">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={url} alt={alt || "Featured image preview"} className="max-h-[220px] w-full object-cover" />
+          {broken ? (
+            <div className="flex h-[140px] w-full flex-col items-center justify-center gap-[6px] bg-[#F8FAFB] text-center text-[13px] text-[rgb(120,130,140)]">
+              <span>Image can’t be loaded (moved or deleted).</span>
+              <button type="button" onClick={() => input.current?.click()} className="font-medium text-rebm-link underline">
+                Upload a replacement
+              </button>
+            </div>
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={url}
+              alt={alt || "Featured image preview"}
+              onError={() => setBroken(true)}
+              className="max-h-[220px] w-full object-cover"
+            />
+          )}
           <div className="flex items-center justify-between bg-white px-[12px] py-[8px]">
             <span className="truncate text-[12px] text-[rgb(120,130,140)]">{url.split("/").pop()}</span>
             <button
@@ -60,10 +90,12 @@ export function ImageUploadField({
       ) : (
         <button
           type="button"
+          disabled={busy}
+          aria-busy={busy}
           onClick={() => input.current?.click()}
           onDragOver={(e) => {
             e.preventDefault();
-            setDragOver(true);
+            if (!busy) setDragOver(true);
           }}
           onDragLeave={() => setDragOver(false)}
           onDrop={(e) => {
@@ -72,7 +104,7 @@ export function ImageUploadField({
             const f = e.dataTransfer.files?.[0];
             if (f) upload(f);
           }}
-          className={`flex w-full flex-col items-center justify-center rounded-[12px] border-2 border-dashed px-[16px] py-[32px] text-center transition-colors ${
+          className={`flex w-full flex-col items-center justify-center rounded-[12px] border-2 border-dashed px-[16px] py-[32px] text-center transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${
             dragOver ? "border-rebm-blue bg-[#EEF5FC]" : "border-rebm-card-border bg-white hover:bg-[#F8FAFB]"
           }`}
         >

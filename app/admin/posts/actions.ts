@@ -11,8 +11,8 @@ import { postInputSchema } from "@/lib/blog/validation";
 import { createClient } from "@/lib/supabase/server";
 
 export type ActionResult =
-  | { ok: true; id: string; slug: string }
-  | { ok: false; error: string; fieldErrors?: Record<string, string> };
+  | { ok: true; id: string; slug: string; updatedAt: string }
+  | { ok: false; error: string; fieldErrors?: Record<string, string>; conflict?: boolean };
 
 /** Normalize status vs date: future 'published' → scheduled; due 'scheduled' → published. */
 function normalizeStatus(status: PostStatus, publishedAt: string | null): PostStatus {
@@ -74,16 +74,21 @@ export async function createPost(raw: unknown): Promise<ActionResult> {
   const { data, error } = await supabase
     .from("blog_posts")
     .insert(toRow(parsed.data))
-    .select("id, slug")
+    .select("id, slug, updated_at")
     .single();
 
   if (error) return dbError(error);
+  await syncTags(supabase, data.id, parsed.data.tags);
   revalidateBlog(data.slug);
-  return { ok: true, id: data.id, slug: data.slug };
+  return { ok: true, id: data.id, slug: data.slug, updatedAt: data.updated_at };
 }
 
 // ── update ─────────────────────────────────────────────────────────────────
-export async function updatePost(id: string, raw: unknown): Promise<ActionResult> {
+export async function updatePost(
+  id: string,
+  raw: unknown,
+  expectedUpdatedAt?: string,
+): Promise<ActionResult> {
   await requireAdmin();
   const parsed = postInputSchema.safeParse(raw);
   if (!parsed.success) {
@@ -93,12 +98,21 @@ export async function updatePost(id: string, raw: unknown): Promise<ActionResult
   const supabase = await createClient();
   const { data: existing } = await supabase
     .from("blog_posts")
-    .select("slug")
+    .select("slug, updated_at")
     .eq("id", id)
     .single();
   if (!existing) return { ok: false, error: "Post not found." };
 
-  if ((await slugTaken(parsed.data.slug, id))) {
+  // Optimistic concurrency: refuse to overwrite a version the editor didn't see.
+  if (expectedUpdatedAt && existing.updated_at !== expectedUpdatedAt) {
+    return {
+      ok: false,
+      conflict: true,
+      error: "This post was changed elsewhere since you opened it. Reload to see the latest version before saving.",
+    };
+  }
+
+  if (await slugTaken(parsed.data.slug, id)) {
     return { ok: false, error: "Slug in use.", fieldErrors: { slug: "That slug is already taken." } };
   }
 
@@ -106,7 +120,7 @@ export async function updatePost(id: string, raw: unknown): Promise<ActionResult
     .from("blog_posts")
     .update(toRow(parsed.data))
     .eq("id", id)
-    .select("id, slug")
+    .select("id, slug, updated_at")
     .single();
   if (error) return dbError(error);
 
@@ -115,27 +129,46 @@ export async function updatePost(id: string, raw: unknown): Promise<ActionResult
     await supabase
       .from("blog_post_slugs")
       .upsert({ old_slug: existing.slug, post_id: id }, { onConflict: "old_slug" });
+    // If this slug was itself an old slug for this post, retire that redirect.
+    await supabase.from("blog_post_slugs").delete().eq("old_slug", data.slug).eq("post_id", id);
   }
 
+  await syncTags(supabase, id, parsed.data.tags);
   revalidateBlog(data.slug, existing.slug);
-  return { ok: true, id: data.id, slug: data.slug };
+  return { ok: true, id: data.id, slug: data.slug, updatedAt: data.updated_at };
 }
 
-// ── autosave (draft only; skips empty new posts on the client) ──────────────
+// ── autosave ────────────────────────────────────────────────────────────────
+/**
+ * Background autosave of the content fields only — NEVER the slug, status,
+ * published_at, tags, or SEO. This keeps a live post's URL and publication
+ * state exactly as last intentionally saved; those change only through an
+ * explicit Save. Guarded by optimistic concurrency so a stale editor tab can't
+ * clobber a newer version (returns { conflict } instead).
+ */
 export async function autosavePost(
   id: string,
-  fields: { title: string; slug: string; body: unknown; excerpt?: string },
-): Promise<{ ok: boolean; savedAt?: string; error?: string }> {
+  fields: { title: string; body: unknown; excerpt?: string },
+  expectedUpdatedAt?: string,
+): Promise<{ ok: boolean; savedAt?: string; error?: string; conflict?: boolean }> {
   await requireAdmin();
   const supabase = await createClient();
+
+  if (expectedUpdatedAt) {
+    const { data: cur } = await supabase.from("blog_posts").select("updated_at").eq("id", id).single();
+    if (cur && cur.updated_at !== expectedUpdatedAt) {
+      return { ok: false, conflict: true, error: "Post changed on the server." };
+    }
+  }
+
+  const body = sanitizeDoc(fields.body);
   const { data, error } = await supabase
     .from("blog_posts")
     .update({
       title: fields.title || "Untitled",
-      slug: fields.slug,
-      body: sanitizeDoc(fields.body),
+      body,
       excerpt: fields.excerpt || null,
-      reading_time_minutes: readingTimeMinutes(sanitizeDoc(fields.body)),
+      reading_time_minutes: readingTimeMinutes(body),
     })
     .eq("id", id)
     .select("updated_at")
@@ -175,11 +208,14 @@ export async function duplicatePost(id: string): Promise<ActionResult> {
       seo_title: src.seo_title,
       meta_description: src.meta_description,
     })
-    .select("id, slug")
+    .select("id, slug, updated_at")
     .single();
   if (error) return dbError(error);
+  // Carry the source post's tags onto the copy.
+  const tagNames = await getPostTagNames(id);
+  await syncTags(supabase, data.id, tagNames);
   revalidatePath("/admin/posts");
-  return { ok: true, id: data.id, slug: data.slug };
+  return { ok: true, id: data.id, slug: data.slug, updatedAt: data.updated_at };
 }
 
 // ── archive / restore / delete ──────────────────────────────────────────────
@@ -190,12 +226,12 @@ export async function archivePost(id: string): Promise<ActionResult> {
     .from("blog_posts")
     .update({ archived_at: new Date().toISOString() })
     .eq("id", id)
-    .select("id, slug")
+    .select("id, slug, updated_at")
     .single();
   if (error) return dbError(error);
   revalidateBlog(data.slug);
   revalidatePath("/admin/posts");
-  return { ok: true, id: data.id, slug: data.slug };
+  return { ok: true, id: data.id, slug: data.slug, updatedAt: data.updated_at };
 }
 
 export async function restorePost(id: string): Promise<ActionResult> {
@@ -205,12 +241,12 @@ export async function restorePost(id: string): Promise<ActionResult> {
     .from("blog_posts")
     .update({ archived_at: null })
     .eq("id", id)
-    .select("id, slug")
+    .select("id, slug, updated_at")
     .single();
   if (error) return dbError(error);
   revalidateBlog(data.slug);
   revalidatePath("/admin/posts");
-  return { ok: true, id: data.id, slug: data.slug };
+  return { ok: true, id: data.id, slug: data.slug, updatedAt: data.updated_at };
 }
 
 /** Permanent delete — the UI gates this behind a typed confirmation. */
@@ -221,15 +257,77 @@ export async function deletePost(id: string): Promise<ActionResult> {
     .from("blog_posts")
     .delete()
     .eq("id", id)
-    .select("id, slug")
+    .select("id, slug, updated_at")
     .single();
   if (error) return dbError(error);
   revalidateBlog(data.slug);
   revalidatePath("/admin/posts");
-  return { ok: true, id: data.id, slug: data.slug };
+  return { ok: true, id: data.id, slug: data.slug, updatedAt: data.updated_at };
 }
 
 // ── helpers ─────────────────────────────────────────────────────────────────
+
+/**
+ * Replace a post's tags from a list of NAMES: ensure each tag exists (creating
+ * it with a derived slug), then rewrite the join rows. Names that collide on
+ * slug are deduped. Runs as a full replace so removing a tag in the editor
+ * removes the link.
+ */
+async function syncTags(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  postId: string,
+  names: string[],
+): Promise<void> {
+  const bySlug = new Map<string, string>();
+  for (const raw of names ?? []) {
+    const name = raw.trim();
+    if (!name) continue;
+    const slug = slugify(name);
+    if (slug && !bySlug.has(slug)) bySlug.set(slug, name);
+  }
+
+  const slugs = [...bySlug.keys()];
+  if (slugs.length) {
+    await supabase
+      .from("tags")
+      .upsert(
+        slugs.map((slug) => ({ slug, name: bySlug.get(slug)! })),
+        { onConflict: "slug", ignoreDuplicates: true },
+      );
+  }
+
+  let tagIds: string[] = [];
+  if (slugs.length) {
+    const { data } = await supabase.from("tags").select("id").in("slug", slugs);
+    tagIds = (data ?? []).map((t) => t.id as string);
+  }
+
+  await supabase.from("blog_post_tags").delete().eq("post_id", postId);
+  if (tagIds.length) {
+    await supabase
+      .from("blog_post_tags")
+      .insert(tagIds.map((tag_id) => ({ post_id: postId, tag_id })));
+  }
+}
+
+/** Read a post's tag names (for hydrating the editor). */
+export async function getPostTagNames(postId: string): Promise<string[]> {
+  await requireAdmin();
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("blog_post_tags")
+    .select("tags(name)")
+    .eq("post_id", postId);
+  const names = (data ?? [])
+    .flatMap((row) => {
+      const t = (row as { tags?: { name?: string } | { name?: string }[] }).tags;
+      return Array.isArray(t) ? t : t ? [t] : [];
+    })
+    .map((t) => t?.name)
+    .filter((n): n is string => Boolean(n));
+  return [...new Set(names)].sort((a, b) => a.localeCompare(b));
+}
+
 async function slugTaken(slug: string, exceptId?: string): Promise<boolean> {
   const supabase = await createClient();
   let query = supabase.from("blog_posts").select("id").eq("slug", slug);

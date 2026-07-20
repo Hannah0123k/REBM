@@ -3,7 +3,12 @@ import type { Metadata } from "next";
 import { Container } from "@/components/Container";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { FeaturedBlogCard } from "@/components/blog/FeaturedBlogCard";
-import { getFeaturedPost, getGridPosts } from "@/content/blog-placeholders";
+import {
+  getFeaturedPost as getPlaceholderFeatured,
+  getGridPosts as getPlaceholderGrid,
+} from "@/content/blog-placeholders";
+import { cardFromPlaceholder, cardFromPost, type CardPost } from "@/lib/blog/cardView";
+import { getFeaturedPost, getPublishedPosts } from "@/lib/blog/queries";
 
 export const metadata: Metadata = {
   title: "Blog — Real Estate Broker Match",
@@ -17,12 +22,34 @@ export const metadata: Metadata = {
  *   post (the latest Market Watch / "Market Pulse") → the remaining posts in a
  *   grid, newest first → a "View more articles" control.
  *
- * STYLING is the current brand. Content is placeholder only — see
- * content/blog-placeholders.ts; nothing links out yet (no dead post routes).
+ * DATA: reads published posts from Supabase (newest first). Until the WordPress
+ * migration lands any real posts, it falls back to the placeholder layout so
+ * the design stays reviewable. Dynamic render (Supabase via cookies) → scheduled
+ * posts appear the moment their time passes.
  */
-export default function BlogPage() {
-  const featured = getFeaturedPost();
-  const posts = getGridPosts();
+export default async function BlogPage() {
+  let featured: CardPost;
+  let posts: CardPost[];
+  let hasMore = false;
+  let isPlaceholder = false;
+
+  try {
+    const featuredReal = await getFeaturedPost();
+    if (featuredReal) {
+      const { posts: page, totalPages } = await getPublishedPosts({ page: 1, pageSize: 12 });
+      featured = cardFromPost(featuredReal);
+      posts = page.filter((p) => p.id !== featuredReal.id).map(cardFromPost);
+      hasMore = totalPages > 1;
+    } else {
+      throw new Error("no published posts yet");
+    }
+  } catch {
+    // No posts yet, or the store is briefly unavailable — show the reviewable
+    // placeholder layout rather than a 500. Real posts take over automatically.
+    isPlaceholder = true;
+    featured = cardFromPlaceholder(getPlaceholderFeatured());
+    posts = getPlaceholderGrid().map(cardFromPlaceholder);
+  }
 
   return (
     <main id="main-content" className="bg-white">
@@ -47,31 +74,37 @@ export default function BlogPage() {
 
       <Container className="pt-[72px] pb-[88px]">
         <div className="mx-auto max-w-[1200px]">
-          {/* Small placeholder note (removed once real posts are migrated). */}
-          <p className="mb-[36px] text-center text-[13px] text-[rgb(150,160,170)]">
-            Placeholder layout — real articles are added during migration.
-          </p>
+          {/* Placeholder note — only while no real posts are published yet. */}
+          {isPlaceholder && (
+            <p className="mb-[36px] text-center text-[13px] text-[rgb(150,160,170)]">
+              Placeholder layout — real articles are added during migration.
+            </p>
+          )}
 
           {/* Featured post (Market Watch leads, as on the live site) */}
           <FeaturedBlogCard post={featured} />
 
           {/* Post grid, newest first */}
-          <div className="mt-[64px] grid grid-cols-1 gap-x-[40px] gap-y-[56px] sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
-              <BlogCard key={post.id} post={post} />
-            ))}
-          </div>
+          {posts.length > 0 && (
+            <div className="mt-[64px] grid grid-cols-1 gap-x-[40px] gap-y-[56px] sm:grid-cols-2 lg:grid-cols-3">
+              {posts.map((post) => (
+                <BlogCard key={post.id} post={post} />
+              ))}
+            </div>
+          )}
 
-          {/* "View more articles" — filled brand-blue pill (Figma). Inert until
-              pagination/real posts exist. */}
-          <div className="mt-[64px] flex justify-center">
-            <span
-              className="inline-flex cursor-default items-center rounded-full bg-rebm-blue px-[32px] py-[13px] text-[15px] font-semibold text-white"
-              title="Available after migration"
-            >
-              View more articles
-            </span>
-          </div>
+          {/* "View more articles" — filled brand-blue pill (Figma). Shown only
+              when more pages exist; pagination route lands with migration. */}
+          {(hasMore || isPlaceholder) && (
+            <div className="mt-[64px] flex justify-center">
+              <span
+                className="inline-flex cursor-default items-center rounded-full bg-rebm-blue px-[32px] py-[13px] text-[15px] font-semibold text-white"
+                title={isPlaceholder ? "Available after migration" : "Pagination coming soon"}
+              >
+                View more articles
+              </span>
+            </div>
+          )}
         </div>
       </Container>
     </main>
