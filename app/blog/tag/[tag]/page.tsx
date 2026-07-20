@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { Container } from "@/components/Container";
 import { BlogCard } from "@/components/blog/BlogCard";
+import { BlogPagination } from "@/components/blog/BlogPagination";
 import { cardFromPost } from "@/lib/blog/cardView";
 import { getPublishedPosts } from "@/lib/blog/queries";
 import { SITE_NAME, absoluteUrl } from "@/lib/site";
@@ -30,9 +31,16 @@ export async function generateMetadata({
   };
 }
 
-export default async function TagPage({ params }: { params: Promise<{ tag: string }> }) {
+export default async function TagPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ tag: string }>;
+  searchParams: Promise<{ page?: string }>;
+}) {
   const { tag } = await params;
-  const { posts } = await getPublishedPosts({ tagSlug: tag, pageSize: 50 });
+  const page = Math.max(1, Number.parseInt((await searchParams).page ?? "1", 10) || 1);
+  const { posts, totalPages } = await getPublishedPosts({ tagSlug: tag, page, pageSize: 12 });
   if (posts.length === 0) notFound();
 
   return (
@@ -66,6 +74,7 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
               <BlogCard key={p.id} post={cardFromPost(p)} />
             ))}
           </div>
+          <BlogPagination page={page} totalPages={totalPages} basePath={`/blog/tag/${tag}`} />
         </div>
       </Container>
     </main>

@@ -112,6 +112,27 @@ values ('…','original-slug','…', '{"type":"doc","content":[…]}'::jsonb,
   or set them in the editor.
 - `body` must be a Tiptap doc JSON; convert WP HTML → Tiptap during import.
 
+## Public features
+
+- **Pagination**: `/blog?page=N` and `/blog/tag/<slug>?page=N`, 12/page, prev/next
+  controls (`BlogPagination`). Page 1 leads with the featured post.
+- **Search**: `/blog?q=…` — a no-JS GET form matching title/excerpt (ILIKE).
+  Upgrade to Postgres full-text search when volume warrants.
+- **Tags**: `/blog/tag/<slug>` archives (paginated); "Market Watch" is a tag.
+
+## Maintenance
+
+- **Orphaned images**: `scripts/blog-orphan-images.mjs` lists storage objects no
+  post references (dry-run); `--delete` removes them. Needs
+  `SUPABASE_SERVICE_ROLE_KEY` in the shell — the app itself never uses it.
+
+## Tests
+
+`npm test` — Node's built-in runner over `tests/**/*.test.mts` (native TS type
+stripping, no deps). Covers the pure guarantees: slug format, body sanitization,
+and zone-stable date handling. DB-dependent behavior (visibility, redirects,
+concurrency) needs an integration suite against a live Supabase.
+
 ## Deploy checklist
 
 1. Apply `supabase/migrations/0001_init.sql` then `0002_scheduling_and_visibility.sql`.
