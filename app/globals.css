@@ -34,9 +34,23 @@
 
 /* Height of the fixed header, used as the anchor scroll offset everywhere so
    in-page jumps clear the header instead of hiding section headings under it.
-   One source of truth — never patch anchor spacing per-section. */
+   One source of truth — never patch anchor spacing per-section.
+
+   Responsive: a compact header on phones/tablets (Figma mobile shows a ~40px
+   logo in a ~72px bar) that steps up to the approved 122px on desktop (≥1024).
+   Desktop (≥1280) is unchanged. */
 :root {
-  --header-h: 122px;
+  --header-h: 72px;
+}
+@media (min-width: 768px) {
+  :root {
+    --header-h: 92px;
+  }
+}
+@media (min-width: 1024px) {
+  :root {
+    --header-h: 122px;
+  }
 }
 
 html {
@@ -52,6 +66,18 @@ html {
 body {
   background: #ffffff;
   color: #000000;
+}
+
+/* Article body typography mirrors the live site: paragraph/list text renders in
+   the Helvetica Neue system stack (the live site references the same system
+   font — nothing is self-hosted, so there is no licensing exposure), while
+   headings stay in Inter to match the live article's heading font. Sizes,
+   line-heights and colours are set per-element on the article container. */
+.article-prose {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.article-prose :is(h1, h2, h3, h4) {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* --- Motion utilities ------------------------------------------------------

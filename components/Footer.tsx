@@ -6,7 +6,7 @@ import { DisclaimerModal } from "@/components/DisclaimerModal";
 import { Reveal } from "@/components/Reveal";
 import { SOCIAL_ICONS } from "@/components/icons/SocialIcons";
 import { COPYRIGHT, FOOTER_LINKS, PHONE_HREF, PHONE_NUMBER_INTL, SOCIAL_LINKS } from "@/lib/nav";
-import logo from "@/public/assets/rebm-logo-footer@2x.png";
+import logo from "@/public/assets/rebm-logo.svg";
 
 /**
  * Site footer — identical across homepage / Blog / Post / tags (Figma 95:135-144,
@@ -54,12 +54,21 @@ export function Footer() {
           {/* Brand column absorbs slack so the link columns keep their widths
               and never overflow the container (see prior overflow fix). */}
           <div className="min-w-0 flex-1 lg:pr-[24px]">
+            {/* Same wordmark as the header (rebm-logo.svg), sized to match the
+                header (~300px) and rendered white for the dark footer via
+                brightness-0 invert (the SVG is a single navy ink colour).
+                The SVG carries ~5.6px of transparent left padding in its viewBox
+                (ink starts at x8.6 of 458 → 5.6px at the 300px render), so its
+                visible wordmark sat ~6px right of the text below it. A -6px left
+                margin pulls the ink onto the column edge (x64), aligning the
+                wordmark with "Real Estate Foundation Inc.", the social links,
+                the copyright and Admin. */}
             <Image
               src={logo}
               alt="Real Estate Broker Match"
-              width={539}
-              height={79}
-              className="h-auto w-full max-w-[300px]"
+              width={458}
+              height={35}
+              className="-ml-[6px] h-auto w-full max-w-[300px] brightness-0 invert"
             />
             <p className="mt-[16px] text-[15px] leading-[20px]">Real Estate Foundation Inc.</p>
 

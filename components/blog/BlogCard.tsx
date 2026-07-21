@@ -6,12 +6,14 @@ import { formatPublishedDate, isoDateTimeAttr } from "@/lib/blog/date";
 import type { BlogPlaceholder } from "@/content/blog-placeholders";
 
 /**
- * Regular article card for the grid. A shorter (16:9) cover, then the title and
- * excerpt, with the publication date in brand teal at the bottom. No category or
- * author on the public listing (per the approved design). The whole card links
- * to the post; hover/focus lift it and nudge the cover, respecting reduced
- * motion. A broken cover falls back to the placeholder (CoverImage) — never a
- * broken icon.
+ * Regular article card for the grid. A shorter (16:9) cover, then the excerpt,
+ * with the publication date in brand teal at the bottom. The VISIBLE title is
+ * intentionally omitted — the cover artwork already contains the title, so
+ * repeating it beneath the thumbnail would be redundant. The title still reaches
+ * assistive tech via the link's aria-label (and lives on in SEO/DB/slug). No
+ * category or author on the public listing (per the approved design). The whole
+ * card links to the post; hover/focus lift it and nudge the cover, respecting
+ * reduced motion. A broken cover falls back to the placeholder (CoverImage).
  */
 export function BlogCard({ post }: { post: CardPost | BlogPlaceholder }) {
   const p = "href" in post && "dateIso" in post ? post : cardFromPlaceholder(post as BlogPlaceholder);
@@ -29,14 +31,11 @@ export function BlogCard({ post }: { post: CardPost | BlogPlaceholder }) {
           />
         </div>
       </div>
-      <div className="mt-[18px] flex flex-1 flex-col">
-        <h3 className="line-clamp-3 text-[22px] leading-[28px] font-bold text-balance text-rebm-navy transition-colors duration-200 group-hover:text-rebm-link">
-          {p.title}
-        </h3>
+      <div className="mt-[14px] flex flex-1 flex-col">
         {p.excerpt && (
-          <p className="mt-[10px] line-clamp-2 text-[15px] leading-[24px] text-[rgb(70,82,94)]">{p.excerpt}</p>
+          <p className="line-clamp-3 text-[15px] leading-[24px] text-[rgb(70,82,94)]">{p.excerpt}</p>
         )}
-        <time dateTime={isoDateTimeAttr(p.dateIso)} className="mt-auto pt-[16px] text-[14px] font-semibold text-rebm-link">
+        <time dateTime={isoDateTimeAttr(p.dateIso)} className="mt-auto pt-[14px] text-[14px] font-semibold text-rebm-link">
           {formatPublishedDate(p.dateIso)}
         </time>
       </div>
@@ -47,6 +46,7 @@ export function BlogCard({ post }: { post: CardPost | BlogPlaceholder }) {
   return (
     <Link
       href={p.href}
+      aria-label={p.title}
       className="group block h-full rounded-[18px] transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-[3px] hover:drop-shadow-[0_12px_24px_rgba(3,44,64,0.10)] focus-visible:ring-2 focus-visible:ring-rebm-blue focus-visible:ring-offset-4 focus-visible:outline-none motion-reduce:transform-none motion-reduce:transition-none"
     >
       {body}

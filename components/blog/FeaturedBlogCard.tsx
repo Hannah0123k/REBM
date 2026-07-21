@@ -28,13 +28,11 @@ export function FeaturedBlogCard({ post }: { post: CardPost | BlogPlaceholder })
         </div>
       </div>
       <div>
-        {/* Live featured text styling (measured): title 48/57.6 w700; excerpt
-            16/26.4 #334155; date 16px #6EC1E4. The live featured shows the date
-            only — no author avatar. */}
-        <h2 className="text-[34px] leading-[42px] font-bold text-balance text-rebm-navy transition-colors duration-200 group-hover:text-rebm-link sm:text-[48px] sm:leading-[58px]">
-          {p.title}
-        </h2>
-        <p className="mt-[16px] text-[16px] leading-[26px] text-[rgb(51,65,85)]">{p.excerpt}</p>
+        {/* The visible title is omitted — it already appears inside the cover
+            artwork; repeating it would be redundant. Title reaches assistive
+            tech via the wrapping link's aria-label (see below). Excerpt 16/26.4
+            #334155; date 16px #6EC1E4. */}
+        <p className="text-[18px] leading-[29px] text-[rgb(51,65,85)] sm:text-[19px] sm:leading-[31px]">{p.excerpt}</p>
         <time dateTime={isoDateTimeAttr(p.dateIso)} className="mt-[18px] block text-[16px] leading-[26px] text-[#6ec1e4]">
           {formatPublishedDate(p.dateIso)}
         </time>

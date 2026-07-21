@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 
 import { submitContact } from "@/app/contact/actions";
@@ -242,13 +241,6 @@ export function ContactForm() {
         {status === "submitting" ? "Sending…" : "Send Message"}
       </button>
 
-      <p className="mt-[12px] text-center text-[13px] text-[rgb(90,100,110)]">
-        By submitting this form, you agree to our{" "}
-        <Link href="/privacy" className="text-rebm-navy underline">
-          Privacy Policy
-        </Link>
-        .
-      </p>
     </form>
   );
 }

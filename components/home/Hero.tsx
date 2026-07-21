@@ -40,6 +40,9 @@ export function Hero() {
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Desktop only — the scroll fade is tied to the full-bleed background photo,
+    // which is hidden on mobile/tablet (there the photo is a static band).
+    if (window.matchMedia("(max-width: 1023px)").matches) return;
     const section = sectionRef.current;
     const content = contentRef.current;
     const building = buildingRef.current;
@@ -81,13 +84,15 @@ export function Hero() {
 
   return (
     <section ref={sectionRef} className="relative w-full overflow-hidden bg-rebm-blue">
-      {/* Photo as a background layer — exactly the live treatment:
-          size 100% (width 100%, height auto) · position top-centre · no-repeat.
-          Set inline for reliability (the Tailwind arbitrary bg-size didn't apply). */}
+      {/* DESKTOP (≥lg) photo treatment — the approved live look: the building as
+          a full-bleed background scaled to width, top-anchored, faded left-to-blue
+          so the headline keeps contrast. Hidden on mobile/tablet, where the Figma
+          mobile layout instead shows the text on solid blue with the photo as a
+          band BELOW (see the mobile band further down). */}
       <div
         ref={buildingRef}
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-0 hidden lg:block"
         style={{
           backgroundImage: "url('/assets/live/hero-bg.webp')",
           backgroundSize: "100% auto",
@@ -95,23 +100,25 @@ export function Hero() {
           backgroundRepeat: "no-repeat",
         }}
       />
-      {/* Left-to-blue wash so the headline keeps contrast regardless of crop. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-0 hidden lg:block"
         style={{
           background:
             "linear-gradient(to right, #689ECF 0%, rgba(104,158,207,0.82) 34%, rgba(104,158,207,0) 66%)",
         }}
       />
 
-      {/* Content block: live is padding 150 top / 312 bottom → the tall bottom
-          pad is what makes the hero 982 and crops the building to match live. */}
-      <Container className="relative pt-[calc(var(--header-h)+42px)] pb-[60px] lg:pb-[44px]">
-        {/* Everything inside contentRef fades/drifts on scroll; the header, wash
-            and info band stay put. */}
+      {/* MOBILE/TABLET hero (Figma mobile, measured): a COMPACT text block on
+          solid brand-blue — headline, a deliberate mobile excerpt, and the CTA —
+          followed by a SEPARATE full-width building image band directly below.
+          No image is positioned behind the text. On desktop (≥lg) the background
+          treatment above is used with the full copy. Figma gaps: headline→body 18,
+          body→CTA 18. */}
+      <Container className="relative pt-[calc(var(--header-h)+40px)] pb-[36px] sm:pt-[calc(var(--header-h)+42px)] lg:pb-[44px]">
+        {/* contentRef fades/drifts on scroll (desktop only). */}
         <div ref={contentRef} className="will-change-[opacity,transform]">
-          <h1 className="max-w-[840px] text-[34px] leading-[42px] font-semibold tracking-[-0.2px] text-white sm:text-[44px] sm:leading-[58px] lg:text-[50px] lg:leading-[70px]">
+          <h1 className="max-w-[840px] text-[29px] leading-[36px] font-semibold tracking-[-0.2px] text-white sm:text-[38px] sm:leading-[48px] lg:text-[50px] lg:leading-[70px]">
             {hero.headingLines.map((line, i) => (
               <span key={line}>
                 {line}
@@ -122,17 +129,44 @@ export function Hero() {
             ))}
           </h1>
 
-          <div className="mt-[32px] max-w-[580px] space-y-[26px] text-[20px] leading-[26px] text-white">
+          {/* Full copy on every breakpoint (mobile uses the smaller mobile type). */}
+          <div className="mt-[18px] max-w-[580px] space-y-[16px] text-[18px] leading-[25px] text-white lg:mt-[32px] lg:space-y-[26px] lg:text-[20px] lg:leading-[26px]">
             {hero.paragraphs.map((p) => (
               <p key={p}>{p}</p>
             ))}
           </div>
 
-          <PillButton href={hero.cta.href} className="mt-[32px]">
+          <PillButton href={hero.cta.href} className="mt-[18px] lg:mt-[32px]">
             {hero.cta.label}
           </PillButton>
         </div>
       </Container>
+
+      {/* MOBILE/TABLET image band (measured ~212px in the 402 frame): the building
+          photo as a SEPARATE full-width band directly below the text — never behind
+          the words. Its bottom fades into the info band's navy so the photo blends
+          smoothly into the band below. Hidden on desktop. */}
+      {/* Placement measured from the OLD site's mobile hero: the building image
+          (image-6.png, ~402×408, saved as hero-mobile.png) sits full-width at the
+          bottom — background-size 100% 400px, position 50% 100%, no-repeat. Its
+          near-square ratio means it fills the 400px band with no distortion, so
+          the full building shows correctly over the blue background. */}
+      {/* Pulled UP into the text area so the building's corner rises to about the
+          CTA level (per the target). Safe because the image's upper area is fully
+          transparent (the button/blue show through) and the band is
+          pointer-events-none (the button stays clickable). */}
+      <div aria-hidden="true" className="pointer-events-none relative -mt-[170px] h-[400px] w-full overflow-hidden lg:hidden">
+        <div
+          className="absolute inset-0 bg-no-repeat"
+          style={{
+            backgroundImage: "url('/assets/live/hero-mobile.png')",
+            backgroundSize: "100% 100%",
+            backgroundPosition: "50% 100%",
+          }}
+        />
+        {/* Subtle bottom fade only (not a corner) into the info band's navy. */}
+        <div className="absolute inset-x-0 bottom-0 h-[56px] bg-gradient-to-b from-transparent to-[#3f5f7b]" />
+      </div>
 
       {/* Info band — EXACT Figma design (Rectangle 5, 95:36). The Figma node is
           FROSTED GLASS, not a flat overlay: fill #0E384F @ 0.5 PLUS a
@@ -144,14 +178,16 @@ export function Hero() {
           reads identically regardless of how the hero photo above happens to
           crop). 226 tall, 67px vertical padding, left copy 782 / white divider
           98 / right copy 617, text 18/23.4 white. Live wording; Figma visuals. */}
-      <div className="relative w-full overflow-hidden">
-        {/* Frosted building behind the tint (blur ≈ 66.67 × render/1920). */}
+      {/* Mobile: a clean SOLID navy (blends with the building band's bottom fade
+          above); desktop keeps the frosted-building + navy-tint depth treatment. */}
+      <div className="relative w-full overflow-hidden bg-[#3f5f7b] lg:bg-transparent">
+        {/* Frosted building behind the tint (blur ≈ 66.67 × render/1920) — desktop. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 scale-110 bg-[url('/assets/live/hero-bg.webp')] bg-[length:100%_auto] bg-[position:50%_100%] bg-no-repeat blur-[50px]"
+          className="pointer-events-none absolute inset-0 hidden scale-110 bg-[url('/assets/live/hero-bg.webp')] bg-[length:100%_auto] bg-[position:50%_100%] bg-no-repeat blur-[50px] lg:block"
         />
-        {/* Navy tint #0E384F @ 0.5 over the frosted building. */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-rebm-band-info" />
+        {/* Navy tint #0E384F @ 0.5 over the frosted building — desktop. */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 hidden bg-rebm-band-info lg:block" />
 
         <Container className="relative flex flex-col gap-[28px] py-[48px] lg:flex-row lg:items-center lg:gap-0 lg:py-[67px]">
           {/* Summary and bullets both fade in on scroll with the same animation.
@@ -166,13 +202,17 @@ export function Hero() {
           </Reveal>
           <div aria-hidden="true" className="hidden self-stretch lg:mx-[52px] lg:block lg:w-px lg:bg-white" />
           <Reveal
-            className="flex flex-col gap-[4px] text-[18px] leading-[23.4px] text-white lg:min-w-0 lg:basis-0 lg:grow-[44]"
+            className="text-[18px] leading-[23.4px] text-white lg:min-w-0 lg:basis-0 lg:grow-[44]"
             stagger={0.12}
             start="top 88%"
           >
-            {hero.band.points.map((point) => (
-              <p key={point}>{point}</p>
-            ))}
+            {/* Bulleted on mobile (matches the reference); on desktop the bullets
+                are removed so it reads as the approved two-column band. */}
+            <ul className="flex list-disc flex-col gap-[8px] pl-[22px] marker:text-white lg:list-none lg:gap-[4px] lg:pl-0">
+              {hero.band.points.map((point) => (
+                <li key={point}>{point}</li>
+              ))}
+            </ul>
           </Reveal>
         </Container>
       </div>

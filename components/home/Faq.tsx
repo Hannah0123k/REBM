@@ -56,11 +56,11 @@ function Item({ q, a }: { q: string; a: string }) {
 
 export function Faq() {
   return (
-    <div id="faq" className="mt-[96px]">
+    <div id="faq" className="mt-[56px] lg:mt-[96px]">
       {/* Heading then the list fade up on entry; each item keeps its own
           open/close accordion animation (independent of this reveal). */}
       <Reveal stagger={0.1}>
-        <h2 className="text-[32px] leading-[40px] font-bold text-rebm-navy lg:text-[48px] lg:leading-[62.4px]">
+        <h2 className="text-[29px] leading-[36px] font-bold text-rebm-navy lg:text-[48px] lg:leading-[62.4px]">
           {faq.heading}
         </h2>
 
@@ -71,16 +71,9 @@ export function Faq() {
         </div>
       </Reveal>
 
-      <div className="mt-[32px] flex justify-center">
-        {/* Live: opens Elementor popup #602 with the remaining FAQs; wired to
-            /faq once that page exists. */}
-        <a
-          href="/faq"
-          className="rounded-[42px] border-[3px] border-white px-[24px] py-[12px] text-[15px] leading-[15px] text-white transition-opacity hover:opacity-80"
-        >
-          {faq.showMore}
-        </a>
-      </div>
+      {/* "Show More" removed: all available FAQs are shown here and there is no
+          dedicated /faq page yet (the link 404'd). Restore it when the full FAQ
+          set + page exist. */}
     </div>
   );
 }

@@ -25,21 +25,26 @@ const SAFE_HREF = /^(https?:\/\/|mailto:|\/)/i;
 
 function withMarks(text: string, marks: Mark[] | undefined, key: number): ReactNode {
   if (!marks?.length) return <Fragment key={key}>{text}</Fragment>;
+  // The OUTERMOST mark wrapper is this text node's element among its siblings, so
+  // its key must be unique per text node — the mark index alone repeats across
+  // sibling text nodes (each starts at 0). Combine the node key with the mark
+  // index so every wrapper key is unique.
   return marks.reduce<ReactNode>((child, mark, i) => {
+    const k = `${key}-${i}`;
     switch (mark.type) {
       case "bold":
-        return <strong key={i}>{child}</strong>;
+        return <strong key={k}>{child}</strong>;
       case "italic":
-        return <em key={i}>{child}</em>;
+        return <em key={k}>{child}</em>;
       case "strike":
-        return <s key={i}>{child}</s>;
+        return <s key={k}>{child}</s>;
       case "code":
-        return <code key={i}>{child}</code>;
+        return <code key={k}>{child}</code>;
       case "link": {
         const href = String(mark.attrs?.href ?? "");
         if (!SAFE_HREF.test(href)) return child; // unsafe → drop the link, keep text
         return (
-          <a key={i} href={href} target="_blank" rel="noreferrer noopener">
+          <a key={k} href={href} target="_blank" rel="noreferrer noopener">
             {child}
           </a>
         );
@@ -53,6 +58,13 @@ function withMarks(text: string, marks: Mark[] | undefined, key: number): ReactN
 function renderChildren(nodes: Node[] | undefined): ReactNode {
   if (!nodes?.length) return null;
   return nodes.map((n, i) => renderNode(n, i));
+}
+
+/** Paragraph/heading text alignment → inline style (only center/right are ever
+ *  stored; left is the default and renders nothing). Sanitized on save. */
+function alignStyle(node: Node): { textAlign: "center" | "right" } | undefined {
+  const a = node.attrs?.textAlign;
+  return a === "center" || a === "right" ? { textAlign: a } : undefined;
 }
 
 /** colspan/rowspan as DOM attrs (omit when 1 to keep markup clean). */
@@ -76,13 +88,18 @@ function renderNode(node: Node, key: number): ReactNode {
     case "text":
       return withMarks(node.text ?? "", node.marks, key);
     case "paragraph":
-      return <p key={key}>{renderChildren(node.content)}</p>;
+      return (
+        <p key={key} style={alignStyle(node)}>
+          {renderChildren(node.content)}
+        </p>
+      );
     case "heading": {
       const level = Number(node.attrs?.level);
       const children = renderChildren(node.content);
-      if (level === 3) return <h3 key={key}>{children}</h3>;
-      if (level === 4) return <h4 key={key}>{children}</h4>;
-      return <h2 key={key}>{children}</h2>;
+      const style = alignStyle(node);
+      if (level === 3) return <h3 key={key} style={style}>{children}</h3>;
+      if (level === 4) return <h4 key={key} style={style}>{children}</h4>;
+      return <h2 key={key} style={style}>{children}</h2>;
     }
     case "bulletList":
       return <ul key={key}>{renderChildren(node.content)}</ul>;

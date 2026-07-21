@@ -45,9 +45,9 @@ function toColumns<T extends { body: string }>(items: readonly T[], n: number): 
 export function Testimonials() {
   return (
     <section id="testimonials" className="w-full bg-rebm-blue">
-      <Container className="pt-[96px] pb-[125px]">
+      <Container className="pt-[56px] pb-[56px] lg:pt-[96px] lg:pb-[125px]">
         <Reveal>
-          <h2 className="text-[36px] leading-[44px] font-bold text-rebm-navy lg:text-[62px] lg:leading-[80.6px]">
+          <h2 className="text-[29px] leading-[36px] font-bold text-rebm-navy lg:text-[62px] lg:leading-[80.6px]">
             {testimonials.heading}
           </h2>
         </Reveal>
@@ -73,7 +73,7 @@ export function Testimonials() {
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/assets/live/stars.svg" alt="5 out of 5 stars" width={120} height={24} />
-                  <blockquote className="mt-[50px] text-[23px] leading-[29.9px] text-black">
+                  <blockquote className="mt-[28px] text-[16px] leading-[25px] text-black sm:mt-[40px] sm:text-[18px] sm:leading-[27px] lg:mt-[50px] lg:text-[23px] lg:leading-[29.9px]">
                     {t.body}
                   </blockquote>
                   <figcaption className="mt-[24px] text-[18px] leading-[23.4px] font-bold text-black">

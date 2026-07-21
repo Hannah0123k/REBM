@@ -84,7 +84,7 @@ export function SiteHeader() {
             width={458}
             height={35}
             priority
-            className="h-auto w-[clamp(180px,58vw,300px)] sm:w-[360px] xl:w-[clamp(340px,calc(85.9vw-759.5px),560px)]"
+            className="h-auto w-[clamp(210px,66vw,340px)] sm:w-[360px] xl:w-[clamp(340px,calc(85.9vw-759.5px),560px)]"
           />
         </Link>
 

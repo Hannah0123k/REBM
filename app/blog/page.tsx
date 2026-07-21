@@ -68,12 +68,12 @@ export default async function BlogPage({
             reads lighter than the navy REBM logo. A gentle vertical deepening
             plus a soft shadow on the title keep the centered white "Our Blogs"
             readable without darkening the image. */}
-        {/* pt-[81px]: with items-center in the 391px band this puts the title's
-            vertical centre at (391+81)/2 ≈ 236 — the EXACT centreY measured on
-            the live site's hero (title top 192). The title still clears the fixed
-            122px nav (title top ≈ 199). Not the header-height value, because the
-            live site places the heading above the band's geometric centre. */}
-        <section className="relative flex min-h-[340px] w-full items-center justify-center overflow-hidden bg-rebm-blue pt-[81px] lg:min-h-[391px]">
+        {/* Mobile/tablet: pt = header height so the title is EXACTLY centred
+            between the nav's bottom and the band's bottom ((B+headerH)/2 =
+            (navBottom+B)/2). Desktop keeps pt-[81px], which matches the live
+            site's hero (title centreY 236, sitting a touch above the geometric
+            centre). */}
+        <section className="relative flex min-h-[340px] w-full items-center justify-center overflow-hidden bg-rebm-blue pt-[var(--header-h)] lg:min-h-[391px] lg:pt-[81px]">
           {/* Background photo framed EXACTLY like the live site (image-3.png,
               same 1920×384 asset): natural size (background-size:auto — not cover,
               no scale) anchored top-left (0% 0%), so the same visible portion and

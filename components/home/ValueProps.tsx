@@ -18,14 +18,14 @@ import { valueProps } from "@/content/homepage";
 export function ValueProps() {
   return (
     <section className="w-full bg-gradient-to-b from-[#74A6D5] via-rebm-blue to-[#5C92CB]">
-      <Container className="pt-[72px] pb-[100px]">
+      <Container className="pt-[56px] pb-[56px] lg:pt-[72px] lg:pb-[100px]">
         {/* Header — the heading leads the section; top padding is trimmed so it
             starts efficiently without a large blank band above it. */}
         <Reveal className="mx-auto max-w-[820px] text-center" y={20} stagger={0.08}>
-          <h2 className="text-[38px] leading-[46px] font-bold tracking-[-0.5px] text-rebm-navy sm:text-[52px] sm:leading-[60px]">
+          <h2 className="text-[29px] leading-[36px] font-bold tracking-[-0.5px] text-rebm-navy sm:text-[52px] sm:leading-[60px]">
             {valueProps.heading}
           </h2>
-          <p className="mx-auto mt-[22px] max-w-[720px] text-[19px] leading-[29px] text-white sm:text-[20px] sm:leading-[30px]">
+          <p className="mx-auto mt-[22px] max-w-[720px] text-[18px] leading-[25px] text-white sm:text-[20px] sm:leading-[30px]">
             {valueProps.intro.lead}
             <br />
             <span className="italic text-white/90">{valueProps.intro.emphasis}</span>

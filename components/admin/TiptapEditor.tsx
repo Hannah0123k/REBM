@@ -6,6 +6,7 @@ import { Table } from "@tiptap/extension-table";
 import { TableCell } from "@tiptap/extension-table-cell";
 import { TableHeader } from "@tiptap/extension-table-header";
 import { TableRow } from "@tiptap/extension-table-row";
+import TextAlign from "@tiptap/extension-text-align";
 import { EditorContent, useEditor, type Content, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useRef, useState } from "react";
@@ -20,6 +21,11 @@ const extensions = [
     link: { openOnClick: false, HTMLAttributes: { rel: "noreferrer noopener", target: "_blank" } },
   }),
   Image.configure({ inline: false, allowBase64: false }),
+  // Paragraph / heading text alignment (left is the untagged default, so only
+  // center & right actually write a textAlign attr). Kept in sync with the
+  // save-time allowlist (lib/blog/sanitize.ts) and the public renderer
+  // (lib/blog/RenderBody.tsx).
+  TextAlign.configure({ types: ["heading", "paragraph"], alignments: ["left", "center", "right"] }),
   Placeholder.configure({ placeholder: "Write the article…" }),
   // Minimal table support (insert/edit rows & cells) for migrated financial /
   // Market Watch posts. No resizing to keep the schema simple and stable.
@@ -127,6 +133,10 @@ function Toolbar({ editor, onImageClick }: { editor: Editor; onImageClick: () =>
       <button type="button" className={btn(editor.isActive("bulletList"))} onClick={() => editor.chain().focus().toggleBulletList().run()} aria-label="Bulleted list">• List</button>
       <button type="button" className={btn(editor.isActive("orderedList"))} onClick={() => editor.chain().focus().toggleOrderedList().run()} aria-label="Numbered list">1. List</button>
       <button type="button" className={btn(editor.isActive("blockquote"))} onClick={() => editor.chain().focus().toggleBlockquote().run()} aria-label="Quote">❝</button>
+      <Sep />
+      <button type="button" className={btn(editor.isActive({ textAlign: "left" }))} onClick={() => editor.chain().focus().setTextAlign("left").run()} aria-label="Align left" title="Align left">⇤</button>
+      <button type="button" className={btn(editor.isActive({ textAlign: "center" }))} onClick={() => editor.chain().focus().setTextAlign("center").run()} aria-label="Align center" title="Align center">≡</button>
+      <button type="button" className={btn(editor.isActive({ textAlign: "right" }))} onClick={() => editor.chain().focus().setTextAlign("right").run()} aria-label="Align right" title="Align right">⇥</button>
       <Sep />
       <button type="button" className={btn(editor.isActive("link"))} onClick={setLink} aria-label="Link">Link</button>
       <button type="button" className={btn(false)} onClick={onImageClick} aria-label="Insert image">Image</button>

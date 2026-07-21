@@ -25,15 +25,38 @@ export function Process() {
   return (
     <section
       id="process"
-      className="relative w-full overflow-hidden bg-white bg-cover bg-[position:calc(100%+48px)_50%] bg-no-repeat lg:bg-[url('/assets/live/process-bg.webp')]"
+      className="relative w-full overflow-hidden bg-white lg:bg-cover lg:bg-[position:calc(100%+48px)_50%] lg:bg-no-repeat lg:bg-[url('/assets/live/process-bg.webp')]"
     >
-      {/* Group 34: x=1125, y=1121.5 → 109 below the section top. */}
-      <Container className="relative flex min-h-[846px] justify-end pt-[109px]">
+      {/* MOBILE/TABLET: the building photo as a full-width band at the TOP of the
+          section (on desktop it's the full-bleed section background instead).
+          process-bg.webp bakes a white fade into its right ~43% (building is the
+          left ~55%). background-size 184%/left-anchored zooms into the building
+          only, so the image FILLS the band with no white gap; the ONLY fade is a
+          bottom gradient into the white section below. */}
+      <div aria-hidden="true" className="relative h-[220px] w-full overflow-hidden sm:h-[280px] lg:hidden">
+        <div
+          className="absolute inset-0 bg-no-repeat"
+          style={{
+            backgroundImage: "url('/assets/live/process-bg.webp')",
+            backgroundSize: "184% auto",
+            backgroundPosition: "0% 40%",
+          }}
+        />
+        <div className="absolute inset-x-0 bottom-0 h-[52px] bg-gradient-to-b from-transparent to-white" />
+      </div>
+      {/* Group 34: x=1125, y=1121.5 → 109 below the section top (desktop). On
+          mobile the section is content-height with its own padding (no forced
+          846px, so no empty gap before the next section). */}
+      <Container className="relative flex flex-col pt-[40px] pb-[56px] lg:min-h-[846px] lg:flex-row lg:justify-end lg:pt-[109px] lg:pb-0">
         <div className="w-full lg:w-[605px] lg:shrink-0">
           {/* Heading + intro slide gently in from the right (fade-up on mobile). */}
           <Reveal x={30} stagger={0.1}>
-            <h2 className="text-[32px] leading-[41.6px] font-bold text-black">{process.heading}</h2>
-            <p className="mt-[24px] text-[24px] leading-[31.2px] text-black">{process.intro}</p>
+            <h2 className="text-[29px] leading-[36px] font-bold text-black lg:text-[32px] lg:leading-[41.6px]">
+              {process.heading}
+            </h2>
+            <p className="mt-[24px] text-[18px] leading-[23.4px] text-black lg:text-[24px] lg:leading-[31.2px]">
+              {process.intro}
+            </p>
           </Reveal>
 
           {/* Steps 1–3 fade upward in a short stagger. */}

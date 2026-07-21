@@ -21,9 +21,9 @@ import { markets } from "@/content/homepage";
 export function Markets() {
   return (
     <section id="property" className="w-full bg-[#F5F5F5]">
-      <Container className="pt-[96px] pb-[96px]">
+      <Container className="pt-[56px] pb-[56px] lg:pt-[96px] lg:pb-[96px]">
         <Reveal>
-          <h2 className="text-[36px] leading-[44px] font-bold text-rebm-navy lg:text-[62px] lg:leading-[80.6px]">
+          <h2 className="text-[29px] leading-[36px] font-bold text-rebm-navy lg:text-[62px] lg:leading-[80.6px]">
             {markets.heading}
           </h2>
         </Reveal>
@@ -55,10 +55,10 @@ export function Markets() {
                   />
                 ))}
               </div>
-              <h3 className="mt-[24px] text-[32px] leading-[41.6px] font-bold text-rebm-navy">
+              <h3 className="mt-[24px] text-[24px] leading-[31px] font-bold text-rebm-navy lg:text-[32px] lg:leading-[41.6px]">
                 {card.title}
               </h3>
-              <p className="mt-[10px] text-[24px] leading-[31.2px] text-rebm-footer">
+              <p className="mt-[10px] text-[18px] leading-[25px] text-rebm-footer lg:text-[24px] lg:leading-[31.2px]">
                 {card.subtitle}
               </p>
             </article>

@@ -23,7 +23,17 @@ export const postInputSchema = z
     featured_image_url: z.string().url("Enter a valid image URL.").nullable().optional(),
     featured_image_alt: z.string().trim().max(300).nullable().optional(),
     author_name: z.string().trim().max(120).nullable().optional(),
-    author_image_url: z.string().url("Enter a valid image URL.").nullable().optional(),
+    // Either a full http(s) URL OR a root-relative app-asset path ("/…"). The
+    // author images are now bundled assets (see lib/blog/authors.ts), so the
+    // strict .url() would reject their root-relative paths.
+    author_image_url: z
+      .string()
+      .refine(
+        (v) => v.startsWith("/") || /^https?:\/\//.test(v),
+        "Enter a valid image URL or app-asset path.",
+      )
+      .nullable()
+      .optional(),
     status: z.enum(["draft", "published", "scheduled", "unpublished"]),
     featured: z.boolean(),
     // Tag NAMES (slugs are derived server-side). Deduped/cleaned in the action.
@@ -54,18 +64,6 @@ export const postInputSchema = z
           message: "Scheduled posts need a future date and time.",
         });
       }
-    }
-    // Require featured-image alt text when a featured image is set AND publishing.
-    if (
-      data.status === "published" &&
-      data.featured_image_url &&
-      !(data.featured_image_alt ?? "").trim()
-    ) {
-      ctx.addIssue({
-        path: ["featured_image_alt"],
-        code: z.ZodIssueCode.custom,
-        message: "Add alt text for the featured image before publishing.",
-      });
     }
   });
 

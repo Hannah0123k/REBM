@@ -39,6 +39,16 @@ function safeColwidth(v: unknown): number[] | null {
   return out.length ? out : null;
 }
 
+/**
+ * Text alignment on a paragraph/heading. Only "center"/"right" are stored;
+ * "left" (and anything unexpected) collapses to null, since left is the default
+ * and rendering nothing keeps the document clean. Kept in lock-step with the
+ * editor's TextAlign config and the public renderer.
+ */
+function safeAlign(v: unknown): "center" | "right" | null {
+  return v === "center" || v === "right" ? v : null;
+}
+
 const ALLOWED_MARKS = new Set(["bold", "italic", "strike", "code", "link"]);
 
 const SAFE_HREF = /^(https?:\/\/|mailto:|\/)/i;
@@ -64,7 +74,9 @@ function cleanNode(node: Node): Node | null {
   if (node.attrs) {
     if (node.type === "heading") {
       const level = Number(node.attrs.level);
-      out.attrs = { level: level >= 2 && level <= 4 ? level : 2 };
+      out.attrs = { level: level >= 2 && level <= 4 ? level : 2, textAlign: safeAlign(node.attrs.textAlign) };
+    } else if (node.type === "paragraph") {
+      out.attrs = { textAlign: safeAlign(node.attrs.textAlign) };
     } else if (node.type === "image") {
       const src = String(node.attrs.src ?? "");
       if (!SAFE_HREF.test(src)) return null; // drop unsafe image sources

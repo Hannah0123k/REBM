@@ -75,6 +75,33 @@ test("sanitizeDoc clamps heading level and keeps safe content", () => {
   assert.equal(h.attrs.level, 2); // out-of-range level clamped to 2
 });
 
+test("sanitizeDoc preserves center/right text alignment on paragraphs & headings", () => {
+  const clean = sanitizeDoc({
+    type: "doc",
+    content: [
+      { type: "paragraph", attrs: { textAlign: "center" }, content: [{ type: "text", text: "c" }] },
+      { type: "heading", attrs: { level: 3, textAlign: "right" }, content: [{ type: "text", text: "r" }] },
+    ],
+  });
+  const [p, h] = clean.content as { attrs: Record<string, unknown> }[];
+  assert.equal(p.attrs.textAlign, "center");
+  assert.equal(h.attrs.textAlign, "right");
+  assert.equal(h.attrs.level, 3);
+});
+
+test("sanitizeDoc collapses default/garbage alignment to null (kept clean)", () => {
+  const clean = sanitizeDoc({
+    type: "doc",
+    content: [
+      { type: "paragraph", attrs: { textAlign: "left" }, content: [{ type: "text", text: "a" }] },
+      { type: "paragraph", attrs: { textAlign: "justify; color:red" }, content: [{ type: "text", text: "b" }] },
+    ],
+  });
+  const [left, garbage] = clean.content as { attrs: Record<string, unknown> }[];
+  assert.equal(left.attrs.textAlign, null); // "left" is the default → not stored
+  assert.equal(garbage.attrs.textAlign, null); // anything unexpected → null
+});
+
 test("sanitizeDoc throws when the root is not a doc", () => {
   assert.throws(() => sanitizeDoc({ type: "paragraph" }));
   assert.throws(() => sanitizeDoc(null));

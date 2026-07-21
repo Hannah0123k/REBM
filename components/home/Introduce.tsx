@@ -17,17 +17,21 @@ import { introduce } from "@/content/homepage";
 export function Introduce() {
   return (
     <section className="w-full bg-rebm-band-can">
-      <Container className="pt-[100px] pb-[90px]">
+      <Container className="pt-[56px] pb-[56px] lg:pt-[100px] lg:pb-[90px]">
         <Reveal className="flex flex-col items-center text-center" stagger={0.1}>
-          <h2 className="text-[30px] leading-[39px] font-bold text-white">{introduce.heading}</h2>
+          <h2 className="text-[29px] leading-[36px] font-bold text-white lg:text-[30px] lg:leading-[39px]">
+            {introduce.heading}
+          </h2>
 
-          <div className="mt-[63px] flex w-full flex-col gap-[32px] lg:flex-row lg:gap-0">
+          {/* Mobile: stacked with thin horizontal dividers between items (smaller
+              text). Desktop: three columns with vertical dividers (unchanged). */}
+          <div className="mt-[32px] flex w-full flex-col lg:mt-[63px] lg:flex-row lg:gap-0">
             {introduce.items.map((item, i) => (
               <p
                 key={item}
-                className={`flex-1 px-[24px] text-[30px] leading-[39px] text-white ${
-                  i < introduce.items.length - 1 ? "lg:border-r lg:border-white" : ""
-                }`}
+                className={`flex-1 px-[24px] py-[24px] text-[18px] leading-[25px] text-white lg:py-0 lg:text-[30px] lg:leading-[39px] ${
+                  i > 0 ? "border-t border-white/40 lg:border-t-0" : ""
+                } ${i < introduce.items.length - 1 ? "lg:border-r lg:border-white" : ""}`}
               >
                 {item}
               </p>

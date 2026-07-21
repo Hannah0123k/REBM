@@ -3,10 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 
-import { AuthorPhotoField } from "@/components/admin/AuthorPhotoField";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { TiptapEditor } from "@/components/admin/TiptapEditor";
 import { autosavePost, createPost, updatePost } from "@/app/admin/posts/actions";
+import { AUTHORS, findAuthorByName } from "@/lib/blog/authors";
 import { isEmptyDoc } from "@/lib/blog/readingTime";
 import { slugify } from "@/lib/blog/slug";
 import type { BlogPost, PostStatus, TiptapDoc } from "@/lib/blog/types";
@@ -319,19 +319,45 @@ export function PostEditor({ post, initialTags = [] }: { post?: BlogPost; initia
           </Panel>
 
           <Panel title="Author">
-            <Field label="Author name">
-              {(id) => (
-                <input
-                  id={id}
-                  value={author}
-                  onChange={(e) => setAuthor(e.target.value)}
-                  placeholder="Author name"
-                  className="w-full rounded-[10px] border border-rebm-card-border px-[12px] py-[9px] text-[14px] outline-none focus:border-rebm-blue"
-                />
-              )}
-            </Field>
-            <Field label="Author photo">
-              <AuthorPhotoField url={authorImageUrl} authorName={author} onChange={setAuthorImageUrl} />
+            <Field label="Author">
+              {(id) => {
+                const registryAuthor = findAuthorByName(author);
+                // Selected value: the registry id when the name maps to a known
+                // author, otherwise the legacy free-text name (preserved), else "".
+                const selectValue = registryAuthor ? registryAuthor.id : author || "";
+                const isLegacy = !registryAuthor && author.length > 0;
+                return (
+                  <select
+                    id={id}
+                    value={selectValue}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === "") {
+                        setAuthor("");
+                        setAuthorImageUrl(null);
+                        return;
+                      }
+                      const chosen = AUTHORS.find((a) => a.id === val);
+                      if (chosen) {
+                        setAuthor(chosen.name);
+                        setAuthorImageUrl(chosen.imageUrl);
+                      }
+                      // A legacy value (unchanged existing name) leaves state as-is.
+                    }}
+                    className="w-full rounded-[10px] border border-rebm-card-border px-[12px] py-[9px] text-[14px] capitalize outline-none focus:border-rebm-blue"
+                  >
+                    <option value="">Select author…</option>
+                    {isLegacy && (
+                      <option value={author}>{author} (existing)</option>
+                    )}
+                    {AUTHORS.map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.name}
+                      </option>
+                    ))}
+                  </select>
+                );
+              }}
             </Field>
           </Panel>
 
@@ -343,11 +369,9 @@ export function PostEditor({ post, initialTags = [] }: { post?: BlogPost; initia
             <ImageUploadField
               url={featuredUrl}
               alt={featuredAlt}
-              altError={fieldErrors.featured_image_alt}
               onChange={({ url, alt }) => {
                 setFeaturedUrl(url);
                 setFeaturedAlt(alt);
-                clearFieldError("featured_image_alt");
               }}
             />
           </Panel>

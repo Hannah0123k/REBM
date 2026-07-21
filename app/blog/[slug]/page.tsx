@@ -21,6 +21,7 @@ import {
   cardFromPost,
   type CardPost,
 } from "@/lib/blog/cardView";
+import { resolveAuthorImage } from "@/lib/blog/authors";
 import { formatPublishedDate, isoDateTimeAttr } from "@/lib/blog/date";
 import { getPostBySlug, getRelatedPosts, resolveOldSlug, type PublicPost } from "@/lib/blog/queries";
 import { RenderBody, isBodyEmpty } from "@/lib/blog/RenderBody";
@@ -68,7 +69,9 @@ function viewFromPost(post: PublicPost): ArticleView {
     coverAlt: post.featured_image_alt || post.title,
     coverTone: isMw ? "blue" : "light",
     authorName: post.author_name,
-    authorImageUrl: post.author_image_url,
+    // Authoritative: image derived from the author name via the registry, so it
+    // can never mismatch the name and self-heals posts with a null stored URL.
+    authorImageUrl: resolveAuthorImage(post.author_name, post.author_image_url),
     tags: post.tags,
     isPlaceholder: false,
     body: post.body,
@@ -208,43 +211,31 @@ export default async function BlogPostPage({
           />
         )}
 
-        <article className="pt-[calc(var(--header-h)+44px)] pb-[0px]">
+        <article className="pt-[calc(var(--header-h)+16px)] pb-[0px]">
           <Container>
+            {/* One shared content column (max-w-760) for the WHOLE header —
+                back link, date, featured image, author and body all inherit its
+                width, so the image edges line up with the body text edges. */}
             <div className="mx-auto max-w-[760px]">
               <Link href="/blog" className="text-[14px] font-medium text-rebm-link hover:underline">
                 ← Our Blogs
               </Link>
 
-              {/* Title → meta. The category eyebrow is intentionally omitted —
-                  no public-facing category/tag UI (data is still kept for
-                  related-post logic, filtering and migration). */}
-              <h1 className="mt-[18px] text-[34px] leading-[42px] font-bold text-balance text-rebm-navy sm:text-[48px] sm:leading-[56px]">
-                {view.title}
-              </h1>
+              {/* The featured image already contains the article title, so the
+                  title is NOT shown visually. It stays in the DOM as an sr-only
+                  <h1> for accessibility, document structure and SEO; the visible
+                  <title>, Open Graph, Twitter, JSON-LD, slug and search all still
+                  use it (see generateMetadata / articleSchema). */}
+              <h1 className="sr-only">{view.title}</h1>
 
-              <div className="mt-[20px] flex flex-wrap items-center gap-x-[12px] gap-y-[8px] text-[15px] text-[rgb(90,102,114)]">
-                {/* Author block only when real author data exists — never faked. */}
-                {view.authorName && (
-                  <>
-                    <span className="flex items-center gap-[10px]">
-                      <AuthorAvatar name={view.authorName} src={view.authorImageUrl} size={38} />
-                      <span className="font-medium text-rebm-navy">{view.authorName}</span>
-                    </span>
-                    <span aria-hidden="true" className="text-[rgb(180,190,200)]">·</span>
-                  </>
-                )}
-                <time dateTime={isoDateTimeAttr(view.dateIso)} className="font-medium text-rebm-link">
-                  {formatPublishedDate(view.dateIso)}
-                </time>
-                {view.readingMinutes > 0 && (
-                  <>
-                    <span aria-hidden="true" className="text-[rgb(180,190,200)]">·</span>
-                    <span>{view.readingMinutes} min read</span>
-                  </>
-                )}
-              </div>
+              {/* Tight, centered header rhythm:
+                  date → featured image → circular author photo → "By {author}".
+                  Everything from the date through the name is centered. */}
+              <p className="mt-[14px] text-center text-[13px] font-semibold tracking-[0.14em] text-rebm-navy uppercase">
+                <time dateTime={isoDateTimeAttr(view.dateIso)}>{formatPublishedDate(view.dateIso)}</time>
+              </p>
 
-              <div className="mt-[32px]">
+              <div className="mt-[14px]">
                 <CoverImage
                   url={view.coverUrl}
                   alt={view.coverAlt}
@@ -255,6 +246,16 @@ export default async function BlogPostPage({
                 />
               </div>
 
+              {/* Author block only when real author data exists — never faked.
+                  Circular photo derived from the author name (resolveAuthorImage),
+                  then "By {name}" just beneath it, centered as one unit. */}
+              {view.authorName && (
+                <div className="mt-[16px] flex flex-col items-center">
+                  <AuthorAvatar name={view.authorName} src={view.authorImageUrl} size={64} />
+                  <p className="mt-[8px] text-[17px] font-semibold text-rebm-navy">By {view.authorName}</p>
+                </div>
+              )}
+
               {view.isPlaceholder && (
                 <p className="mt-[24px] rounded-[12px] bg-[#EEF3F8] px-[18px] py-[12px] text-[14px] leading-[21px] text-[rgb(70,82,94)]">
                   <span className="font-semibold text-rebm-navy">Preview.</span> This is placeholder
@@ -263,8 +264,14 @@ export default async function BlogPostPage({
                 </p>
               )}
 
-              {/* Body — shared premium typography for real + placeholder content. */}
-              <div className="prose prose-lg mt-[32px] max-w-none text-[18px] leading-[32px] text-black [&>p:first-of-type]:text-[20px] [&>p:first-of-type]:leading-[33px] [&>p:first-of-type]:text-[rgb(55,67,79)] [&_a]:text-rebm-link [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-rebm-quote-border [&_blockquote]:pl-[18px] [&_blockquote]:text-[rgb(60,72,84)] [&_blockquote]:italic [&_h2]:mt-[44px] [&_h2]:mb-[10px] [&_h2]:text-[28px] [&_h2]:leading-[34px] [&_h2]:font-bold [&_h2]:text-rebm-navy [&_h3]:mt-[34px] [&_h3]:text-[22px] [&_h3]:font-semibold [&_h3]:text-rebm-navy [&_img]:my-[28px] [&_img]:rounded-[14px] [&_li]:my-[7px] [&_ol]:my-[18px] [&_ol]:list-decimal [&_ol]:pl-[26px] [&_p]:my-[20px] [&_ul]:my-[18px] [&_ul]:list-disc [&_ul]:pl-[26px]">
+              {/* Body — emulates the live article's typography (measured):
+                  paragraphs 18/23.4 #0b384f in the Helvetica Neue stack (font
+                  set by .article-prose in globals.css), ~31px paragraph gaps;
+                  h2 30/39 w600 #1e293b in Inter. No special first paragraph (the
+                  live article has none). Pasted inline fonts/sizes/colors can't
+                  reach here — the save-time sanitizer strips them (sanitize.ts)
+                  and RenderBody only emits bold/italic/link/heading/list/quote. */}
+              <div className="article-prose mt-[20px] max-w-none text-[18px] leading-[24px] text-[#0b384f] [&_a]:text-rebm-link [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-rebm-quote-border [&_blockquote]:pl-[18px] [&_blockquote]:text-[rgb(60,72,84)] [&_blockquote]:italic [&_h2]:mt-[45px] [&_h2]:mb-[19px] [&_h2]:text-[30px] [&_h2]:leading-[39px] [&_h2]:font-semibold [&_h2]:text-[#1e293b] [&_h3]:mt-[34px] [&_h3]:mb-[12px] [&_h3]:text-[24px] [&_h3]:leading-[31px] [&_h3]:font-semibold [&_h3]:text-[#1e293b] [&_img]:my-[28px] [&_img]:rounded-[14px] [&_li]:my-[6px] [&_ol]:my-[18px] [&_ol]:list-decimal [&_ol]:pl-[26px] [&_p]:mt-0 [&_p]:mb-[31px] [&_ul]:my-[18px] [&_ul]:list-disc [&_ul]:pl-[26px]">
                 {view.placeholderBlocks ? (
                   view.placeholderBlocks.map((b, i) =>
                     b.kind === "h2" ? <h2 key={i}>{b.text}</h2> : <p key={i}>{b.text}</p>,

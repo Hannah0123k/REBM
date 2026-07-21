@@ -1,3 +1,4 @@
+import { resolveAuthorImage } from "@/lib/blog/authors";
 import type { BlogPlaceholder } from "@/content/blog-placeholders";
 import type { PublicPostCard } from "@/lib/blog/queries";
 
@@ -29,6 +30,16 @@ export type CardPost = {
  */
 export const BLOG_COVER_ASPECT = "aspect-[1564/942]";
 
+/**
+ * The same 1564×942 cover artwork, as raw numbers — for the admin crop editor,
+ * which needs the numeric ratio (and target output pixels) to enforce the crop
+ * box and render the cropped image. Kept next to BLOG_COVER_ASPECT so the CSS
+ * aspect and the crop aspect can never drift apart.
+ */
+export const BLOG_COVER_W = 1564;
+export const BLOG_COVER_H = 942;
+export const BLOG_COVER_RATIO = BLOG_COVER_W / BLOG_COVER_H; // ≈ 1.6603
+
 const MARKET_WATCH = new Set(["market-watch", "market-pulse"]);
 
 export function cardFromPost(p: PublicPostCard): CardPost {
@@ -43,7 +54,9 @@ export function cardFromPost(p: PublicPostCard): CardPost {
     imageUrl: p.featured_image_url,
     imageAlt: p.featured_image_alt || p.title,
     authorName: p.author_name ?? "",
-    authorImageUrl: p.author_image_url,
+    // Image derived from the author name (registry) so name↔image never mismatch
+    // and posts with a null stored URL still show the right photo. See authors.ts.
+    authorImageUrl: resolveAuthorImage(p.author_name, p.author_image_url),
     isMarketWatch,
   };
 }

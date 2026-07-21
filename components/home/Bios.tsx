@@ -39,66 +39,57 @@ const HEAD_POSITION: Record<string, string> = {
 export function Bios() {
   return (
     <section id="about" className="w-full bg-[#F5F5F5]">
-      <Container className="pt-[101px] pb-[50px]">
+      <Container className="pt-[56px] pb-[56px] lg:pt-[101px] lg:pb-[50px]">
         {/* Kicker, then each profile row as a unit (Alan first, Rhett ~0.15s
             later), then the closing line — all fade up in sequence. */}
-        <Reveal stagger={0.15}>
-        {/* "Meet Alan & Rhett" kicker — indented to the text column so it sits
-            above the name; the photo below aligns to the name's top, not the
-            kicker (matches the reference). An addition; not on the live site. */}
-        <h2 className="mb-[16px] text-[28px] leading-[34px] font-bold text-rebm-navy sm:pl-[350.7px] lg:text-[34px] lg:leading-[42px]">
-          Meet Alan &amp; Rhett
-        </h2>
+        {/* Kicker and EACH profile row get their OWN scroll-entrance, so Alan and
+            Rhett both fade up as they scroll into view. (One shared Reveal fired
+            when the section top entered, animating Rhett while still off-screen.) */}
+        <Reveal>
+          <h2 className="mb-[16px] text-center text-[29px] leading-[36px] font-bold text-rebm-navy sm:pl-[350.7px] sm:text-left lg:text-[34px] lg:leading-[42px]">
+            Meet Alan &amp; Rhett
+          </h2>
+        </Reveal>
         {bios.people.map((person, i) => (
-          <div
-            key={person.name}
-            className={`flex flex-col items-start gap-[24px] sm:flex-row sm:items-stretch sm:gap-0 ${i > 0 ? "mt-[51px]" : ""}`}
-          >
-            {/* On desktop the photo tracks the text column's height, capped at
-                its 248px design height. The wrapper is the flex item so
-                align-items:stretch grows it to the row height (the text column),
-                while the image fills it absolutely — a percentage height on the
-                <img> itself would fall back to its intrinsic 248 and never
-                shrink. So a SHORTER bio (Rhett) pulls the photo down to the
-                text's height, bottom-aligned with the last line; a LONGER bio
-                (Alan) hits the 248 cap and stays top-aligned as designed. On
-                mobile the wrapper collapses and the image keeps its fixed 248. */}
-            <div className="w-[285.7px] shrink-0 sm:relative sm:mr-[65px] sm:max-h-[248px] sm:self-stretch">
-              <Image
-                src={PHOTOS[person.photo]}
-                alt={person.alt}
-                style={{ objectPosition: HEAD_POSITION[person.photo] ?? "50% 0%" }}
-                className="h-[248px] w-full rounded-[30px] object-cover sm:absolute sm:inset-0 sm:h-full"
-              />
-            </div>
-            <div className="min-w-0 flex-1">
-              {/* Line-height tightened to the font size so the name's cap sits
-                  at the top of its box, aligning with the headshot top (the
-                  extra leading otherwise dropped the cap ~9px below the photo). */}
-              <h3 className="mb-[20px] text-[40px] leading-[40px] font-black text-rebm-navy lg:text-[62px] lg:leading-[62px]">
-                {person.name}
-              </h3>
-              <div className="space-y-[20px] text-[23px] leading-[29.9px] text-black">
-                {person.body.map((para) => (
-                  <p key={para}>{para}</p>
-                ))}
+          <Reveal key={person.name} className={i > 0 ? "mt-[51px]" : ""}>
+            {/* The photo wrapper tracks the text column's height on desktop
+                (capped at 248px); on mobile it collapses to the fixed 248. */}
+            <div className="flex flex-col items-center gap-[24px] sm:flex-row sm:items-stretch sm:gap-0">
+              <div className="w-[285.7px] shrink-0 sm:relative sm:mr-[65px] sm:max-h-[248px] sm:self-stretch">
+                <Image
+                  src={PHOTOS[person.photo]}
+                  alt={person.alt}
+                  style={{ objectPosition: HEAD_POSITION[person.photo] ?? "50% 0%" }}
+                  className="h-[248px] w-full rounded-[30px] object-cover sm:absolute sm:inset-0 sm:h-full"
+                />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="mb-[20px] text-center text-[40px] leading-[40px] font-black text-rebm-navy sm:text-left lg:text-[62px] lg:leading-[62px]">
+                  {person.name}
+                </h3>
+                <div className="space-y-[20px] text-[16px] leading-[24px] text-black lg:text-[23px] lg:leading-[29.9px]">
+                  {person.body.map((para) => (
+                    <p key={para}>{para}</p>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          </Reveal>
         ))}
 
-        <p className="mt-[50px] text-[24px] leading-[39.6px] text-[rgb(30,41,59)]">
-          {bios.closing.before}
-          <a
-            href={bios.closing.linkHref}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="text-rebm-link underline"
-          >
-            {bios.closing.linkText}
-          </a>
-          {bios.closing.after}
-        </p>
+        <Reveal className="mt-[50px]">
+          <p className="text-[18px] leading-[27px] text-[rgb(30,41,59)] lg:text-[24px] lg:leading-[39.6px]">
+            {bios.closing.before}
+            <a
+              href={bios.closing.linkHref}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="text-rebm-link underline"
+            >
+              {bios.closing.linkText}
+            </a>
+            {bios.closing.after}
+          </p>
         </Reveal>
       </Container>
     </section>
