@@ -22,6 +22,7 @@
   --color-rebm-card-border: #d9d9d9;
   --color-rebm-quote-border: #417aae;
   --color-rebm-star: #fb9639;
+  --color-rebm-newsletter: #d7e3f0; /* pale-blue panel behind the article newsletter block — a tint of rebm-blue */
 
   /* Section bands. These sit over photos, so what you see on screen is a
      composite — never sample them from a screenshot. */

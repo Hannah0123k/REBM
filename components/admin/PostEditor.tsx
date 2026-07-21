@@ -180,8 +180,8 @@ export function PostEditor({ post, initialTags = [] }: { post?: BlogPost; initia
       // Reflect any server-side normalization (future-dated publish → scheduled).
       setStatus(normalizeStatus(effectiveStatus, localInputToIso(publishedLocal)));
       setSaveState("saved");
-      if (mode === "new") router.replace(`/admin/posts/${res.id}/edit`);
-      else router.refresh();
+      // After a successful manual save, return to the posts dashboard.
+      router.push("/admin/posts");
     } finally {
       mutating.current = false;
     }

@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { AuthorAvatar } from "@/components/blog/AuthorAvatar";
 import { CoverImage } from "@/components/blog/CoverImage";
 import { BLOG_COVER_ASPECT, cardFromPlaceholder, type CardPost } from "@/lib/blog/cardView";
 import { formatPublishedDate, isoDateTimeAttr } from "@/lib/blog/date";
@@ -19,43 +18,26 @@ export function FeaturedBlogCard({ post }: { post: CardPost | BlogPlaceholder })
   const live = p.href !== "#";
 
   const inner = (
-    <article className="grid items-center gap-[28px] lg:grid-cols-[1.45fr_1fr] lg:gap-[52px]">
-      <div className="overflow-hidden rounded-[22px]">
+    // Live featured lead geometry (measured): image : text column ratio = 655 :
+    // 486 with a ~72px gap; side-by-side on desktop (≥lg / >1024, where the live
+    // site is horizontal) and stacked (cover on top) on tablet/mobile.
+    <article className="grid items-center gap-[28px] lg:grid-cols-[655fr_486fr] lg:gap-[72px]">
+      <div className="overflow-hidden rounded-[30px]">
         <div className="transition-transform duration-300 ease-out group-hover:scale-[1.02] motion-reduce:transform-none motion-reduce:transition-none">
-          <CoverImage url={p.imageUrl} alt={p.imageAlt} aspect={BLOG_COVER_ASPECT} tone="blue" rounded="rounded-[22px]" eager />
+          <CoverImage url={p.imageUrl} alt={p.imageAlt} aspect={BLOG_COVER_ASPECT} tone="blue" rounded="rounded-[30px]" eager />
         </div>
       </div>
       <div>
-        <span className="inline-flex items-center rounded-full bg-rebm-blue/15 px-[12px] py-[5px] text-[12px] font-bold tracking-[0.08em] text-rebm-navy uppercase">
-          {p.category}
-        </span>
-        <h2 className="mt-[16px] text-[32px] leading-[40px] font-bold text-balance text-rebm-navy group-hover:underline sm:text-[42px] sm:leading-[50px]">
+        {/* Live featured text styling (measured): title 48/57.6 w700; excerpt
+            16/26.4 #334155; date 16px #6EC1E4. The live featured shows the date
+            only — no author avatar. */}
+        <h2 className="text-[34px] leading-[42px] font-bold text-balance text-rebm-navy transition-colors duration-200 group-hover:text-rebm-link sm:text-[48px] sm:leading-[58px]">
           {p.title}
         </h2>
-        <p className="mt-[16px] text-[18px] leading-[28px] text-[rgb(70,82,94)]">{p.excerpt}</p>
-
-        {p.authorName ? (
-          <div className="mt-[20px] flex items-center gap-[10px]">
-            <AuthorAvatar name={p.authorName} src={p.authorImageUrl} size={38} />
-            <div className="text-[14px] leading-[19px]">
-              <span className="block font-medium text-rebm-navy">{p.authorName}</span>
-              <time dateTime={isoDateTimeAttr(p.dateIso)} className="block text-rebm-link">
-                {formatPublishedDate(p.dateIso)}
-              </time>
-            </div>
-          </div>
-        ) : (
-          <time dateTime={isoDateTimeAttr(p.dateIso)} className="mt-[18px] block text-[15px] font-semibold text-rebm-link">
-            {formatPublishedDate(p.dateIso)}
-          </time>
-        )}
-
-        <span
-          className={`mt-[26px] inline-flex w-fit items-center gap-[8px] rounded-full px-[26px] py-[13px] text-[16px] font-medium text-white shadow-sm transition-[transform,box-shadow] duration-200 ease-out group-hover:scale-[1.03] group-hover:shadow-lg motion-reduce:transform-none motion-reduce:transition-none ${live ? "bg-rebm-navy" : "cursor-default bg-rebm-navy/60"}`}
-        >
-          Read the full report
-          <span aria-hidden="true">→</span>
-        </span>
+        <p className="mt-[16px] text-[16px] leading-[26px] text-[rgb(51,65,85)]">{p.excerpt}</p>
+        <time dateTime={isoDateTimeAttr(p.dateIso)} className="mt-[18px] block text-[16px] leading-[26px] text-[#6ec1e4]">
+          {formatPublishedDate(p.dateIso)}
+        </time>
       </div>
     </article>
   );

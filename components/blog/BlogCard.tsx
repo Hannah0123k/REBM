@@ -23,14 +23,14 @@ export function BlogCard({ post }: { post: CardPost | BlogPlaceholder }) {
           <CoverImage
             url={p.imageUrl}
             alt={p.imageAlt}
-            aspect="aspect-[16/9]"
+            aspect="aspect-[377/220]"
             tone={p.isMarketWatch ? "blue" : "light"}
             rounded="rounded-[16px]"
           />
         </div>
       </div>
       <div className="mt-[18px] flex flex-1 flex-col">
-        <h3 className="line-clamp-3 text-[22px] leading-[28px] font-bold text-balance text-rebm-navy group-hover:underline">
+        <h3 className="line-clamp-3 text-[22px] leading-[28px] font-bold text-balance text-rebm-navy transition-colors duration-200 group-hover:text-rebm-link">
           {p.title}
         </h3>
         {p.excerpt && (

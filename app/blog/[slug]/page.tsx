@@ -6,8 +6,8 @@ import { Container } from "@/components/Container";
 import { Footer } from "@/components/Footer";
 import { AuthorAvatar } from "@/components/blog/AuthorAvatar";
 import { CoverImage } from "@/components/blog/CoverImage";
+import { NewsletterSection } from "@/components/blog/NewsletterSection";
 import { RelatedPosts } from "@/components/blog/RelatedPosts";
-import { SubscribeCard } from "@/components/blog/SubscribeCard";
 import {
   getPlaceholderBody,
   getPlaceholderBySlug,
@@ -171,18 +171,18 @@ export default async function BlogPostPage({
     // Fall back to placeholders so the section is never empty pre-migration.
     let realRelated: Awaited<ReturnType<typeof getRelatedPosts>> = [];
     try {
-      realRelated = await getRelatedPosts(post.id, 3);
+      realRelated = await getRelatedPosts({ id: post.id, tags: post.tags }, 2);
     } catch {
       realRelated = [];
     }
     related = realRelated.length
       ? realRelated.map(cardFromPost)
-      : getRelatedPlaceholders("__none__", 3).map(cardFromPlaceholder);
+      : getRelatedPlaceholders("__none__", 2).map(cardFromPlaceholder);
   } else {
     const ph = getPlaceholderBySlug(slug);
     if (!ph) notFound();
     view = viewFromPlaceholder(ph);
-    related = getRelatedPlaceholders(ph.id, 3).map(cardFromPlaceholder);
+    related = getRelatedPlaceholders(ph.id, 2).map(cardFromPlaceholder);
   }
 
   const articleSchema = view.isPlaceholder
@@ -208,18 +208,17 @@ export default async function BlogPostPage({
           />
         )}
 
-        <article className="pt-[calc(var(--header-h)+44px)] pb-[88px]">
+        <article className="pt-[calc(var(--header-h)+44px)] pb-[0px]">
           <Container>
             <div className="mx-auto max-w-[760px]">
               <Link href="/blog" className="text-[14px] font-medium text-rebm-link hover:underline">
                 ← Our Blogs
               </Link>
 
-              {/* Eyebrow → title → meta: a clear top-down hierarchy. */}
-              <p className="mt-[22px] text-[13px] font-bold tracking-[0.08em] text-rebm-blue uppercase">
-                {view.eyebrow}
-              </p>
-              <h1 className="mt-[10px] text-[34px] leading-[42px] font-bold text-balance text-rebm-navy sm:text-[48px] sm:leading-[56px]">
+              {/* Title → meta. The category eyebrow is intentionally omitted —
+                  no public-facing category/tag UI (data is still kept for
+                  related-post logic, filtering and migration). */}
+              <h1 className="mt-[18px] text-[34px] leading-[42px] font-bold text-balance text-rebm-navy sm:text-[48px] sm:leading-[56px]">
                 {view.title}
               </h1>
 
@@ -277,28 +276,12 @@ export default async function BlogPostPage({
                 )}
               </div>
 
-              {view.tags.length > 0 && (
-                <div className="mt-[44px] flex flex-wrap gap-[10px] border-t border-rebm-card-border pt-[24px]">
-                  {view.tags.map((t) => (
-                    <Link
-                      key={t.slug}
-                      href={`/blog/tag/${t.slug}`}
-                      className="rounded-full bg-[#EEF3F8] px-[14px] py-[6px] text-[14px] font-medium text-rebm-navy hover:bg-[#E1EAF3]"
-                    >
-                      {t.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
-
-              {/* Subscription card — reusable, honest, future-ready for Resend. */}
-              <div className="mt-[56px]">
-                <SubscribeCard />
-              </div>
             </div>
           </Container>
         </article>
 
+        {/* Bottom-of-article order: newsletter band → "You May Also Like" → footer. */}
+        <NewsletterSection />
         <RelatedPosts posts={related} />
       </main>
       <Footer />

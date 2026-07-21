@@ -1,5 +1,6 @@
 import "server-only";
 
+import { rankRelated } from "@/lib/blog/related";
 import type { TiptapDoc } from "@/lib/blog/types";
 import { createClient } from "@/lib/supabase/server";
 
@@ -231,15 +232,25 @@ export async function resolveOldSlug(oldSlug: string): Promise<string | null> {
  * Related published posts for the "You May Also Like" section — newest first,
  * EXCLUDING the current post and (via onlyVisible + RLS) any draft/unpublished.
  */
-export async function getRelatedPosts(excludeId: string, limit = 3): Promise<PublicPostCard[]> {
+/**
+ * Related posts for "You May Also Like". Fetches the newest-first public-visible
+ * pool (current post + drafts + archived + future all excluded by the predicate
+ * and the `neq`), then ranks by relevance — same type → shared tags → recency —
+ * and returns the top `limit`. See lib/blog/related for the pure ranking.
+ */
+export async function getRelatedPosts(
+  current: { id: string; tags: PublicTag[] },
+  limit = 2,
+): Promise<PublicPostCard[]> {
   const supabase = await createClient();
   const { data, error } = await onlyVisible(supabase.from("blog_posts").select(CARD_COLUMNS))
-    .neq("id", excludeId)
+    .neq("id", current.id)
     .order("published_at", { ascending: false })
     .order("id", { ascending: false })
-    .limit(limit);
+    .limit(24); // a small pool to rank; this blog has ~21 posts total
   if (error) throw new Error(`getRelatedPosts: ${error.message}`);
-  return (data ?? []).map((r) => toCard(r as unknown as RawRow));
+  const pool = (data ?? []).map((r) => toCard(r as unknown as RawRow));
+  return rankRelated({ tags: current.tags }, pool, limit);
 }
 
 /** All slugs of currently-visible posts — for generateStaticParams / sitemaps. */
