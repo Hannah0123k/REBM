@@ -21,14 +21,14 @@ export function ValueProps() {
       <Container className="pt-[56px] pb-[56px] lg:pt-[72px] lg:pb-[100px]">
         {/* Header — the heading leads the section; top padding is trimmed so it
             starts efficiently without a large blank band above it. */}
-        <Reveal className="mx-auto max-w-[820px] text-center" y={20} stagger={0.08}>
+        <Reveal className="mx-auto max-w-[820px] text-center" y={20} stagger={0.2} duration={1.5}>
           <h2 className="text-[29px] leading-[36px] font-bold tracking-[-0.5px] text-rebm-navy sm:text-[52px] sm:leading-[60px]">
             {valueProps.heading}
           </h2>
           <p className="mx-auto mt-[22px] max-w-[720px] text-[18px] leading-[25px] text-white sm:text-[20px] sm:leading-[30px]">
             {valueProps.intro.lead}
             <br />
-            <span className="italic text-white/90">{valueProps.intro.emphasis}</span>
+            <span className="italic text-white">{valueProps.intro.emphasis}</span>
           </p>
         </Reveal>
 

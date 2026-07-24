@@ -1,12 +1,15 @@
 import Link from "next/link";
 
 import { CoverImage } from "@/components/blog/CoverImage";
-import { cardFromPlaceholder, type CardPost } from "@/lib/blog/cardView";
+import { BLOG_COVER_ASPECT, cardFromPlaceholder, type CardPost } from "@/lib/blog/cardView";
 import { formatPublishedDate, isoDateTimeAttr } from "@/lib/blog/date";
 import type { BlogPlaceholder } from "@/content/blog-placeholders";
 
 /**
- * Regular article card for the grid. A shorter (16:9) cover, then the excerpt,
+ * Regular article card for the grid. The cover uses the SAME aspect ratio as
+ * the article/related covers (BLOG_COVER_ASPECT, 1564/942) so the cover artwork —
+ * including its top/bottom border edges — shows fully and identically everywhere;
+ * a different ratio here would object-cover-trim those edges. Then the excerpt,
  * with the publication date in brand teal at the bottom. The VISIBLE title is
  * intentionally omitted — the cover artwork already contains the title, so
  * repeating it beneath the thumbnail would be redundant. The title still reaches
@@ -25,7 +28,7 @@ export function BlogCard({ post }: { post: CardPost | BlogPlaceholder }) {
           <CoverImage
             url={p.imageUrl}
             alt={p.imageAlt}
-            aspect="aspect-[377/220]"
+            aspect={BLOG_COVER_ASPECT}
             tone={p.isMarketWatch ? "blue" : "light"}
             rounded="rounded-[16px]"
           />
@@ -35,7 +38,7 @@ export function BlogCard({ post }: { post: CardPost | BlogPlaceholder }) {
         {p.excerpt && (
           <p className="line-clamp-3 text-[15px] leading-[24px] text-[rgb(70,82,94)]">{p.excerpt}</p>
         )}
-        <time dateTime={isoDateTimeAttr(p.dateIso)} className="mt-auto pt-[14px] text-[14px] font-semibold text-rebm-link">
+        <time dateTime={isoDateTimeAttr(p.dateIso)} className="mt-auto pt-[14px] text-[14px] font-semibold text-[#6ec1e4]">
           {formatPublishedDate(p.dateIso)}
         </time>
       </div>

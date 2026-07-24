@@ -25,6 +25,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { tag } = await params;
   const name = titleCase(tag);
+  // A tag with no visible posts 404s in the page — but the blog loading boundary
+  // makes that a soft-404 (HTTP 200). A cheap existence check lets us mark the
+  // empty case noindex so invalid tag URLs don't get indexed.
+  const { posts } = await getPublishedPosts({ tagSlug: tag, page: 1, pageSize: 1 });
+  if (posts.length === 0) {
+    return { title: `${name} — ${SITE_NAME} Blog`, robots: { index: false, follow: false } };
+  }
   return {
     title: `${name} — ${SITE_NAME} Blog`,
     description: `Articles tagged ${name} from ${SITE_NAME}.`,

@@ -31,20 +31,30 @@ export function ValuePropCards({ cards }: { cards: readonly Card[] }) {
         gsap.registerPlugin(ScrollTrigger);
         const ctx = gsap.context(() => {
           const items = Array.from(el.children);
-          gsap.from(items, {
-            y: -24,
-            opacity: 0,
-            duration: 0.6,
-            ease: "power3.out",
-            stagger: 0.18,
-            scrollTrigger: {
-              trigger: el,
-              start: "top 80%",
-              end: "bottom 15%",
-              // enter → play, leave (fully out) → reset, both directions, so it
-              // replays on re-entry but not while scrolling within view.
-              toggleActions: "restart reset restart reset",
-            },
+          // Each card animates on its OWN scroll trigger, so on mobile (stacked)
+          // they reveal ONE AT A TIME as you scroll to each — not all at once.
+          // Slower on mobile for a calmer, more deliberate entrance. On desktop
+          // (single row) the three triggers fire together, as before.
+          const mobile = window.matchMedia("(max-width: 640px)").matches;
+          items.forEach((item, i) => {
+            gsap.from(item, {
+              // A clean FADE-IN (with a gentle grow-in-place) — no vertical slide,
+              // so the cards can't overlap each other or the previous card's
+              // floating icon badge as they appear. Each card has its own trigger,
+              // so on mobile they fade in one-by-one, top to bottom, as you scroll.
+              opacity: 0,
+              scale: 0.96,
+              duration: mobile ? 1.5 : 1.7,
+              ease: "power2.out",
+              delay: mobile ? 0 : i * 0.28, // desktop row: a soft left→right cascade
+              scrollTrigger: {
+                trigger: item,
+                start: "top 85%",
+                end: "bottom 8%",
+                // enter → play, leave (fully out) → reset, both directions.
+                toggleActions: "restart reset restart reset",
+              },
+            });
           });
         }, el);
         cleanup = () => ctx.revert();
@@ -60,7 +70,7 @@ export function ValuePropCards({ cards }: { cards: readonly Card[] }) {
   return (
     <div
       ref={ref}
-      className="mt-[64px] grid grid-cols-1 items-stretch gap-[28px] md:grid-cols-3 lg:gap-[32px]"
+      className="mt-[64px] grid grid-cols-1 items-stretch gap-[28px] lg:grid-cols-3 lg:gap-[32px]"
     >
       {cards.map((card) => {
         const Icon = VALUE_PROP_ICONS[card.icon];

@@ -46,6 +46,29 @@ export function MobileNav() {
     buttonRef.current?.focus();
   };
 
+  // Same-page anchor links (`/#faq`, …) must NOT rely on the browser's native
+  // hash scroll: it fires while the drawer still has the body scroll-locked, so
+  // it lands short (the deeper the section, the further off — e.g. FAQ stopped
+  // ~180px above target). Instead we close the drawer, then scroll on the next
+  // frames once the lock has lifted and layout has settled. scrollIntoView
+  // honors each section's CSS scroll-margin-top, so it lands under the header.
+  const onNavClick = (href: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const id = href.startsWith("/#") ? href.slice(2) : null;
+    const target = id ? document.getElementById(id) : null;
+    if (!target) {
+      close(); // real route (Blog/Contact) or not on the homepage — navigate normally
+      return;
+    }
+    e.preventDefault();
+    close();
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+      }),
+    );
+  };
+
   return (
     <div className="xl:hidden">
       <button
@@ -92,7 +115,7 @@ export function MobileNav() {
                 key={link.href}
                 ref={i === 0 ? firstLinkRef : undefined}
                 href={link.href}
-                onClick={close}
+                onClick={onNavClick(link.href)}
                 className="rounded-[4px] px-[12px] py-[6px] text-[24px] leading-[32px] text-white transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
               >
                 {link.label}

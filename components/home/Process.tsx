@@ -59,31 +59,35 @@ export function Process() {
             </p>
           </Reveal>
 
-          {/* Steps 1–3 fade upward in a short stagger. */}
-          <Reveal className="mt-[39px] space-y-[24px]" stagger={0.08} start="top 82%">
+          {/* Steps 1–3 reveal ONE AT A TIME as each scrolls into view (its own
+              Reveal → its own trigger), with a slower entrance — instead of all
+              three firing together when the group appears. */}
+          <div className="mt-[39px] space-y-[24px]">
             {process.steps.map((step) => (
-              <div key={step.label}>
-                {/* h3, not h4 — the section heading above is an h2, so the step
-                    labels are the next level down; skipping to h4 broke the
-                    document outline. Visual styling is unchanged. */}
-                <h3 className="text-[24px] leading-[31.2px] font-bold text-rebm-blue">
-                  {step.label}
-                </h3>
-                <p className="mt-[8px] text-[18px] leading-[23.4px] font-medium text-black">
-                  {step.before}
-                  {step.linkText && (
-                    <a
-                      href={step.linkHref}
-                      className="text-rebm-link underline transition-opacity hover:opacity-70"
-                    >
-                      {step.linkText}
-                    </a>
-                  )}
-                  {step.after}
-                </p>
-              </div>
+              <Reveal key={step.label} duration={1.4} start="top 88%">
+                <div>
+                  {/* h3, not h4 — the section heading above is an h2, so the step
+                      labels are the next level down; skipping to h4 broke the
+                      document outline. Visual styling is unchanged. */}
+                  <h3 className="text-[24px] leading-[31.2px] font-bold text-rebm-blue">
+                    {step.label}
+                  </h3>
+                  <p className="mt-[8px] text-[18px] leading-[23.4px] font-medium text-black">
+                    {step.before}
+                    {step.linkText && (
+                      <a
+                        href={step.linkHref}
+                        className="text-rebm-link underline transition-opacity hover:opacity-70"
+                      >
+                        {step.linkText}
+                      </a>
+                    )}
+                    {step.after}
+                  </p>
+                </div>
+              </Reveal>
             ))}
-          </Reveal>
+          </div>
         </div>
       </Container>
     </section>

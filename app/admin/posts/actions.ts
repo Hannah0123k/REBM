@@ -174,7 +174,10 @@ export async function autosavePost(
     .eq("id", id)
     .select("updated_at")
     .single();
-  if (error) return { ok: false, error: error.message };
+  if (error) {
+    console.error(`[admin/posts] autosave db error: ${error.message}`);
+    return { ok: false, error: "Autosave failed — will retry." };
+  }
   return { ok: true, savedAt: data.updated_at };
 }
 
@@ -351,5 +354,8 @@ function dbError(error: { code?: string; message: string }): ActionResult {
   if (error.code === "23505") {
     return { ok: false, error: "Slug in use.", fieldErrors: { slug: "That slug is already taken." } };
   }
-  return { ok: false, error: error.message };
+  // Don't return raw Postgres/PostgREST text (constraint/column names, RLS
+  // internals) to the client — log it server-side, show a generic message.
+  console.error(`[admin/posts] db error${error.code ? ` (${error.code})` : ""}: ${error.message}`);
+  return { ok: false, error: "Something went wrong saving this post. Please try again." };
 }

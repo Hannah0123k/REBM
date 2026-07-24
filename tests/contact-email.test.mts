@@ -178,7 +178,7 @@ test("rate limiter allows up to max then blocks, and resets after the window", (
 });
 
 test("rate limiter is per-key", () => {
-  let now = 0;
+  const now = 0;
   const rl = createRateLimiter({ windowMs: 1000, max: 1, now: () => now });
   assert.equal(rl.check("a"), false);
   assert.equal(rl.check("b"), false); // different key unaffected

@@ -105,7 +105,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-0 hidden lg:block"
         style={{
           background:
-            "linear-gradient(to right, #689ECF 0%, rgba(104,158,207,0.82) 34%, rgba(104,158,207,0) 66%)",
+            "linear-gradient(to right, #689ECF 0%, rgba(104,158,207,0.82) 40%, rgba(104,158,207,0) 82%)",
         }}
       />
 

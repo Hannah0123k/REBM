@@ -15,6 +15,10 @@ export const config = {
   // session cookie stays fresh across the whole site (Supabase's recommended
   // matcher). The gate logic itself only acts on /admin.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    // Excludes Next internals and static assets (images + PDFs) so the CDN
+    // serves them directly with no session/auth round-trip. The migrated WP
+    // Market Pulse PDFs under /wp-content/uploads/** rely on this to stay pure
+    // static assets. The gate logic only acts on /admin anyway.
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|pdf)$).*)",
   ],
 };

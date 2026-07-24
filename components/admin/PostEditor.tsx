@@ -7,6 +7,7 @@ import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { TiptapEditor } from "@/components/admin/TiptapEditor";
 import { autosavePost, createPost, updatePost } from "@/app/admin/posts/actions";
 import { AUTHORS, findAuthorByName } from "@/lib/blog/authors";
+import { isoToZonedInput, zonedInputToIso } from "@/lib/blog/date";
 import { isEmptyDoc } from "@/lib/blog/readingTime";
 import { slugify } from "@/lib/blog/slug";
 import type { BlogPost, PostStatus, TiptapDoc } from "@/lib/blog/types";
@@ -15,17 +16,11 @@ const EMPTY_DOC: TiptapDoc = { type: "doc", content: [{ type: "paragraph" }] };
 const STATUSES: PostStatus[] = ["draft", "published", "scheduled", "unpublished"];
 const AUTOSAVE_MS = 3000;
 
-/** ISO → value for <input type="datetime-local"> (local wall-clock). */
-function isoToLocalInput(iso: string | null): string {
-  if (!iso) return "";
-  const d = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-/** datetime-local value → offset-aware ISO instant (pins the wall-clock choice). */
-function localInputToIso(v: string): string | null {
-  return v ? new Date(v).toISOString() : null;
-}
+// datetime-local ⇄ UTC-instant conversion is anchored to the site's business
+// display zone (America/New_York), NOT the admin's browser zone, so the date the
+// admin picks is the date the public sees. See lib/blog/date.ts.
+const isoToLocalInput = isoToZonedInput;
+const localInputToIso = zonedInputToIso;
 
 /** Mirror of the server's normalizeStatus so the UI reflects the saved value. */
 function normalizeStatus(status: PostStatus, iso: string | null): PostStatus {
@@ -297,7 +292,7 @@ export function PostEditor({ post, initialTags = [] }: { post?: BlogPost; initia
               )}
             </Field>
             {(status === "published" || status === "scheduled") && (
-              <Field label="Publish date & time" hint="Past dates are allowed (for migrated posts)." error={fieldErrors.published_at}>
+              <Field label="Publish date & time" hint="Eastern Time (ET) — the date shown publicly. Past dates allowed." error={fieldErrors.published_at}>
                 {(id) => (
                   <input
                     id={id}

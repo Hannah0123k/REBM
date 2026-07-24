@@ -151,8 +151,12 @@ export async function getPublishedPosts(opts?: {
   if (opts?.excludeId) query = query.neq("id", opts.excludeId);
   if (opts?.tagSlug) query = query.eq("blog_post_tags.tags.slug", opts.tagSlug);
   if (opts?.search?.trim()) {
-    const q = opts.search.trim().replace(/[%_,]/g, " ");
-    query = query.or(`title.ilike.%${q}%,excerpt.ilike.%${q}%`);
+    // Whitelist letters/numbers/space only — strips every PostgREST filter
+    // metacharacter (`,` `(` `)` `.` `%` `_` `:` `*` `\`), so a search term can't
+    // manipulate this `.or()` logical-filter string. (RLS + onlyVisible() are a
+    // second layer, but keep the input clean at the source.)
+    const q = opts.search.trim().replace(/[^\p{L}\p{N}\s]/gu, " ").trim();
+    if (q) query = query.or(`title.ilike.%${q}%,excerpt.ilike.%${q}%`);
   }
 
   const { data, count, error } = await query

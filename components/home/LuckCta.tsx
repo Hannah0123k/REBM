@@ -37,16 +37,23 @@ export function LuckCta() {
           the content matches the space above it (symmetric band). */}
       <Container className="relative flex flex-col justify-center py-[56px] lg:min-h-[448px] lg:py-[100px]">
         <Reveal className="flex flex-col items-center text-center" stagger={0.1}>
-          <h2 className="max-w-[720px] text-[29px] leading-[36px] font-bold text-white lg:text-[32px] lg:leading-[41.6px]">
-            {luckCta.headingLines.map((line, i) => (
-              <span key={line}>
+          {/* Each sentence is its OWN block so the browser can never combine or
+              awkwardly interleave them: two intentional lines on desktop/tablet.
+              A generous max-width keeps each sentence on a single line whenever it
+              fits; text-balance makes the break graceful (and word-safe) when a
+              sentence must wrap on very narrow screens. Tight line-height keeps the
+              two lines visually connected — no large gap. */}
+          <h2 className="mx-auto flex max-w-[860px] flex-col text-[25px] leading-[32px] font-bold tracking-[-0.01em] text-white sm:text-[28px] sm:leading-[36px] lg:text-[32px] lg:leading-[41.6px]">
+            {luckCta.headingLines.map((line) => (
+              <span key={line} className="block text-balance">
                 {line}
-                {i < luckCta.headingLines.length - 1 && <br />}
               </span>
             ))}
           </h2>
 
-          <p className="mt-[24px] max-w-[988px] text-[18px] leading-[25px] text-white lg:text-[24px] lg:leading-[31.2px]">
+          {/* text-pretty prevents the last word ("luck.") from being orphaned on
+              its own line when the paragraph wraps on mobile. */}
+          <p className="mt-[24px] max-w-[988px] text-[17px] leading-[24px] text-pretty text-white sm:text-[18px] sm:leading-[25px] lg:text-[24px] lg:leading-[31.2px]">
             {luckCta.body}
           </p>
 

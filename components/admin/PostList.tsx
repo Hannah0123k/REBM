@@ -13,14 +13,23 @@ import {
   duplicatePost,
   restorePost,
 } from "@/app/admin/posts/actions";
+import { DISPLAY_TIME_ZONE } from "@/lib/blog/date";
 import { displayStatus, type PostListItem } from "@/lib/blog/types";
 
 type Filter = "All" | "Draft" | "Published" | "Scheduled" | "Unpublished" | "Archived" | "Needs review";
 const FILTERS: Filter[] = ["All", "Draft", "Published", "Scheduled", "Unpublished", "Archived", "Needs review"];
 
+// Format in the SAME business zone the public site uses (America/New_York), NOT
+// the admin's browser zone — otherwise a near-midnight publish date shows one
+// day here and another on the public blog. Keeps admin ⇄ public dates identical.
 function fmt(date: string | null): string {
   if (!date) return "—";
-  return new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    timeZone: DISPLAY_TIME_ZONE,
+  });
 }
 
 export function PostList({
@@ -99,7 +108,7 @@ export function PostList({
         </div>
       </div>
 
-      <div className="mt-[16px] overflow-hidden rounded-[14px] border border-rebm-card-border bg-white">
+      <div className="mt-[16px] overflow-x-auto rounded-[14px] border border-rebm-card-border bg-white">
         {visible.length === 0 ? (
           <div className="p-[48px] text-center text-[15px] text-[rgb(120,130,140)]">
             {initialPosts.length === 0
@@ -107,7 +116,7 @@ export function PostList({
               : "No posts match this view."}
           </div>
         ) : (
-          <table className="w-full border-collapse text-left">
+          <table className="w-full min-w-[760px] border-collapse text-left">
             <thead>
               <tr className="border-b border-rebm-card-border text-[12px] tracking-wide text-[rgb(120,130,140)] uppercase">
                 <th className="px-[16px] py-[12px] font-semibold">Title</th>

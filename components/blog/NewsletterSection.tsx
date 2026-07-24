@@ -31,12 +31,16 @@ export function NewsletterSection() {
   const [status, setStatus] = useState<Status>("idle");
   const [formError, setFormError] = useState<string | null>(null);
   const uid = useId();
-  const doneRef = useRef<HTMLParagraphElement>(null);
+  const doneRef = useRef<HTMLDivElement>(null);
 
   // Move focus to the confirmation once it renders so keyboard / screen-reader
-  // users land on it instead of on the now-hidden form.
+  // users land on it instead of on the now-hidden form. `preventScroll` keeps the
+  // reader at their current scroll position — without it, focusing scrolls the
+  // confirmation into view and the page jumps (most noticeable on mobile).
   useEffect(() => {
-    if (status === "success" || status === "pending") doneRef.current?.focus();
+    if (status === "success" || status === "pending") {
+      doneRef.current?.focus({ preventScroll: true });
+    }
   }, [status]);
 
   const set = (key: keyof NewsletterFormValues, v: string) => {
@@ -79,8 +83,6 @@ export function NewsletterSection() {
     }
   }
 
-  const done = status === "success" || status === "pending";
-
   return (
     <section aria-labelledby={`${uid}-title`} className="bg-white pt-[12px] pb-[56px] sm:pb-[64px]">
       <Container>
@@ -88,52 +90,54 @@ export function NewsletterSection() {
             centered as /blog/[slug]'s prose column, so the panel's left/right
             edges match the article text (not the viewport). */}
         <div className="mx-auto max-w-[760px]">
-          <div className="grid gap-[28px] rounded-[28px] bg-rebm-newsletter px-[28px] py-[32px] sm:px-[40px] sm:py-[40px] lg:grid-cols-2 lg:items-center lg:gap-[40px] lg:px-[48px] lg:py-[44px]">
-            {/* Left — heading + supporting copy */}
-            <div>
-              <h2
-                id={`${uid}-title`}
-                className="text-[32px] leading-[38px] font-bold tracking-[-0.01em] text-rebm-navy sm:text-[36px] sm:leading-[42px]"
+          <div className="rounded-[28px] bg-rebm-newsletter px-[28px] py-[32px] sm:px-[40px] sm:py-[40px] lg:px-[48px] lg:py-[44px]">
+            {status === "success" || status === "pending" ? (
+              /* Confirmation — replaces the form in place with the centered
+                 success state. `success` is a real, delivered signup
+                 (res.ok && res.delivered); `pending` is the pre-launch state
+                 where the backend isn't configured yet — both show the same
+                 thank-you copy. */
+              <div
+                ref={doneRef}
+                tabIndex={-1}
+                role="status"
+                className="rebm-pop-in mx-auto flex max-w-[460px] flex-col items-center py-[8px] text-center outline-none sm:py-[16px]"
               >
-                Subscribe
-                <br />
-                to our email list
-              </h2>
-              <p className="mt-[18px] max-w-[420px] text-[17px] leading-[27px] text-[rgb(47,68,86)] sm:text-[19px] sm:leading-[30px]">
-                Join our newsletter to get exclusive insights, updates and expert tips.
-              </p>
-            </div>
-
-            {/* Right — form, or the confirmation once submitted */}
-            <div>
-              {done ? (
-                <div className="flex items-start gap-[14px] rounded-[20px] bg-white/70 px-[24px] py-[22px]">
-                  <span
-                    aria-hidden="true"
-                    className="mt-[1px] flex size-[40px] shrink-0 items-center justify-center rounded-full bg-[#E4F4EA] text-[20px] text-[#1B7A43]"
+                <span
+                  aria-hidden="true"
+                  className="flex size-[56px] items-center justify-center rounded-full bg-[#E4F4EA] text-[26px] text-[#1B7A43] sm:size-[64px] sm:text-[30px]"
+                >
+                  ✓
+                </span>
+                <h2
+                  id={`${uid}-title`}
+                  className="mt-[20px] text-[26px] leading-[32px] font-bold tracking-[-0.01em] text-rebm-navy sm:text-[30px] sm:leading-[36px]"
+                >
+                  Thank You for Subscribing!
+                </h2>
+                <p className="mt-[12px] text-[16px] leading-[26px] text-balance text-[rgb(47,68,86)] sm:text-[17px] sm:leading-[27px]">
+                  You’re all set. We’ll keep you updated with our latest real estate insights, market
+                  trends, and new articles.
+                </p>
+              </div>
+            ) : (
+              <div className="grid gap-[28px] lg:grid-cols-2 lg:items-center lg:gap-[40px]">
+                {/* Left — heading + supporting copy */}
+                <div>
+                  <h2
+                    id={`${uid}-title`}
+                    className="text-[32px] leading-[38px] font-bold tracking-[-0.01em] text-rebm-navy sm:text-[36px] sm:leading-[42px]"
                   >
-                    ✓
-                  </span>
-                  <p
-                    ref={doneRef}
-                    tabIndex={-1}
-                    role="status"
-                    className="text-[16px] leading-[25px] text-rebm-navy outline-none"
-                  >
-                    {status === "success" ? (
-                      <>
-                        <strong className="font-semibold">You’re subscribed.</strong> Thanks for joining —
-                        expect exclusive insights and updates in your inbox.
-                      </>
-                    ) : (
-                      <>
-                        <strong className="font-semibold">Thanks!</strong> Email updates aren’t live just
-                        yet — we’ve noted your interest and will add you the moment they launch.
-                      </>
-                    )}
+                    Subscribe
+                    <br />
+                    to our email list
+                  </h2>
+                  <p className="mt-[18px] max-w-[420px] text-[17px] leading-[27px] text-[rgb(47,68,86)] sm:text-[19px] sm:leading-[30px]">
+                    Join our newsletter to get exclusive insights, updates and expert tips.
                   </p>
                 </div>
-              ) : (
+
+                {/* Right — the subscription form */}
                 <form onSubmit={onSubmit} noValidate className="flex flex-col gap-[16px]">
                   <div>
                     <label htmlFor={`${uid}-fullName`} className="sr-only">
@@ -195,8 +199,8 @@ export function NewsletterSection() {
                     </p>
                   )}
                 </form>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </Container>

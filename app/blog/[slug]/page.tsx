@@ -23,6 +23,7 @@ import {
 } from "@/lib/blog/cardView";
 import { resolveAuthorImage } from "@/lib/blog/authors";
 import { formatPublishedDate, isoDateTimeAttr } from "@/lib/blog/date";
+import { safeJsonLd } from "@/lib/blog/jsonLd";
 import { getPostBySlug, getRelatedPosts, resolveOldSlug, type PublicPost } from "@/lib/blog/queries";
 import { RenderBody, isBodyEmpty } from "@/lib/blog/RenderBody";
 import { SITE_NAME, absoluteUrl } from "@/lib/site";
@@ -118,7 +119,12 @@ export async function generateMetadata({
 
   if (!post) {
     const ph = getPlaceholderBySlug(slug);
-    if (!ph) return { title: "Post not found" };
+    // Genuinely missing (→ notFound() in the page). The blog loading boundary
+    // makes the response a soft-404 (HTTP 200), so mark it noindex here to keep
+    // search engines from indexing invalid/deleted URLs. (A true 404 status would
+    // require dropping the blog loading skeletons — a deliberate UX feature — so
+    // it's deferred; see the pre-launch notes.)
+    if (!ph) return { title: "Post not found", robots: { index: false, follow: false } };
     return {
       title: ph.title,
       description: ph.excerpt,
@@ -206,8 +212,12 @@ export default async function BlogPostPage({
         {articleSchema && (
           <script
             type="application/ld+json"
-            // JSON.stringify escapes the values; keys are static.
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+            // JSON.stringify escapes " and \ but NOT </script> — an admin-set
+            // (or imported-from-the-hacked-source) title/author could otherwise
+            // break out of this inline <script> and run arbitrary markup for every
+            // visitor. Escape the HTML-significant chars to \uXXXX so the payload
+            // stays inside the JSON string literal. See lib/blog/jsonLd.
+            dangerouslySetInnerHTML={{ __html: safeJsonLd(articleSchema) }}
           />
         )}
 
@@ -217,7 +227,7 @@ export default async function BlogPostPage({
                 back link, date, featured image, author and body all inherit its
                 width, so the image edges line up with the body text edges. */}
             <div className="mx-auto max-w-[760px]">
-              <Link href="/blog" className="text-[14px] font-medium text-rebm-link hover:underline">
+              <Link href="/blog" className="text-[14px] font-medium text-[#6ec1e4] hover:underline">
                 ← Our Blogs
               </Link>
 
@@ -231,7 +241,7 @@ export default async function BlogPostPage({
               {/* Tight, centered header rhythm:
                   date → featured image → circular author photo → "By {author}".
                   Everything from the date through the name is centered. */}
-              <p className="mt-[14px] text-center text-[13px] font-semibold tracking-[0.14em] text-rebm-navy uppercase">
+              <p className="mt-[14px] text-center text-[15px] leading-[24px] font-semibold text-[#6ec1e4]">
                 <time dateTime={isoDateTimeAttr(view.dateIso)}>{formatPublishedDate(view.dateIso)}</time>
               </p>
 
@@ -251,7 +261,12 @@ export default async function BlogPostPage({
                   then "By {name}" just beneath it, centered as one unit. */}
               {view.authorName && (
                 <div className="mt-[16px] flex flex-col items-center">
-                  <AuthorAvatar name={view.authorName} src={view.authorImageUrl} size={64} />
+                  <AuthorAvatar
+                    name={view.authorName}
+                    src={view.authorImageUrl}
+                    size={64}
+                    sizeClasses="size-[44px] sm:size-[64px]"
+                  />
                   <p className="mt-[8px] text-[17px] font-semibold text-rebm-navy">By {view.authorName}</p>
                 </div>
               )}

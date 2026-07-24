@@ -34,7 +34,7 @@ export async function signIn(_prev: SignInState, formData: FormData): Promise<Si
     return { error: "Invalid email or password." };
   }
 
-  redirect("/admin");
+  redirect("/admin/posts");
 }
 
 /** Sign out and return to the login screen. */

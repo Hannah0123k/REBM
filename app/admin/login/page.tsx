@@ -16,7 +16,7 @@ export default async function AdminLoginPage({
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
-  if (supabaseConfigured && (await isAdminUser())) redirect("/admin");
+  if (supabaseConfigured && (await isAdminUser())) redirect("/admin/posts");
   const { error } = await searchParams;
 
   return (

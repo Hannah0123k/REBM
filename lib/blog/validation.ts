@@ -20,7 +20,13 @@ export const postInputSchema = z
       .refine(isValidSlug, "Use lowercase letters, numbers and hyphens only."),
     excerpt: z.string().trim().max(500).optional().or(z.literal("")),
     body: z.object({ type: z.literal("doc") }).passthrough(),
-    featured_image_url: z.string().url("Enter a valid image URL.").nullable().optional(),
+    // Only http(s) — z.url() alone would accept javascript:/data: schemes. This
+    // is a stored Supabase Storage URL, so http(s) is the correct constraint.
+    featured_image_url: z
+      .string()
+      .refine((v) => /^https?:\/\//i.test(v), "Enter a valid image URL.")
+      .nullable()
+      .optional(),
     featured_image_alt: z.string().trim().max(300).nullable().optional(),
     author_name: z.string().trim().max(120).nullable().optional(),
     // Either a full http(s) URL OR a root-relative app-asset path ("/…"). The

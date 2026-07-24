@@ -14,7 +14,7 @@ import { testimonials } from "@/content/homepage";
  *   heading  Inter 62/80.6 w700 #032C40
  *   grid     8 white cards, 3-column MASONRY, 20px gap, staggered tops
  *   card     width ~498, bg #fff, radius 20px, padding 64px 62px 64px 64px
- *            stars (120×24) → body (Inter 23/29.9 #000) → author near bottom
+ *            body (Inter 23/29.9 #000) → author near bottom (star rating removed)
  *   author   live computes to Helvetica Neue 18/23.4 w700 — the only non-Inter
  *            text on the page. Rendered in Inter 700 per the spec's recommendation
  *            (Elementor default leaking through, not a design intent).
@@ -71,9 +71,9 @@ export function Testimonials() {
                   key={t.author}
                   className="rounded-[20px] bg-white p-[32px] shadow-[0_16px_40px_-20px_rgba(3,44,64,0.30)] sm:p-[48px] lg:p-[64px] lg:pr-[62px]"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/assets/live/stars.svg" alt="5 out of 5 stars" width={120} height={24} />
-                  <blockquote className="mt-[28px] text-[16px] leading-[25px] text-black sm:mt-[40px] sm:text-[18px] sm:leading-[27px] lg:mt-[50px] lg:text-[23px] lg:leading-[29.9px]">
+                  {/* Star rating removed (Hannah). The quote now starts at the
+                      card padding — no empty reserved space above it. */}
+                  <blockquote className="text-[16px] leading-[25px] text-black sm:text-[18px] sm:leading-[27px] lg:text-[23px] lg:leading-[29.9px]">
                     {t.body}
                   </blockquote>
                   <figcaption className="mt-[24px] text-[18px] leading-[23.4px] font-bold text-black">
@@ -87,7 +87,10 @@ export function Testimonials() {
 
         <Faq />
 
-        <Reveal className="mt-[48px] flex justify-center">
+        {/* Closing CTA sits a comfortable step below the FAQ — pulled up closer
+            to the questions than the full section rhythm so it reads as the FAQ's
+            own call-to-action, not a detached block. */}
+        <Reveal className="mt-[16px] flex justify-center lg:mt-[24px]">
           <PillButton href={testimonials.cta.href}>{testimonials.cta.label}</PillButton>
         </Reveal>
       </Container>

@@ -7,8 +7,8 @@
  * Run: node scripts/migrate/dry-run.mts
  */
 // The WordPress REST payload is untyped external data; `any` is intentional at
-// that boundary in this one-off migration script (not shipped app code).
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// that boundary in this one-off migration script (not shipped app code). The
+// no-explicit-any relaxation for scripts/** lives in eslint.config.mjs.
 import { mkdirSync, writeFileSync, rmSync, existsSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";

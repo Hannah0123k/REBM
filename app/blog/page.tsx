@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 
 import { Container } from "@/components/Container";
 import { Footer } from "@/components/Footer";
-import { BlogCard } from "@/components/blog/BlogCard";
+import { ArticleGrid } from "@/components/blog/ArticleGrid";
 import { FeaturedBlogCard } from "@/components/blog/FeaturedBlogCard";
-import { MoreArticles } from "@/components/blog/MoreArticles";
 import {
   getFeaturedPost as getPlaceholderFeatured,
   getGridPosts as getPlaceholderGrid,
@@ -29,34 +28,30 @@ export const metadata: Metadata = {
  * centered container (~1in side margins on a 13" screen). Dynamic render, so
  * scheduled posts appear the moment their time passes.
  */
-export default async function BlogPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ page?: string }>;
-}) {
-  const page = Math.max(1, Number.parseInt((await searchParams).page ?? "1", 10) || 1);
-
+export default async function BlogPage() {
   let featured: CardPost | null = null;
   let posts: CardPost[] = [];
-  let moreHref: string | undefined;
+  let excludeId: string | undefined;
+  let hasMore = false;
 
   try {
     const featuredReal = await getFeaturedPost();
     if (!featuredReal) throw new Error("no published posts yet");
     const { posts: gridPosts, totalPages } = await getPublishedPosts({
-      page,
+      page: 1,
       pageSize: GRID_SIZE,
       excludeId: featuredReal.id,
     });
-    featured = page === 1 ? cardFromPost(featuredReal) : null;
+    featured = cardFromPost(featuredReal);
     posts = gridPosts.map(cardFromPost);
-    moreHref = page < totalPages ? `/blog?page=${page + 1}` : undefined;
+    excludeId = featuredReal.id;
+    hasMore = totalPages > 1; // remaining pages load INLINE via ArticleGrid
   } catch {
     // Nothing published yet (or a transient read error) → show the reviewable
     // placeholder layout rather than a blank page or a 500.
     featured = cardFromPlaceholder(getPlaceholderFeatured());
     posts = getPlaceholderGrid().map(cardFromPlaceholder);
-    moreHref = undefined; // no real page 2 yet
+    hasMore = false; // no real page 2 yet
   }
 
   return (
@@ -73,7 +68,7 @@ export default async function BlogPage({
             (navBottom+B)/2). Desktop keeps pt-[81px], which matches the live
             site's hero (title centreY 236, sitting a touch above the geometric
             centre). */}
-        <section className="relative flex min-h-[340px] w-full items-center justify-center overflow-hidden bg-rebm-blue pt-[var(--header-h)] lg:min-h-[391px] lg:pt-[81px]">
+        <section className="relative flex min-h-[170px] w-full items-center justify-center overflow-hidden bg-rebm-blue pt-[40px] sm:min-h-[340px] sm:pt-[var(--header-h)] lg:min-h-[391px] lg:pt-[81px]">
           {/* Background photo framed EXACTLY like the live site (image-3.png,
               same 1920×384 asset): natural size (background-size:auto — not cover,
               no scale) anchored top-left (0% 0%), so the same visible portion and
@@ -121,23 +116,14 @@ export default async function BlogPage({
         <div className="mx-auto w-[min(1226px,100%-64px)] pt-[60px] pb-[80px] md:w-[min(1226px,100%-84px)] md:pt-[100px] lg:w-[min(1226px,100%-128px)]">
           {featured && <FeaturedBlogCard post={featured} />}
 
-          {posts.length > 0 && (
-            // Live grid: 3 cols (desktop) / 2 (tablet) / 1 (mobile),
-            // column-gap 48px, row-gap 70px (measured).
-            <div
-              className={`grid grid-cols-1 gap-x-[48px] gap-y-[70px] md:grid-cols-2 lg:grid-cols-3 ${featured ? "mt-[40px] lg:mt-[60px]" : ""}`}
-            >
-              {posts.map((post) => (
-                <BlogCard key={post.id} post={post} />
-              ))}
-            </div>
-          )}
-
-          {moreHref && (
-            <div className="mt-[60px] flex justify-center">
-              <MoreArticles href={moreHref} />
-            </div>
-          )}
+          {/* Live grid (3/2/1 cols, gap-x 48 / gap-y 70, measured) + inline
+              "More Articles": subsequent pages append here on the same page. */}
+          <ArticleGrid
+            initialPosts={posts}
+            hasFeatured={Boolean(featured)}
+            excludeId={excludeId}
+            initialHasMore={hasMore}
+          />
         </div>
       </main>
       <Footer />

@@ -30,15 +30,22 @@ export function useActiveSection(ids: string[], headerH = 120): string | null {
     const els = ids
       .map((id) => ({ id, el: document.getElementById(id) }))
       .filter((x): x is { id: string; el: HTMLElement } => x.el !== null);
-    if (els.length === 0) return;
 
-    const trigger = headerH + 24;
+    // Trigger line must sit BELOW where a clicked anchor lands, or that section
+    // won't count as active. The deepest landing is #faq at its scroll-margin-top
+    // (--header-h + 24 ≈ 146px on desktop); with headerH=120 a +24 trigger (144)
+    // fell just short, so clicking FAQ left Testimonials highlighted. +52 clears
+    // every section's landing spot with slack.
+    const trigger = headerH + 52;
 
     // Active = the section whose top is the greatest that is still at/above the
     // trigger line — i.e. the one currently sitting under the header. Chosen by
     // live position, so it's independent of nav-vs-document ordering (About is
     // nav-item #2 but the first section in the DOM) and handles the FAQ-inside-
     // Testimonials nesting (FAQ's top passes the trigger later, so it wins).
+    // With no sections (e.g. /contact) the loop leaves `current` null, so this
+    // also clears any stale highlight carried over from the homepage — SiteHeader
+    // persists across navigation, so without that reset About would stay lit.
     const compute = () => {
       let current: string | null = null;
       let bestTop = -Infinity;
@@ -51,6 +58,12 @@ export function useActiveSection(ids: string[], headerH = 120): string | null {
       }
       setActive((prev) => (prev === current ? prev : current));
     };
+
+    // No sections to observe — reset (via compute) and skip listener setup.
+    if (els.length === 0) {
+      compute();
+      return;
+    }
 
     let ticking = false;
     const onScroll = () => {

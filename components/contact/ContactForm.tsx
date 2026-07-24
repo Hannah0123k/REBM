@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 
 import { submitContact } from "@/app/contact/actions";
+import { PillButton } from "@/components/PillButton";
 import { contactSchema, type ContactFormValues } from "@/lib/contact/validation";
 
 /** Format digits as a US phone number: (XXX) XXX-XXXX, progressively as typed. */
@@ -53,10 +54,26 @@ export function ContactForm() {
   const uid = useId();
   const successRef = useRef<HTMLHeadingElement>(null);
 
-  // Move focus to the confirmation once it renders, so keyboard/screen-reader
-  // users land on it (the form is gone) instead of being stranded.
+  // On success the tall form is replaced by the short confirmation card, which
+  // shrinks the page — so the old scroll position (near the Send button) would
+  // leave the thank-you opening mid/low and appearing to scroll up. Jump to the
+  // top instantly, then move focus to the heading for keyboard/screen-reader
+  // users (the form is gone) so they aren't stranded.
   useEffect(() => {
-    if (status === "success") successRef.current?.focus();
+    if (status !== "success") return;
+    const html = document.documentElement;
+    const prev = html.style.scrollBehavior;
+    html.style.scrollBehavior = "auto"; // hold instant across the settle window
+    window.scrollTo(0, 0);
+    const raf = requestAnimationFrame(() => window.scrollTo(0, 0));
+    const restore = setTimeout(() => {
+      html.style.scrollBehavior = prev;
+    }, 300);
+    successRef.current?.focus({ preventScroll: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(restore);
+    };
   }, [status]);
 
   const set = <K extends keyof ContactFormValues>(key: K, v: ContactFormValues[K]) => {
@@ -66,7 +83,7 @@ export function ContactForm() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (status === "submitting") return; // prevent duplicate submit
+    if (status === "submitting" || status === "success") return; // prevent duplicate submit
     setFormError(null);
 
     const local = contactSchema.safeParse(values);
@@ -102,21 +119,20 @@ export function ContactForm() {
     return (
       <div
         role="status"
-        className="rebm-fade-in-slow rounded-[24px] bg-white p-[36px] text-center shadow-[0_18px_48px_-24px_rgba(3,44,64,0.30)]"
+        className="rebm-fade-in-slow flex min-h-[360px] flex-col items-center justify-center rounded-[24px] bg-white p-[36px] text-center shadow-[0_18px_48px_-24px_rgba(3,44,64,0.30)] sm:p-[48px]"
       >
-        <div className="mx-auto mb-[16px] flex size-[52px] items-center justify-center rounded-full bg-[#E4F4EA] text-[26px] text-[#1B7A43]">
+        <div className="mb-[18px] flex size-[52px] items-center justify-center rounded-full bg-[#E4F4EA] text-[26px] text-[#1B7A43]">
           ✓
         </div>
-        <h2 ref={successRef} tabIndex={-1} className="text-[22px] font-bold text-rebm-navy outline-none">
-          Thanks — message received
+        <h2 ref={successRef} tabIndex={-1} className="text-[22px] font-bold text-rebm-navy outline-none sm:text-[26px]">
+          Thank you! We received your message and will be in touch soon.
         </h2>
-        <p className="mx-auto mt-[10px] max-w-[420px] text-[15px] leading-[23px] text-[rgb(60,70,80)]">
-          We’ll be in touch shortly. For anything urgent you can also call{" "}
-          <a href="tel:+18008415033" className="text-rebm-link underline">
-            (800) 841-5033
-          </a>
-          .
+        <p className="mt-[12px] max-w-[440px] text-[15px] leading-[23px] text-[rgb(60,70,80)]">
+          In the meantime, feel free to explore our latest articles.
         </p>
+        <PillButton href="/blog" className="mt-[26px] text-[16px] leading-[24px]">
+          Explore Latest Articles
+        </PillButton>
       </div>
     );
   }
@@ -131,10 +147,10 @@ export function ContactForm() {
         <TextField id={`${uid}-first`} label="First Name" required value={values.firstName} placeholder="John" error={errors.firstName} onChange={(v) => set("firstName", v)} autoComplete="given-name" />
         <TextField id={`${uid}-last`} label="Last Name" required value={values.lastName} placeholder="Doe" error={errors.lastName} onChange={(v) => set("lastName", v)} autoComplete="family-name" />
         <TextField id={`${uid}-email`} label="Email" required type="email" value={values.email} placeholder="john@example.com" error={errors.email} onChange={(v) => set("email", v)} autoComplete="email" />
-        <TextField id={`${uid}-phone`} label="Phone" required type="tel" inputMode="tel" value={values.phone} placeholder="(800) 841-5033" error={errors.phone} onChange={(v) => set("phone", formatPhone(v))} autoComplete="tel" />
+        <TextField id={`${uid}-phone`} label="Phone" required type="tel" inputMode="tel" value={values.phone} placeholder="(123) 456-7891" error={errors.phone} onChange={(v) => set("phone", formatPhone(v))} autoComplete="tel" />
       </div>
 
-      <div className="mt-[22px] grid gap-[16px] sm:grid-cols-2 sm:items-center">
+      <div className="mt-[22px] grid gap-[16px] sm:grid-cols-2 sm:items-start">
         {/* Yes/No — pill-styled, but backed by real radio inputs for accessibility.
             The group is required; that's conveyed on the radiogroup, not each radio
             (aria-required isn't valid on role=radio). Pills cross-fade on change. */}
@@ -186,7 +202,7 @@ export function ContactForm() {
           id={`${uid}-heard`}
           label="How did you find Real Estate Broker Match?"
           value={values.heardAbout}
-          placeholder="e.g. Google, referral, social media"
+          placeholder="e.g. Attorney, CPA, other"
           error={errors.heardAbout}
           onChange={(v) => set("heardAbout", v)}
         />
@@ -240,7 +256,6 @@ export function ContactForm() {
       >
         {status === "submitting" ? "Sending…" : "Send Message"}
       </button>
-
     </form>
   );
 }

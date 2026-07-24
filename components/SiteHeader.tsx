@@ -21,6 +21,10 @@ const SECTION_IDS = NAV_LINKS.map((l) => sectionId(l.href)).filter(
   (id): id is string => id !== null,
 );
 
+/** Stable empty list for pages with no in-page sections (keeps the effect deps
+    stable so the scrollspy resets exactly once when leaving the homepage). */
+const NO_SECTIONS: string[] = [];
+
 /**
  * Sticky site header — shared by every page. Live site is fixed + transparent;
  * we keep it fixed but fade in a solid brand-blue background after a little
@@ -36,7 +40,10 @@ const SECTION_IDS = NAV_LINKS.map((l) => sectionId(l.href)).filter(
 export function SiteHeader() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
-  const active = useActiveSection(SECTION_IDS);
+  // Scrollspy only applies on the homepage, where these sections exist. On other
+  // pages we pass an empty list so the highlight clears (About no longer stays
+  // dark on /contact etc.).
+  const active = useActiveSection(pathname === "/" ? SECTION_IDS : NO_SECTIONS);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);

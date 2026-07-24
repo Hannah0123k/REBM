@@ -27,20 +27,15 @@ export default function ContactPage() {
   return (
     <>
     <ScrollTopOnMount />
-    <main id="main-content" className="flex min-h-screen w-full flex-col bg-rebm-blue">
-      <section className="flex w-full flex-1 flex-col pt-[var(--header-h)] pb-[24px]">
-        <Container className="flex flex-1 flex-col">
-          {/* Heading fades up on load; the form panel follows ~180ms later.
-              Disabled under prefers-reduced-motion (globals.css).
-
-              "Contact Us" is VERTICALLY CENTERED in the open blue space between
-              the header and the form: the heading lives in a flex-1 region that
-              grows to fill that gap and centers the words within it (equal space
-              above and below). The form then sits below at its natural position.
-              On mobile the form is taller than the viewport, so the heading
-              region collapses toward its content and the page scrolls top-anchored
-              instead of clipping. */}
-          <div className="rebm-enter flex flex-1 items-center justify-center text-center">
+    <main id="main-content" className="min-h-screen w-full bg-rebm-blue">
+      <section className="w-full pt-[var(--header-h)] pb-[48px]">
+        <Container>
+          {/* Heading fades up on load; the form/success panel follows ~180ms
+              later (disabled under prefers-reduced-motion). Content is TOP-ALIGNED
+              (not vertically centered) with a modest gap under the header, so the
+              short success card and the tall form both start high on the page —
+              no large empty gap above "Contact Us", and nothing opens mid-page. */}
+          <div className="rebm-enter pt-[24px] pb-[28px] text-center lg:pt-[36px]">
             <h1 className="text-[30px] leading-[36px] font-bold tracking-[-0.3px] text-rebm-navy sm:text-[38px] sm:leading-[44px]">
               Contact Us
             </h1>

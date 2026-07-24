@@ -8,7 +8,12 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { formatPublishedDate, isoDateTimeAttr } from "../lib/blog/date.ts";
+import {
+  formatPublishedDate,
+  isoDateTimeAttr,
+  isoToZonedInput,
+  zonedInputToIso,
+} from "../lib/blog/date.ts";
 import { extractText, readingTimeMinutes } from "../lib/blog/readingTime.ts";
 import { sanitizeDoc } from "../lib/blog/sanitize.ts";
 import { isValidSlug, slugify } from "../lib/blog/slug.ts";
@@ -124,6 +129,34 @@ test("isoDateTimeAttr returns a full UTC instant", () => {
   assert.equal(isoDateTimeAttr("2026-02-03"), "2026-02-03T12:00:00.000Z");
   assert.equal(isoDateTimeAttr("2026-02-03T20:00:00Z"), "2026-02-03T20:00:00.000Z");
   assert.equal(isoDateTimeAttr("not-a-date"), "");
+});
+
+// The admin picks a wall-clock in ET; it must store the instant whose ET
+// calendar date equals what was typed, and render back to the same public date.
+test("zonedInputToIso anchors the admin wall-clock to ET (winter, UTC-5)", () => {
+  // 9:00 AM ET on Jan 23 → 14:00 UTC; and it must display as Jan 23.
+  assert.equal(zonedInputToIso("2026-01-23T09:00"), "2026-01-23T14:00:00.000Z");
+  assert.equal(formatPublishedDate(zonedInputToIso("2026-01-23T09:00")!), "January 23, 2026");
+});
+
+test("zonedInputToIso is DST-aware (summer, UTC-4) — no hardcoded offset", () => {
+  // 9:00 AM ET on Jul 15 → 13:00 UTC (EDT), not 14:00.
+  assert.equal(zonedInputToIso("2026-07-15T09:00"), "2026-07-15T13:00:00.000Z");
+});
+
+test("publish date the admin picks is the date shown publicly (near midnight)", () => {
+  // 11:30 PM ET on Jan 23 crosses into the next UTC day, but must still read Jan 23.
+  const iso = zonedInputToIso("2026-01-23T23:30")!;
+  assert.equal(iso, "2026-01-24T04:30:00.000Z");
+  assert.equal(formatPublishedDate(iso), "January 23, 2026");
+});
+
+test("datetime-local ⇄ instant round-trips through ET", () => {
+  for (const v of ["2026-01-23T09:00", "2026-07-15T23:30", "2025-12-23T00:15"]) {
+    assert.equal(isoToZonedInput(zonedInputToIso(v)), v);
+  }
+  assert.equal(zonedInputToIso(""), null);
+  assert.equal(isoToZonedInput(null), "");
 });
 
 // ── reading time ─────────────────────────────────────────────────────────────

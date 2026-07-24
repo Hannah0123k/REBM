@@ -23,6 +23,10 @@
 # misc
 .DS_Store
 *.pem
+# stray root screenshot (unreferenced) — keep it out of the repo
+.bios.png
+# Claude Code local settings — never pushed
+.claude/
 
 # debug
 npm-debug.log*
@@ -30,8 +34,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files (real values never committed) — but DO track the placeholder template
 .env*
+!.env.example
 
 # vercel
 .vercel
