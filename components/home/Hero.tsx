@@ -115,7 +115,21 @@ export function Hero() {
           No image is positioned behind the text. On desktop (≥lg) the background
           treatment above is used with the full copy. Figma gaps: headline→body 18,
           body→CTA 18. */}
-      <Container className="relative pt-[calc(var(--header-h)+40px)] pb-[36px] sm:pt-[calc(var(--header-h)+42px)] lg:pb-[44px]">
+      {/* Hero content clears the fixed header via padding-top = --header-h, and
+          the ADDEND is the actual visible gap below the header. Mobile is 18px,
+          down from an original 40px. Measured header-bottom → headline cap-top
+          was 47px, which read as dead space under the logo; 18px lands it at
+          25px, a 47% reduction. Two revisions got here: 28px (-25%) was reviewed
+          and judged still too loose. 18px is the floor — it sets the gap to
+          exactly the hero's own 18px headline→paragraph rhythm, so the space
+          below the header is now the same unit the hero uses internally rather
+          than an arbitrary smaller number. Do not go below this without changing
+          that rhythm too, or the headline starts to crowd the logo.
+          Because this is the CONTAINER's padding, the headline, both paragraphs
+          and the CTA all rise together as one block; their internal spacing is
+          untouched. The sm+ value (42px) is deliberately unchanged, so tablet and
+          desktop keep their existing vertical position. */}
+      <Container className="relative pt-[calc(var(--header-h)+18px)] pb-[36px] sm:pt-[calc(var(--header-h)+42px)] lg:pb-[44px]">
         {/* contentRef fades/drifts on scroll (desktop only). */}
         <div ref={contentRef} className="will-change-[opacity,transform]">
           <h1 className="max-w-[840px] text-[29px] leading-[36px] font-semibold tracking-[-0.2px] text-white sm:text-[38px] sm:leading-[48px] lg:text-[50px] lg:leading-[70px]">

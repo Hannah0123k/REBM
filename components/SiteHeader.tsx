@@ -81,10 +81,25 @@ export function SiteHeader() {
           href="/"
           className="shrink-0 rounded-[6px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rebm-navy focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
         >
-          {/* Logo SVG cropped to its ink bounds (viewBox 0 17 458 35) so the
+          {/* Logo SVG cropped to its ink bounds (viewBox "4.5 17 458 35") so the
               wordmark fills the box and reads larger than the untrimmed live
               asset at the same width. Bigger than live where the nav has room;
-              1280 stays compact like live so the 7-link nav fits. */}
+              1280 stays compact like live so the 7-link nav fits.
+
+              The viewBox X ORIGIN (4.5, not 0) is what makes the wordmark align
+              with the page's text. The asset was trimmed vertically but not
+              horizontally, leaving ~8.5 units of transparent padding on its left
+              — 1.86% of the box, i.e. 4.6px at 390 and 11px at 1920. The header
+              and the hero both already sit on the same Container gutter, so the
+              BOXES aligned perfectly; it was the ink inside this box that sat
+              right of the headline. Shifting the viewBox origin (rather than the
+              box width) cancels that padding while keeping the 458x35 aspect, so
+              the rendered logo size, the layout, and every other usage's
+              dimensions are all bit-for-bit unchanged. 4.5 leaves ~4 units of
+              inset, which lands the wordmark on the headline's own glyph side
+              bearing — measured residual is <=1px at every breakpoint, versus
+              2-6.5px before. Do NOT "fix" this back to 0: that overcorrects and
+              pushes the logo LEFT of the text. */}
           <Image
             src={logo}
             alt="Real Estate Broker Match"

@@ -57,18 +57,19 @@ export function Footer() {
             {/* Same wordmark as the header (rebm-logo.svg), sized to match the
                 header (~300px) and rendered white for the dark footer via
                 brightness-0 invert (the SVG is a single navy ink colour).
-                The SVG carries ~5.6px of transparent left padding in its viewBox
-                (ink starts at x8.6 of 458 → 5.6px at the 300px render), so its
-                visible wordmark sat ~6px right of the text below it. A -6px left
-                margin pulls the ink onto the column edge (x64), aligning the
-                wordmark with "Real Estate Foundation Inc.", the social links,
+                The -6px left margin that used to live here is GONE on purpose:
+                it compensated for transparent left padding inside the SVG, and
+                that padding is now removed at the source (viewBox origin moved to
+                4.5 — see SiteHeader). Keeping both would double-correct and push
+                the wordmark left of the column. The Container gutter alone now
+                aligns it with "Real Estate Foundation Inc.", the social links,
                 the copyright and Admin. */}
             <Image
               src={logo}
               alt="Real Estate Broker Match"
               width={458}
               height={35}
-              className="-ml-[6px] h-auto w-full max-w-[300px] brightness-0 invert"
+              className="h-auto w-full max-w-[300px] brightness-0 invert"
             />
             <p className="mt-[16px] text-[15px] leading-[20px]">Real Estate Foundation Inc.</p>
 

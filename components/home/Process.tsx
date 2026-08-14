@@ -17,6 +17,26 @@ import { process } from "@/content/homepage";
  * The background shows from lg up (the live desktop layout); on mobile the
  * section is plain white so the single-column text stays readable.
  *
+ * ⚠️ background-position-x MUST stay within 0%–100%. `cover` only guarantees the
+ * image covers the box for positions inside that range; anything beyond it (e.g.
+ * the `calc(100% + 48px)` "nudge-right" from 154c25d) slides the image off its
+ * own box and exposes bare white section on the LEFT. The gap is invisible while
+ * the image still overflows horizontally, so it only appears once the viewport
+ * passes ~1883 CSS px — i.e. on wide monitors and, far more commonly, when a
+ * normal user zooms the browser OUT (90/80/75/67% on a 1920 screen all land
+ * above 1883). It is 37px at 1920 and settles at a constant 48px past ~1931.
+ * Right-anchoring at 100% is also what makes the section behave correctly as it
+ * widens: the image is height-locked, so a wider viewport REVEALS more of the
+ * building's left side rather than shrinking or shifting the photo.
+ *
+ * position-y is 20%, not 50%, purely to protect the tower on ultrawide/zoomed-out
+ * viewports. Below ~1931px it is a no-op — the image is height-locked to the 846
+ * section so there is no vertical overflow to distribute. Past that, `cover`
+ * scales the image UP to fill the width and the excess height gets cropped; at
+ * 50% that crop is split evenly and beheads the tower (visible from ~2866px, i.e.
+ * 67% browser zoom on a 1920 screen). Biasing the crop to the bottom sacrifices
+ * foreground road instead, keeping the tower and its sky in frame.
+ *
  * Text (live): H2 Inter 32/41.6 w700 #032C40 · intro 24/31.2 · Step labels
  * 24/31.2 w700 #689ECF · step body 18/23.4 w500. Container justify-end → text
  * pinned right, 605 wide.
@@ -25,7 +45,7 @@ export function Process() {
   return (
     <section
       id="process"
-      className="relative w-full overflow-hidden bg-white lg:bg-cover lg:bg-[position:calc(100%+48px)_50%] lg:bg-no-repeat lg:bg-[url('/assets/live/process-bg.webp')]"
+      className="relative w-full overflow-hidden bg-white lg:bg-cover lg:bg-[position:100%_20%] lg:bg-no-repeat lg:bg-[url('/assets/live/process-bg.webp')]"
     >
       {/* MOBILE/TABLET: the building photo as a full-width band at the TOP of the
           section (on desktop it's the full-bleed section background instead).
