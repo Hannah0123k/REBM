@@ -46,10 +46,19 @@ const FIELD_BASE =
 const LABEL = "text-[14px] font-medium text-rebm-navy";
 const ERR = "mt-[6px] text-[13px] text-red-600 rebm-fade-in";
 
+// If the server action hasn't resolved within this window, we stop waiting and
+// let the user retry — the UI must never spin forever. (The server itself is also
+// time-bounded on every network hop; this is the client-side backstop for a lost
+// response, cold-start stall, or network drop.)
+const REQUEST_TIMEOUT_MS = 15_000;
+// After this long still waiting, reassure the user it isn't frozen.
+const SLOW_NOTICE_MS = 3_000;
+
 export function ContactForm() {
   const [values, setValues] = useState<ContactFormValues>(EMPTY);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<Status>("idle");
+  const [slow, setSlow] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const uid = useId();
   const successRef = useRef<HTMLHeadingElement>(null);
@@ -104,14 +113,42 @@ export function ContactForm() {
     }
 
     setStatus("submitting");
-    const res = await submitContact(values);
-    if (res.ok) {
-      setStatus("success");
-    } else {
-      // Keep entered values so nothing is lost on failure.
+    setSlow(false);
+    // Flip to "Still sending…" if it's taking a moment, so it never reads frozen.
+    const slowTimer = setTimeout(() => setSlow(true), SLOW_NOTICE_MS);
+    // Client backstop: a Server Action can't be truly cancelled, but we stop
+    // WAITING on it so the button always recovers. If the timeout wins, the user
+    // can retry; the message is never marked sent unless the backend confirmed it.
+    let timer: ReturnType<typeof setTimeout>;
+    const timeout = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => reject(new Error("client-timeout")), REQUEST_TIMEOUT_MS);
+    });
+
+    try {
+      const res = await Promise.race([submitContact(values), timeout]);
+      if (res.ok) {
+        setStatus("success");
+      } else {
+        // Keep entered values so nothing is lost on failure.
+        setStatus("error");
+        setFormError(res.error);
+        setErrors(res.fieldErrors ?? {});
+      }
+    } catch (err) {
+      // Timeout, network drop, or a server-action rejection — WITHOUT this catch
+      // the promise rejection left the button stuck on "Sending…" indefinitely.
+      const timedOut = err instanceof Error && err.message === "client-timeout";
+      console.error("[contact] submit failed on client:", timedOut ? "timeout" : err);
       setStatus("error");
-      setFormError(res.error);
-      setErrors(res.fieldErrors ?? {});
+      setFormError(
+        timedOut
+          ? "We couldn’t send your message right now. Please try again."
+          : "Something went wrong sending your message. Please try again.",
+      );
+    } finally {
+      clearTimeout(timer!);
+      clearTimeout(slowTimer);
+      setSlow(false);
     }
   }
 
@@ -254,7 +291,7 @@ export function ContactForm() {
         disabled={status === "submitting"}
         className="mt-[22px] w-full rounded-full bg-rebm-navy px-[28px] py-[15px] text-[16px] font-semibold text-white transition-[transform,box-shadow] duration-200 ease-out hover:scale-[1.03] hover:shadow-lg focus-visible:ring-2 focus-visible:ring-rebm-blue focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] disabled:opacity-60 motion-reduce:transform-none motion-reduce:transition-none"
       >
-        {status === "submitting" ? "Sending…" : "Send Message"}
+        {status === "submitting" ? (slow ? "Still sending…" : "Sending…") : "Send Message"}
       </button>
     </form>
   );

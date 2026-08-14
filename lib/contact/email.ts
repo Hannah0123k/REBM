@@ -250,12 +250,20 @@ export function renderVisitorConfirmation(data: ContactInput): { subject: string
 // Network layer.
 // ---------------------------------------------------------------------------
 
+/** Hard cap on a single Resend HTTP call. Resend normally answers in <500ms; if a
+ *  call ever stalls (network/provider hiccup) we abort rather than let the request
+ *  — and the whole submission — hang up to the platform's function limit. */
+const RESEND_TIMEOUT_MS = 10_000;
+
 async function postToResend(body: Record<string, unknown>, apiKey: string): Promise<SendResult> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), RESEND_TIMEOUT_MS);
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify(body),
+      signal: controller.signal,
     });
     if (!res.ok) {
       const detail = await res.text().catch(() => "");
@@ -264,11 +272,17 @@ async function postToResend(body: Record<string, unknown>, apiKey: string): Prom
     const json = (await res.json().catch(() => ({}))) as { id?: string };
     return { sent: true, id: json.id };
   } catch (e) {
-    return {
-      sent: false,
-      reason: "provider_error",
-      detail: e instanceof Error ? e.message : "network error",
-    };
+    // AbortError = our own timeout fired; report it distinctly so logs show a
+    // stall rather than a generic network error.
+    const detail =
+      e instanceof Error && e.name === "AbortError"
+        ? `timeout after ${RESEND_TIMEOUT_MS}ms`
+        : e instanceof Error
+          ? e.message
+          : "network error";
+    return { sent: false, reason: "provider_error", detail };
+  } finally {
+    clearTimeout(timer);
   }
 }
 

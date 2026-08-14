@@ -261,3 +261,21 @@ test("sendContactEmail catches a network/thrown error as provider_error", async 
   assert.equal(r.sent, false);
   assert.equal(r.reason === "provider_error" && r.detail.includes("socket hang up"), true);
 });
+
+test("sendContactEmail maps an aborted (timed-out) request to a 'timeout' provider_error and returns promptly", async () => {
+  process.env.RESEND_API_KEY = "re_test";
+  process.env.CONTACT_FROM_EMAIL = "REBM <no-reply@rebm.com>";
+  process.env.CONTACT_RECIPIENT_ALAN = "alan@rebm.com";
+  // Simulate the fetch aborting: reject with an AbortError, exactly as the real
+  // fetch does when its AbortSignal fires. Proves the timeout branch classifies
+  // it as a timeout (not a generic network error) and never hangs.
+  globalThis.fetch = (async () => {
+    throw new DOMException("The operation was aborted.", "AbortError");
+  }) as typeof globalThis.fetch;
+
+  const started = Date.now();
+  const r = await sendContactEmail(VALID, { submittedAt: new Date() });
+  assert.ok(Date.now() - started < 1000, "must resolve promptly, not hang");
+  assert.equal(r.sent, false);
+  assert.equal(r.reason === "provider_error" && r.detail.startsWith("timeout"), true);
+});
