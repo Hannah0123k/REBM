@@ -63,22 +63,58 @@ html {
   scroll-margin-top: var(--header-h);
 }
 
-/* Per-section anchor tuning so a nav "jump" lands with balanced breathing room.
-   #faq's heading sits at the section's very top → the default lands it flush
-   against the header, so add clearance. #testimonials has large top padding →
-   the default leaves a big gap above the heading (much more than the ~32px below
-   it), so we land a bit higher (part of that padding tucks under the header) to
-   even the top/bottom spacing — WITHOUT changing the section's actual padding.
-   The two #testimonials tiers match its pt-56 (mobile/tablet) vs lg:pt-96. */
-#faq {
-  scroll-margin-top: calc(var(--header-h) + 24px);
+/* ── Anchor landing ─────────────────────────────────────────────────────────
+   A nav jump must position the section's HEADING a consistent distance below
+   the fixed header — not the section's BOX. Those are different things: every
+   section carries its own top padding, so scrolling the box flush under the
+   header pushes the heading down by exactly that padding. Measured on desktop
+   before this rule existed, the heading landed at 101 / 109 / 96px for
+   About / Process / Property, against 32 / 42px for Testimonials and FAQ, which
+   had already been hand-tuned. Same nav, five different landings.
+
+   Each value below is
+
+       --header-h  +  --anchor-lead  −  (that section's own top padding)
+
+   so every heading arrives on the same line regardless of its section's
+   padding. The section's real padding is never touched — this only moves where
+   the scroll stops. If you change a section's top padding, change its number
+   here to match, or its anchor drifts again. */
+:root {
+  --anchor-lead: 40px;
 }
+
+/* Mobile/tablet: About, Property and Testimonials all use pt-56; FAQ's heading
+   sits at its very top (no padding to subtract). #process is deliberately NOT
+   listed — on mobile that section opens with its building-photo band, so
+   landing on the heading would pull the band up under the header and hide it.
+   There the default [id] rule stands and the section arrives from its top. */
+#about,
+#property,
 #testimonials {
-  scroll-margin-top: calc(var(--header-h) - 24px);
+  scroll-margin-top: calc(var(--header-h) + var(--anchor-lead) - 56px);
 }
+#faq {
+  scroll-margin-top: calc(var(--header-h) + var(--anchor-lead));
+}
+
+/* Desktop: the large top paddings live here, so this is where the five
+   landings actually diverge. lg:pt is 101 / 109 / 96 / 96 / 0 respectively. */
 @media (min-width: 1024px) {
+  #about {
+    scroll-margin-top: calc(var(--header-h) + var(--anchor-lead) - 101px);
+  }
+  #process {
+    scroll-margin-top: calc(var(--header-h) + var(--anchor-lead) - 109px);
+  }
+  #property {
+    scroll-margin-top: calc(var(--header-h) + var(--anchor-lead) - 96px);
+  }
   #testimonials {
-    scroll-margin-top: calc(var(--header-h) - 64px);
+    scroll-margin-top: calc(var(--header-h) + var(--anchor-lead) - 96px);
+  }
+  #faq {
+    scroll-margin-top: calc(var(--header-h) + var(--anchor-lead));
   }
 }
 

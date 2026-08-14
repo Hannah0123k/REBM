@@ -14,6 +14,19 @@ import { getFeaturedPost, getPublishedPosts } from "@/lib/blog/queries";
 /** Featured Market Watch leads page 1; six article cards per page beneath it. */
 const GRID_SIZE = 6;
 
+/**
+ * Serve this page from cache and refresh it in the background at most once a
+ * minute, instead of re-rendering and re-querying Supabase for every visitor.
+ * Before this, /blog was `x-vercel-cache: MISS` on every request (0.28-0.99s
+ * TTFB, up to 2.4s total) while the cached homepage answered in ~0.17s.
+ *
+ * The trade: a post whose scheduled time passes becomes visible within a minute
+ * rather than on the very next request. Publishing is not a real-time operation,
+ * so a minute is a fair price for making every reader's load fast. Raise this if
+ * the blog gets quieter; lower it only with a reason.
+ */
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Blog — Real Estate Broker Match",
   description:
@@ -25,8 +38,7 @@ export const metadata: Metadata = {
  * Market Watch lead (page 1 only) → a 3-across grid of article cards → a "More
  * Articles" control. Reads Supabase (newest first); falls back to the reviewable
  * placeholder layout until real posts are migrated. Featured + grid share one
- * centered container (~1in side margins on a 13" screen). Dynamic render, so
- * scheduled posts appear the moment their time passes.
+ * centered container (~1in side margins on a 13" screen).
  */
 export default async function BlogPage() {
   let featured: CardPost | null = null;

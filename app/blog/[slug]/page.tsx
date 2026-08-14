@@ -34,9 +34,17 @@ import { SITE_NAME, absoluteUrl } from "@/lib/site";
  *    issues a 308 permanent redirect to the current URL (no broken links).
  *  - Falls back to the pre-migration PLACEHOLDER catalogue so every card on the
  *    listing navigates to a real, rendering article route (no dead "#" links).
- *  - Dynamic (Supabase read via cookies) so a scheduled post appears the moment
- *    its publish time passes — no cache flush required.
  */
+
+/**
+ * Cached and revalidated in the background, matching the blog index. Article
+ * bodies change rarely, so re-rendering one per request was pure cost: reads go
+ * through the session-less public client (lib/supabase/public.ts), which is what
+ * makes caching possible at all — the old cookie-bound client forced every
+ * request to render fresh. A scheduled post goes live within a minute of its
+ * publish time rather than on the next request.
+ */
+export const revalidate = 60;
 
 /** Normalized shape the article page renders — real DB post OR placeholder. */
 type ArticleView = {

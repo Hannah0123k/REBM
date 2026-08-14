@@ -86,6 +86,17 @@ export function SiteHeader() {
               asset at the same width. Bigger than live where the nav has room;
               1280 stays compact like live so the 7-link nav fits.
 
+              The width MUST grow monotonically with the viewport. There used to
+              be an `sm:w-[360px]` step here, which made the logo jump UP to 360
+              at 640 and then back DOWN to 340 at 1280 — so zooming out shrank the
+              logo at one point and grew it everywhere else. 340 is a hard ceiling
+              below 1280 because the 7-link nav + phone pill leave only ~22px of
+              slack in the container at that width (measured), so the fix is to
+              cap the small end rather than raise 1280. The sm step was also
+              redundant: clamp(210,66vw,340) already reaches 340 at 515px and
+              holds it, which meets the xl clamp at exactly 340. Removing it makes
+              the curve continuous at both 640 and 1280.
+
               The viewBox X ORIGIN (4.5, not 0) is what makes the wordmark align
               with the page's text. The asset was trimmed vertically but not
               horizontally, leaving ~8.5 units of transparent padding on its left
@@ -106,7 +117,7 @@ export function SiteHeader() {
             width={458}
             height={35}
             priority
-            className="h-auto w-[clamp(210px,66vw,340px)] sm:w-[360px] xl:w-[clamp(340px,calc(85.9vw-759.5px),560px)]"
+            className="h-auto w-[clamp(210px,66vw,340px)] xl:w-[clamp(340px,calc(85.9vw-759.5px),560px)]"
           />
         </Link>
 

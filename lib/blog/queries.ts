@@ -2,7 +2,7 @@ import "server-only";
 
 import { rankRelated } from "@/lib/blog/related";
 import type { TiptapDoc } from "@/lib/blog/types";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 /**
  * PUBLIC blog data access — the single source of truth for what visitors see.
@@ -136,7 +136,7 @@ export async function getPublishedPosts(opts?: {
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   // Tag filter needs an inner join so the WHERE can reference the joined slug.
   const columns = opts?.tagSlug
@@ -182,7 +182,7 @@ export async function getPublishedPosts(opts?: {
  * when nothing is published yet (caller shows placeholders).
  */
 export async function getFeaturedPost(): Promise<PublicPostCard | null> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const featured = await onlyVisible(supabase.from("blog_posts").select(CARD_COLUMNS))
     .eq("featured", true)
@@ -204,7 +204,7 @@ export async function getFeaturedPost(): Promise<PublicPostCard | null> {
 
 /** A single visible post by its current slug, or null if not publicly visible. */
 export async function getPostBySlug(slug: string): Promise<PublicPost | null> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await onlyVisible(supabase.from("blog_posts").select(FULL_COLUMNS))
     .eq("slug", slug)
     .maybeSingle();
@@ -218,7 +218,7 @@ export async function getPostBySlug(slug: string): Promise<PublicPost | null> {
  * the old slug is unknown or the post is no longer public.
  */
 export async function resolveOldSlug(oldSlug: string): Promise<string | null> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data: hist, error } = await supabase
     .from("blog_post_slugs")
     .select("post_id")
@@ -246,7 +246,7 @@ export async function getRelatedPosts(
   current: { id: string; tags: PublicTag[] },
   limit = 2,
 ): Promise<PublicPostCard[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await onlyVisible(supabase.from("blog_posts").select(CARD_COLUMNS))
     .neq("id", current.id)
     .order("published_at", { ascending: false })
@@ -259,7 +259,7 @@ export async function getRelatedPosts(
 
 /** All slugs of currently-visible posts — for generateStaticParams / sitemaps. */
 export async function getAllPublishedSlugs(): Promise<string[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await onlyVisible(supabase.from("blog_posts").select("slug"))
     .order("published_at", { ascending: false });
   if (error) throw new Error(`getAllPublishedSlugs: ${error.message}`);
@@ -268,7 +268,7 @@ export async function getAllPublishedSlugs(): Promise<string[]> {
 
 /** Tags that have at least one publicly-visible post (public read via RLS). */
 export async function getPublicTags(): Promise<PublicTag[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("blog_post_tags")
     .select("tags(name, slug)");
