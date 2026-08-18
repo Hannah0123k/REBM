@@ -53,7 +53,7 @@ export default function PrivacyPage() {
             <h1 className="text-[28px] font-bold sm:text-[32px]">Privacy Policy</h1>
 
             <p className="mt-[16px] text-[14px] leading-[21px] text-[rgb(90,100,110)]">
-              <span className="font-semibold">Effective Date:</span> August 12, 2026
+              <span className="font-semibold">Effective Date:</span> August 18, 2026
             </p>
 
             <div className="mt-[24px] space-y-[16px] text-[15px] leading-[24px] text-[rgb(40,52,64)]">
