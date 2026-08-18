@@ -67,10 +67,29 @@ export function Bios() {
                 <h3 className="mb-[20px] text-center text-[40px] leading-[40px] font-black text-rebm-navy sm:text-left lg:text-[62px] lg:leading-[62px]">
                   {person.name}
                 </h3>
+                {/* A bio paragraph is either a plain string or a segmented
+                    {before, linkText, linkHref, after} when it carries an inline
+                    link (Alan's NNN book). Same shape and same anchor styling as
+                    `bios.closing` below — one pattern for both. */}
                 <div className="space-y-[20px] text-[16px] leading-[24px] text-black lg:text-[23px] lg:leading-[29.9px]">
-                  {person.body.map((para) => (
-                    <p key={para}>{para}</p>
-                  ))}
+                  {person.body.map((para) =>
+                    typeof para === "string" ? (
+                      <p key={para}>{para}</p>
+                    ) : (
+                      <p key={para.linkText}>
+                        {para.before}
+                        <a
+                          href={para.linkHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-rebm-link underline transition-opacity hover:opacity-70"
+                        >
+                          {para.linkText}
+                        </a>
+                        {para.after}
+                      </p>
+                    ),
+                  )}
                 </div>
               </div>
             </div>

@@ -47,7 +47,16 @@ export const bios = {
       photo: "alan",
       alt: "Team: Alan",
       body: [
-        "Since 1993, Alan has helped thousands of clients buy, sell, and lease billions of dollars in real estate. He is a nationally recognized expert in investment real estate and 1031 exchanges, and the author of The NNN Triple Net Property Book. Alan has matched clients with trusted real estate brokers nationwide, and his proven track record makes him uniquely qualified to assist with the sale of your investment property.",
+        // Segmented rather than a plain string so the book title can be an inline
+        // link mid-sentence, exactly like `closing` below. Copy is unchanged.
+        {
+          before:
+            "Since 1993, Alan has helped thousands of clients buy, sell, and lease billions of dollars in real estate. He is a nationally recognized expert in investment real estate and 1031 exchanges, and the author of ",
+          linkText: "The NNN Triple Net Property Book",
+          linkHref: "https://1031tax.com/nnn-book/",
+          after:
+            ". Alan has matched clients with trusted real estate brokers nationwide, and his proven track record makes him uniquely qualified to assist with the sale of your investment property.",
+        },
         "Alan has been the trusted real estate broker for everyone ranging from first-time investors to billion-dollar property owners, attorneys, accountants, financial advisors, institutional fund managers, and family offices. He understands that while every client is unique, their goals are strikingly similar: to be heard and understood, to receive clear guidance, and to sell their property for the highest price with the smoothest process. Above all, Alan believes in giving clients realistic advice - not inflated projections or promises that can’t be delivered.",
       ],
     },
