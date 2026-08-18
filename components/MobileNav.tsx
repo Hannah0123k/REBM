@@ -61,10 +61,13 @@ export function MobileNav() {
     }
     e.preventDefault();
     close();
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // "auto" (instant), matching the desktop nav — a tapped link opens the page
+    // at that section rather than animating the whole way down to it. The two
+    // rAFs are still needed: they wait for the drawer's body scroll-lock to lift
+    // so the jump lands on target rather than short.
     requestAnimationFrame(() =>
       requestAnimationFrame(() => {
-        target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+        target.scrollIntoView({ behavior: "auto", block: "start" });
       }),
     );
   };

@@ -53,9 +53,15 @@
   }
 }
 
+/* Anchor jumps land INSTANTLY — no `scroll-behavior: smooth` here on purpose.
+   Animating the jump meant clicking a nav link flung the page through every
+   section between here and the target, which read as a jarring rush rather than
+   as navigation (worst on Testimonials and FAQ, which are the longest travels).
+   A nav link should just open the page at that section. The scroll-margin rules
+   below still apply to an instant jump, so each heading lands 40px below the
+   header exactly as before — only the animation is gone. */
 html {
   font-family: var(--font-sans);
-  scroll-behavior: smooth;
 }
 
 /* Every element that can be a scroll anchor clears the sticky header. */
@@ -215,9 +221,8 @@ html {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
+  /* No scroll-behavior override needed here any more — scrolling is instant for
+     everyone now, so there is nothing for reduced-motion to opt out of. */
   .rebm-enter,
   .rebm-enter-delayed,
   .rebm-fade-in,

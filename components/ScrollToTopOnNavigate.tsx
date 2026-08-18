@@ -6,12 +6,13 @@ import { useEffect, useRef } from "react";
 /**
  * On every client-side route change, jump INSTANTLY to the top of the page.
  *
- * The site sets `html { scroll-behavior: smooth }` (for in-page anchor links),
- * which also animates the App Router's scroll-to-top on navigation — so arriving
- * on a new page after scrolling elsewhere looked like it "scrolled up from the
- * bottom" (worst on mobile). This forces `scroll-behavior: auto` for the
- * navigation-settle window, lands at the top, then restores smooth so anchor
- * links still glide. Mounted once in the root layout — covers every page.
+ * Scrolling is instant site-wide (no `scroll-behavior: smooth` in globals.css),
+ * so the `auto` forced below is belt-and-braces rather than the load-bearing
+ * part it used to be — it guards against anything setting smooth inline later.
+ * What this component is actually for is the scroll-to-top itself, plus the
+ * hash-target polling further down: a deep section such as the FAQ is not in the
+ * DOM at the instant the route swaps, so the jump has to wait for it.
+ * Mounted once in the root layout — covers every page.
  */
 export function ScrollToTopOnNavigate() {
   const pathname = usePathname();
