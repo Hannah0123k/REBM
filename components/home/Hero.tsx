@@ -132,12 +132,27 @@ export function Hero() {
       <Container className="relative pt-[calc(var(--header-h)+18px)] pb-[36px] sm:pt-[calc(var(--header-h)+42px)] lg:pb-[44px]">
         {/* contentRef fades/drifts on scroll (desktop only). */}
         <div ref={contentRef} className="will-change-[opacity,transform]">
-          <h1 className="max-w-[840px] text-[29px] leading-[36px] font-semibold tracking-[-0.2px] text-white sm:text-[38px] sm:leading-[48px] lg:text-[50px] lg:leading-[70px]">
+          {/* DESKTOP LINE COMPOSITION IS ENFORCED, NOT HOPED FOR.
+              Each designed line is its own block at lg with `whitespace-nowrap`,
+              so a line can never wrap inside itself. Previously the lines were
+              inline spans separated by a <br>, which fixed where lines BEGIN but
+              left each line free to re-wrap internally — and line 2 ("match you
+              with a real estate broker") needed 839.0px inside a 840px
+              max-width, i.e. it fitted by ONE PIXEL. Any machine whose text
+              measured a hair wider stranded "broker" on a fourth line. Measured:
+              with Inter unavailable and the fallback face in use, that line needs
+              865.6px, which is 25.6px MORE than the old box — reproduced exactly
+              in Firefox, and the reason it looked fine on one computer and broke
+              on another with the same deployment and a cleared cache.
+              `lg:max-w-none` hands the width back to the Container so the nowrap
+              lines have room to spare instead of sitting on the limit; the h1 is
+              transparent, so a wider box changes nothing visually. The 840px cap
+              still governs the smaller breakpoints, where the copy wraps freely
+              and nowrap is deliberately NOT applied. */}
+          <h1 className="max-w-[840px] text-[29px] leading-[36px] font-semibold tracking-[-0.2px] text-white sm:text-[38px] sm:leading-[48px] lg:max-w-none lg:text-[50px] lg:leading-[70px]">
             {hero.headingLines.map((line, i) => (
-              <span key={line}>
+              <span key={line} className="lg:block lg:whitespace-nowrap">
                 {line}
-                {/* Force the exact live break on desktop; wrap naturally below. */}
-                {i < hero.headingLines.length - 1 && <br className="hidden lg:inline" />}
                 {i < hero.headingLines.length - 1 && <span className="lg:hidden"> </span>}
               </span>
             ))}
