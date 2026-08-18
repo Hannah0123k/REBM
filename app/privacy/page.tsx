@@ -37,6 +37,12 @@ export const metadata: Metadata = {
  * identification, this page must be updated BEFORE those tools go live, and the
  * "we do not use" statements in §1(b), §5 and §6 must be revisited — they are
  * affirmative representations, not boilerplate.
+ *
+ * The privacy contact is rhett@realestatebrokermatch.com (Hannah, 2026-08-18),
+ * appearing in §10(b), §10(f) and §15. It is an individual's mailbox rather than
+ * a role alias, which is legally sufficient but ties statutory response
+ * deadlines to one person being available — if a privacy@ alias is ever created,
+ * swap all three occurrences to it.
  */
 export default function PrivacyPage() {
   return (
@@ -312,9 +318,16 @@ export default function PrivacyPage() {
                   ]}
                 />
                 <p className="font-semibold">(b) How to Submit a Request.</p>
+                <p>You may submit privacy requests by:</p>
+                <List
+                  items={[
+                    "Emailing rhett@realestatebrokermatch.com with “Privacy Request” in the subject line",
+                    "Calling 1.800.841.5033",
+                    "Writing to us at the address listed in Section 15",
+                  ]}
+                />
                 <p>
-                  You may submit privacy requests by calling 1.800.841.5033, by writing to us at the
-                  address listed in Section 15, or through our{" "}
+                  You may also reach us through our{" "}
                   <Link href="/contact" className="text-rebm-link underline">
                     Contact page
                   </Link>
@@ -341,9 +354,10 @@ export default function PrivacyPage() {
                 <p className="font-semibold">(f) Appeals.</p>
                 <p>
                   If we deny a request and applicable law gives you the right to appeal, you may
-                  appeal by calling 1.800.841.5033 or by writing to us at the address in Section 15,
-                  stating that your message is a privacy appeal. We will respond to appeals within
-                  the time frame required by applicable law.
+                  appeal by emailing rhett@realestatebrokermatch.com with “Privacy Appeal” in the
+                  subject line, by calling 1.800.841.5033, or by writing to us at the address in
+                  Section 15. We will respond to appeals within the time frame required by
+                  applicable law.
                 </p>
                 <p className="font-semibold">(g) Non-Discrimination.</p>
                 <p>We will not discriminate against you for exercising any privacy right.</p>
@@ -430,6 +444,8 @@ export default function PrivacyPage() {
                   2451 S. Yosemite Street
                   <br />
                   Denver, CO 80231
+                  <br />
+                  Email: rhett@realestatebrokermatch.com
                   <br />
                   Phone: 1.800.841.5033
                 </p>
