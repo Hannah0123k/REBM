@@ -148,10 +148,25 @@ export function Hero() {
               lines have room to spare instead of sitting on the limit; the h1 is
               transparent, so a wider box changes nothing visually. The 840px cap
               still governs the smaller breakpoints, where the copy wraps freely
-              and nowrap is deliberately NOT applied. */}
+              and nowrap is deliberately NOT applied.
+
+              NOWRAP STARTS AT 1100px, NOT AT lg (1024) — the number is measured,
+              not picked. nowrap cannot wrap, so if a line ever exceeded its box
+              it would CLIP instead, and clipped text is worse than a wrapped
+              line. At 1024 the Container is only 896px wide while the widest
+              realistic fallback measures 889px — 7px of headroom, and a wide
+              face such as Verdana would need 999px and be cut off. At 1100 the
+              Container is 972px, which clears that same fallback by 83px and
+              keeps growing (263px at 1280, 708px at 1920). In the 1024-1099
+              sliver the lines simply wrap normally: every realistic face still
+              fits there, and the worst case degrades to a wrapped line rather
+              than a truncated one. */}
           <h1 className="max-w-[840px] text-[29px] leading-[36px] font-semibold tracking-[-0.2px] text-white sm:text-[38px] sm:leading-[48px] lg:max-w-none lg:text-[50px] lg:leading-[70px]">
             {hero.headingLines.map((line, i) => (
-              <span key={line} className="lg:block lg:whitespace-nowrap">
+              <span
+                key={line}
+                className="lg:block [@media(min-width:1100px)]:whitespace-nowrap"
+              >
                 {line}
                 {i < hero.headingLines.length - 1 && <span className="lg:hidden"> </span>}
               </span>

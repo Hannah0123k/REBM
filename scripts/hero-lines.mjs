@@ -33,7 +33,7 @@ const WANT = [
   "match you with a real estate broker",
   "who will sell your property.",
 ];
-const DESKTOP = [1024, 1100, 1280, 1366, 1440, 1512, 1536, 1600, 1920, 2560];
+const DESKTOP = [1024, 1080, 1099, 1100, 1152, 1280, 1366, 1440, 1512, 1536, 1600, 1920, 2560];
 const MOBILE = [320, 375, 390, 430, 768, 1023];
 /** Below this the copy is meant to wrap freely, so nowrap must NOT be applied. */
 const LG = 1024;
@@ -117,7 +117,7 @@ for (const name of picked) {
   const engine = ALL[name];
   const cases = [
     ...DESKTOP.map((w) => [w, "Inter loaded", {}]),
-    ...[1024, 1280, 1440, 1920].map((w) => [w, "Inter BLOCKED", { blockFonts: true }]),
+    ...[1024, 1099, 1100, 1280, 1440, 1920].map((w) => [w, "Inter BLOCKED", { blockFonts: true }]),
     ...[1.25, 1.5, 2].map((d) => [1440, `DPR ${d}`, { dpr: d }]),
     ...[18, 20].map((f) => [1440, `root ${f}px`, { rootFs: f }]),
   ];
