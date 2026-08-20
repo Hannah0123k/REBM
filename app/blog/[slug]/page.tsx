@@ -144,9 +144,19 @@ export async function generateMetadata({
   const title = post.seo_title || post.title;
   const description = post.meta_description || post.excerpt || undefined;
   const url = absoluteUrl(`/blog/${post.slug}`);
+  // A post that sets its own `openGraph` does NOT inherit the root layout's
+  // images, so a post with no featured image would share with no preview card
+  // at all. Fall back to the site card instead of nothing.
   const images = post.featured_image_url
     ? [{ url: post.featured_image_url, alt: post.featured_image_alt || post.title }]
-    : undefined;
+    : [
+        {
+          url: "/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: "Real Estate Broker Match makes finding the right real estate broker simple.",
+        },
+      ];
 
   return {
     title,
@@ -163,10 +173,10 @@ export async function generateMetadata({
       images,
     },
     twitter: {
-      card: post.featured_image_url ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title,
       description,
-      images: post.featured_image_url ? [post.featured_image_url] : undefined,
+      images: [post.featured_image_url ?? "/og-image.png"],
     },
   };
 }

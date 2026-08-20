@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 
 import { ScrollToTopOnNavigate } from "@/components/ScrollToTopOnNavigate";
 import { SiteHeader } from "@/components/SiteHeader";
-import { SITE_URL } from "@/lib/site";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 /**
@@ -19,13 +19,49 @@ const inter = Inter({
   display: "swap",
 });
 
+const SITE_DESCRIPTION =
+  "Real Estate Broker Match will match you with a real estate broker who will sell your property. Alan and Rhett Fruitman have helped clients buy and sell billions of dollars of real estate since 1993.";
+
+/**
+ * The link-preview card — what people see when the URL is texted, pasted into
+ * Slack or LinkedIn, or saved as a bookmark. Brand-blue background, navy serif
+ * headline; regenerate it with `node scripts/og-image.mjs`.
+ *
+ * The live WordPress site declares no og:image at all, so scrapers fall back to
+ * whatever photo they find in the markup — which is why a shared link currently
+ * previews as Rhett's headshot instead of anything branded.
+ */
+const OG_IMAGE = {
+  url: "/og-image.png",
+  width: 1200,
+  height: 630,
+  alt: "Real Estate Broker Match makes finding the right real estate broker simple.",
+};
+
 // PROVISIONAL — the live site has no meta description anywhere and no SEO
 // plugin, so these are written fresh. See CLAUDE.md → Before launch.
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Real Estate Broker Match",
-  description:
-    "Real Estate Broker Match will match you with a real estate broker who will sell your property. Alan and Rhett Fruitman have helped clients buy and sell billions of dollars of real estate since 1993.",
+  description: SITE_DESCRIPTION,
+  // Every page that doesn't declare its own `openGraph` inherits this block, so
+  // Blog, Contact and Privacy are covered. Blog POSTS do declare their own and
+  // therefore fall back to OG_IMAGE explicitly — see app/blog/[slug]/page.tsx.
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: "Real Estate Broker Match",
+    description: SITE_DESCRIPTION,
+    locale: "en_US",
+    images: [OG_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Real Estate Broker Match",
+    description: SITE_DESCRIPTION,
+    images: [OG_IMAGE.url],
+  },
   // REBM wordmark (white on brand navy). All icons live in /public and are
   // declared explicitly here — the old app/favicon.ico file-convention was
   // removed so this is the single source of truth. See public/site.webmanifest
