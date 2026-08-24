@@ -54,11 +54,27 @@ function toRow(input: ReturnType<typeof postInputSchema.parse>) {
   };
 }
 
+/** Shape of the incoming body, for a failure message that names the problem. */
+function describeBody(body: unknown): string {
+  if (body === null) return "root is null";
+  if (typeof body !== "object") return `root is a ${typeof body}, not a node`;
+  if (Array.isArray(body)) return "root is an array, not a doc node";
+  const t = (body as { type?: unknown }).type;
+  const kids = (body as { content?: unknown }).content;
+  const count = Array.isArray(kids) ? `${kids.length} top-level blocks` : "no content array";
+  return `root type ${typeof t === "string" ? `"${t}"` : String(t)}, ${count}`;
+}
+
 /**
  * toRow() runs sanitizeDoc(), which THROWS on a body it can't reduce to a doc
  * node. A thrown Server Action rejects on the client with no ActionResult to
  * render, so the editor had nothing to show and no way to tell a failure from a
  * no-op. Return the failure as a value instead.
+ *
+ * The underlying message goes to the editor as well as the log. Unlike
+ * dbError() — which hides Postgres/RLS internals — this text comes from our own
+ * sanitizer, the route is requireAdmin()-gated, and without it the only way to
+ * learn why a save failed is to read the Vercel runtime logs.
  */
 function safeRow(
   input: ReturnType<typeof postInputSchema.parse>,
@@ -66,12 +82,13 @@ function safeRow(
   try {
     return { ok: true, row: toRow(input) };
   } catch (e) {
-    console.error(`[admin/posts] body sanitize failed: ${(e as Error).message}`);
+    const detail = `${(e as Error).message} — ${describeBody(input.body)}`;
+    console.error(`[admin/posts] body sanitize failed: ${detail}`);
     return {
       ok: false,
       result: {
         ok: false,
-        error: "This post's body couldn't be saved.",
+        error: `This post's body couldn't be saved: ${detail}`,
         fieldErrors: { body: "Some content here couldn't be processed. Try removing the block you added last." },
       },
     };
@@ -196,8 +213,9 @@ export async function autosavePost(
   try {
     body = sanitizeDoc(fields.body);
   } catch (e) {
-    console.error(`[admin/posts] autosave sanitize failed: ${(e as Error).message}`);
-    return { ok: false, error: "Autosave couldn't process this content." };
+    const detail = `${(e as Error).message} — ${describeBody(fields.body)}`;
+    console.error(`[admin/posts] autosave sanitize failed: ${detail}`);
+    return { ok: false, error: `Autosave couldn't process this content: ${detail}` };
   }
 
   const { data, error } = await supabase
