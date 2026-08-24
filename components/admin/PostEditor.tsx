@@ -132,18 +132,30 @@ export function PostEditor({ post, initialTags = [] }: { post?: BlogPost; initia
       // later state transition will re-arm this effect.
       mutating.current = true;
       setSaveState("saving");
-      const res = await autosavePost(post.id, { title, body, excerpt }, updatedAtRef.current);
-      mutating.current = false;
-      if (res.ok) {
-        updatedAtRef.current = res.savedAt ?? updatedAtRef.current;
-        setSaveState("saved");
-      } else if (res.conflict) {
-        setConflict(true);
+      try {
+        const res = await autosavePost(post.id, { title, body, excerpt }, updatedAtRef.current);
+        if (res.ok) {
+          updatedAtRef.current = res.savedAt ?? updatedAtRef.current;
+          setSaveState("saved");
+        } else if (res.conflict) {
+          setConflict(true);
+          setSaveState("error");
+          setFormError("This post was changed in another tab or by someone else. Reload before saving.");
+        } else {
+          setSaveState("error"); // re-arms via the effect (bounded to the debounce)
+          setFormError(res.error ?? "Autosave failed — will retry.");
+        }
+      } catch {
+        // A THROWN action (rather than one returning { ok: false }) rejects with
+        // no ActionResult at all. Releasing the lock here is what keeps Save
+        // alive: without the finally, `mutating` stayed true for the rest of the
+        // session and every later Save click was dropped at its own guard, while
+        // saveState stuck on "saving" left both buttons disabled — the editor
+        // looked fine and could not save anything.
         setSaveState("error");
-        setFormError("This post was changed in another tab or by someone else. Reload before saving.");
-      } else {
-        setSaveState("error"); // re-arms via the effect (bounded to the debounce)
-        setFormError(res.error ?? "Autosave failed — will retry.");
+        setFormError("Autosave failed — will retry.");
+      } finally {
+        mutating.current = false;
       }
     }, AUTOSAVE_MS);
     return () => clearTimeout(t);
@@ -177,6 +189,12 @@ export function PostEditor({ post, initialTags = [] }: { post?: BlogPost; initia
       setSaveState("saved");
       // After a successful manual save, return to the posts dashboard.
       router.push("/admin/posts");
+    } catch {
+      // Same reasoning as the autosave catch: a thrown action carries no
+      // ActionResult, so without this the click produced no navigation, no
+      // write and no message — indistinguishable from a dead button.
+      setSaveState("error");
+      setFormError("Couldn't reach the server to save. Your changes are still here — try Save again.");
     } finally {
       mutating.current = false;
     }

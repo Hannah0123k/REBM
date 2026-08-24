@@ -54,6 +54,30 @@ function toRow(input: ReturnType<typeof postInputSchema.parse>) {
   };
 }
 
+/**
+ * toRow() runs sanitizeDoc(), which THROWS on a body it can't reduce to a doc
+ * node. A thrown Server Action rejects on the client with no ActionResult to
+ * render, so the editor had nothing to show and no way to tell a failure from a
+ * no-op. Return the failure as a value instead.
+ */
+function safeRow(
+  input: ReturnType<typeof postInputSchema.parse>,
+): { ok: true; row: ReturnType<typeof toRow> } | { ok: false; result: ActionResult } {
+  try {
+    return { ok: true, row: toRow(input) };
+  } catch (e) {
+    console.error(`[admin/posts] body sanitize failed: ${(e as Error).message}`);
+    return {
+      ok: false,
+      result: {
+        ok: false,
+        error: "This post's body couldn't be saved.",
+        fieldErrors: { body: "Some content here couldn't be processed. Try removing the block you added last." },
+      },
+    };
+  }
+}
+
 function revalidateBlog(slug: string, previousSlug?: string) {
   revalidatePath("/blog");
   revalidatePath(`/blog/${slug}`);
@@ -72,9 +96,12 @@ export async function createPost(raw: unknown): Promise<ActionResult> {
   const dupe = await slugTaken(parsed.data.slug);
   if (dupe) return { ok: false, error: "Slug in use.", fieldErrors: { slug: "That slug is already taken." } };
 
+  const row = safeRow(parsed.data);
+  if (!row.ok) return row.result;
+
   const { data, error } = await supabase
     .from("blog_posts")
-    .insert(toRow(parsed.data))
+    .insert(row.row)
     .select("id, slug, updated_at")
     .single();
 
@@ -117,9 +144,12 @@ export async function updatePost(
     return { ok: false, error: "Slug in use.", fieldErrors: { slug: "That slug is already taken." } };
   }
 
+  const row = safeRow(parsed.data);
+  if (!row.ok) return row.result;
+
   const { data, error } = await supabase
     .from("blog_posts")
-    .update(toRow(parsed.data))
+    .update(row.row)
     .eq("id", id)
     .select("id, slug, updated_at")
     .single();
@@ -162,7 +192,14 @@ export async function autosavePost(
     }
   }
 
-  const body = sanitizeDoc(fields.body);
+  let body;
+  try {
+    body = sanitizeDoc(fields.body);
+  } catch (e) {
+    console.error(`[admin/posts] autosave sanitize failed: ${(e as Error).message}`);
+    return { ok: false, error: "Autosave couldn't process this content." };
+  }
+
   const { data, error } = await supabase
     .from("blog_posts")
     .update({
