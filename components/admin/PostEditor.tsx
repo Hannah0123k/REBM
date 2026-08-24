@@ -5,16 +5,14 @@ import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 
 
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { TiptapEditor } from "@/components/admin/TiptapEditor";
-import { autosavePost, createPost, updatePost } from "@/app/admin/posts/actions";
+import { createPost, updatePost } from "@/app/admin/posts/actions";
 import { AUTHORS, findAuthorByName } from "@/lib/blog/authors";
 import { isoToZonedInput, zonedInputToIso } from "@/lib/blog/date";
-import { isEmptyDoc } from "@/lib/blog/readingTime";
 import { slugify } from "@/lib/blog/slug";
 import type { BlogPost, PostStatus, TiptapDoc } from "@/lib/blog/types";
 
 const EMPTY_DOC: TiptapDoc = { type: "doc", content: [{ type: "paragraph" }] };
 const STATUSES: PostStatus[] = ["draft", "published", "scheduled", "unpublished"];
-const AUTOSAVE_MS = 3000;
 
 // datetime-local ⇄ UTC-instant conversion is anchored to the site's business
 // display zone (America/New_York), NOT the admin's browser zone, so the date the
@@ -61,7 +59,8 @@ export function PostEditor({ post, initialTags = [] }: { post?: BlogPost; initia
 
   // Latest server version this editor is known to be in sync with.
   const updatedAtRef = useRef<string | undefined>(post?.updated_at);
-  // Shared re-entrancy guard: only one mutation (manual OR autosave) at a time.
+  // Re-entrancy guard against double-clicks. Nothing writes on a timer: a post
+  // is saved only when Save or Save Draft is pressed.
   const mutating = useRef(false);
 
   const clearFieldError = useCallback((key: string) => {
@@ -120,47 +119,6 @@ export function PostEditor({ post, initialTags = [] }: { post?: BlogPost; initia
     [title, slug, excerpt, body, featuredUrl, featuredAlt, author, authorImageUrl, status, featured, publishedLocal, seoTitle, metaDescription, tags],
   );
 
-  // Autosave (edit mode, content only). Debounced; single in-flight across
-  // manual + auto; retries on transient error; never touches slug/status/dates.
-  useEffect(() => {
-    if (mode !== "edit" || !post) return;
-    if (saveState !== "unsaved" && saveState !== "error") return;
-    if (isEmptyDoc(body)) return;
-
-    const t = setTimeout(async () => {
-      if (mutating.current) return; // a manual save (or autosave) is running; a
-      // later state transition will re-arm this effect.
-      mutating.current = true;
-      setSaveState("saving");
-      try {
-        const res = await autosavePost(post.id, { title, body, excerpt }, updatedAtRef.current);
-        if (res.ok) {
-          updatedAtRef.current = res.savedAt ?? updatedAtRef.current;
-          setSaveState("saved");
-        } else if (res.conflict) {
-          setConflict(true);
-          setSaveState("error");
-          setFormError("This post was changed in another tab or by someone else. Reload before saving.");
-        } else {
-          setSaveState("error"); // re-arms via the effect (bounded to the debounce)
-          setFormError(res.error ?? "Autosave failed — will retry.");
-        }
-      } catch {
-        // A THROWN action (rather than one returning { ok: false }) rejects with
-        // no ActionResult at all. Releasing the lock here is what keeps Save
-        // alive: without the finally, `mutating` stayed true for the rest of the
-        // session and every later Save click was dropped at its own guard, while
-        // saveState stuck on "saving" left both buttons disabled — the editor
-        // looked fine and could not save anything.
-        setSaveState("error");
-        setFormError("Autosave failed — will retry.");
-      } finally {
-        mutating.current = false;
-      }
-    }, AUTOSAVE_MS);
-    return () => clearTimeout(t);
-  }, [mode, post, saveState, body, title, excerpt]);
-
   async function save(nextStatus?: PostStatus) {
     if (mutating.current) return; // ignore double-clicks / concurrent triggers
     mutating.current = true;
@@ -190,9 +148,9 @@ export function PostEditor({ post, initialTags = [] }: { post?: BlogPost; initia
       // After a successful manual save, return to the posts dashboard.
       router.push("/admin/posts");
     } catch {
-      // Same reasoning as the autosave catch: a thrown action carries no
-      // ActionResult, so without this the click produced no navigation, no
-      // write and no message — indistinguishable from a dead button.
+      // A thrown action carries no ActionResult, so without this the click
+      // produced no navigation, no write and no message — indistinguishable
+      // from a dead button, and the guard above stayed latched.
       setSaveState("error");
       setFormError("Couldn't reach the server to save. Your changes are still here — try Save again.");
     } finally {

@@ -15,7 +15,9 @@ import {
   zonedInputToIso,
 } from "../lib/blog/date.ts";
 import { extractText, readingTimeMinutes } from "../lib/blog/readingTime.ts";
+import { toPlainDoc } from "../lib/blog/plainDoc.ts";
 import { sanitizeDoc } from "../lib/blog/sanitize.ts";
+import type { TiptapDoc } from "../lib/blog/types.ts";
 import { isValidSlug, slugify } from "../lib/blog/slug.ts";
 
 // ── slugify ──────────────────────────────────────────────────────────────────
@@ -240,4 +242,47 @@ test("sanitizeDoc drops disallowed nodes inside cells", () => {
   const c = (sanitizeDoc(dirty).content![0] as { content: { content: { content: { type: string }[] }[] }[] }).content[0].content[0];
   assert.equal(c.content.length, 1); // script dropped, paragraph kept
   assert.equal(c.content[0].type, "paragraph");
+});
+
+// ── ProseMirror attrs → Server Action serialization ─────────────────────────
+// Regression: prosemirror-model builds node attrs with Object.create(null) and
+// Node.toJSON() hands that live object straight out, so editor.getJSON() returns
+// a doc whose attrs have a NULL PROTOTYPE. React's Server Action serializer only
+// accepts plain objects — it swapped each one for a temporary client reference,
+// and the action threw "Cannot access level on the server" the moment
+// sanitizeDoc's cleanNode() read attrs.level. Every post has a heading, so every
+// save of an edited body failed. toPlainDoc() is what makes the doc sendable.
+
+/** A heading node shaped the way editor.getJSON() really emits it. */
+function docWithNullProtoAttrs() {
+  const attrs = Object.create(null);
+  attrs.level = 2;
+  attrs.textAlign = null;
+  return {
+    type: "doc",
+    content: [{ type: "heading", attrs, content: [{ type: "text", text: "Heading" }] }],
+  } as unknown as TiptapDoc;
+}
+
+test("editor attrs really do arrive with a null prototype", () => {
+  const attrs = docWithNullProtoAttrs().content![0].attrs;
+  assert.equal(Object.getPrototypeOf(attrs), null);
+});
+
+test("toPlainDoc gives every attrs object Object.prototype back", () => {
+  const plain = toPlainDoc(docWithNullProtoAttrs());
+  const attrs = plain.content![0].attrs;
+  assert.equal(Object.getPrototypeOf(attrs), Object.prototype);
+  assert.deepEqual(attrs, { level: 2, textAlign: null });
+});
+
+test("toPlainDoc preserves the document itself", () => {
+  const doc = docWithNullProtoAttrs();
+  assert.deepEqual(JSON.parse(JSON.stringify(toPlainDoc(doc))), JSON.parse(JSON.stringify(doc)));
+});
+
+test("a plain-doc body survives sanitizeDoc, which is what save needs", () => {
+  const cleaned = sanitizeDoc(toPlainDoc(docWithNullProtoAttrs()));
+  assert.equal(cleaned.type, "doc");
+  assert.equal((cleaned.content as { attrs: { level: number } }[])[0].attrs.level, 2);
 });

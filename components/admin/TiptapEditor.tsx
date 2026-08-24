@@ -12,6 +12,7 @@ import StarterKit from "@tiptap/starter-kit";
 import { useRef, useState } from "react";
 
 import { uploadImage } from "@/app/admin/posts/upload";
+import { toPlainDoc } from "@/lib/blog/plainDoc";
 import type { TiptapDoc } from "@/lib/blog/types";
 
 /** Shared editor extensions (StarterKit v3 includes Link). Headings limited to 2–4. */
@@ -57,7 +58,7 @@ export function TiptapEditor({
           "prose max-w-none min-h-[320px] overflow-x-auto px-[18px] py-[16px] outline-none [&_h2]:text-[24px] [&_h2]:font-bold [&_h3]:text-[20px] [&_h3]:font-semibold [&_p]:my-[10px] [&_ul]:list-disc [&_ul]:pl-[24px] [&_ol]:list-decimal [&_ol]:pl-[24px] [&_blockquote]:border-l-4 [&_blockquote]:border-rebm-card-border [&_blockquote]:pl-[14px] [&_blockquote]:italic [&_a]:text-rebm-link [&_a]:underline [&_img]:rounded-[8px] [&_table]:my-[12px] [&_table]:border-collapse [&_td]:border [&_td]:border-rebm-card-border [&_td]:p-[8px] [&_td_p]:my-0 [&_th]:border [&_th]:border-rebm-card-border [&_th]:bg-[#EEF3F8] [&_th]:p-[8px] [&_th]:text-left [&_th]:font-semibold [&_th_p]:my-0",
       },
     },
-    onUpdate: ({ editor }) => onChange(editor.getJSON() as TiptapDoc),
+    onUpdate: ({ editor }) => onChange(toPlainDoc(editor.getJSON() as TiptapDoc)),
   });
 
   if (!editor) return <div className="min-h-[360px] rounded-[10px] border border-rebm-card-border bg-white" />;

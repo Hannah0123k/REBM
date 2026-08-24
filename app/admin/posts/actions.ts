@@ -186,56 +186,6 @@ export async function updatePost(
   return { ok: true, id: data.id, slug: data.slug, updatedAt: data.updated_at };
 }
 
-// ── autosave ────────────────────────────────────────────────────────────────
-/**
- * Background autosave of the content fields only — NEVER the slug, status,
- * published_at, tags, or SEO. This keeps a live post's URL and publication
- * state exactly as last intentionally saved; those change only through an
- * explicit Save. Guarded by optimistic concurrency so a stale editor tab can't
- * clobber a newer version (returns { conflict } instead).
- */
-export async function autosavePost(
-  id: string,
-  fields: { title: string; body: unknown; excerpt?: string },
-  expectedUpdatedAt?: string,
-): Promise<{ ok: boolean; savedAt?: string; error?: string; conflict?: boolean }> {
-  await requireAdmin();
-  const supabase = await createClient();
-
-  if (expectedUpdatedAt) {
-    const { data: cur } = await supabase.from("blog_posts").select("updated_at").eq("id", id).single();
-    if (cur && cur.updated_at !== expectedUpdatedAt) {
-      return { ok: false, conflict: true, error: "Post changed on the server." };
-    }
-  }
-
-  let body;
-  try {
-    body = sanitizeDoc(fields.body);
-  } catch (e) {
-    const detail = `${(e as Error).message} — ${describeBody(fields.body)}`;
-    console.error(`[admin/posts] autosave sanitize failed: ${detail}`);
-    return { ok: false, error: `Autosave couldn't process this content: ${detail}` };
-  }
-
-  const { data, error } = await supabase
-    .from("blog_posts")
-    .update({
-      title: fields.title || "Untitled",
-      body,
-      excerpt: fields.excerpt || null,
-      reading_time_minutes: readingTimeMinutes(body),
-    })
-    .eq("id", id)
-    .select("updated_at")
-    .single();
-  if (error) {
-    console.error(`[admin/posts] autosave db error: ${error.message}`);
-    return { ok: false, error: "Autosave failed — will retry." };
-  }
-  return { ok: true, savedAt: data.updated_at };
-}
-
 // ── duplicate ──────────────────────────────────────────────────────────────
 export async function duplicatePost(id: string): Promise<ActionResult> {
   await requireAdmin();
