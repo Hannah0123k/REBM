@@ -3,7 +3,9 @@
 import { headers } from "next/headers";
 
 import { createRateLimiter } from "@/lib/contact/rateLimit";
-import { subscribeToNewsletter } from "@/lib/newsletter/subscribe";
+import { createMondayItem } from "@/lib/monday/client";
+import { REBM_GROUP_ID, buildSubscriberItem } from "@/lib/monday/prospects";
+import { splitName, subscribeToNewsletter } from "@/lib/newsletter/subscribe";
 import { newsletterSchema } from "@/lib/newsletter/validation";
 
 /**
@@ -49,6 +51,35 @@ export async function subscribeNewsletter(raw: unknown): Promise<NewsletterResul
   }
 
   const result = await subscribeToNewsletter(parsed.data);
+
+  // Monday CRM record is BEST-EFFORT and secondary — it never changes what the
+  // subscriber sees. It runs on the two paths that ACCEPT the signup (a real
+  // Resend subscription, or the honest "not live yet" acknowledgement), and NOT
+  // on the provider_error path below: that one asks the visitor to try again,
+  // and writing here first would put a duplicate on the board when they do.
+  if (result.subscribed || result.reason === "unconfigured") {
+    try {
+      const { firstName, lastName } = splitName(parsed.data.fullName);
+      const item = buildSubscriberItem(
+        { firstName, lastName, email: parsed.data.email },
+        new Date(),
+      );
+      const crm = await createMondayItem({ groupId: REBM_GROUP_ID, ...item });
+      if (crm.created) {
+        console.log(`[newsletter] Monday item created id=${crm.id}`);
+      } else if (crm.reason === "unconfigured") {
+        // Names only — never any value.
+        console.warn(`[newsletter] Monday not configured — set: ${crm.missing.join(", ")}`);
+      } else {
+        console.error(`[newsletter] Monday create failed (non-fatal): ${crm.detail}`);
+      }
+    } catch (e) {
+      console.error(
+        `[newsletter] Monday create threw (non-fatal): ${e instanceof Error ? e.message : "unknown"}`,
+      );
+    }
+  }
+
   if (result.subscribed) return { ok: true, delivered: true };
 
   if (result.reason === "unconfigured") {

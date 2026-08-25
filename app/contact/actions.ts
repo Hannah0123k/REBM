@@ -5,6 +5,8 @@ import { headers } from "next/headers";
 import { sendContactEmail, sendVisitorConfirmation } from "@/lib/contact/email";
 import { clientIp, createRateLimiter, hashIp, isRateLimited } from "@/lib/contact/rateLimit";
 import { contactSchema } from "@/lib/contact/validation";
+import { createMondayItem } from "@/lib/monday/client";
+import { REBM_GROUP_ID, buildInquiryItem } from "@/lib/monday/prospects";
 import { createClient } from "@/lib/supabase/server";
 
 export type ContactResult =
@@ -139,6 +141,29 @@ export async function submitContact(raw: unknown): Promise<ContactResult> {
       error:
         "Sorry — we couldn’t send your message right now. Please try again shortly.",
     };
+  }
+
+  // Monday CRM record is BEST-EFFORT and secondary, for the same reason as the
+  // auto-reply below: Resend has already delivered the lead to Alan and Rhett,
+  // so a Monday outage must not turn a delivered lead into an error screen the
+  // visitor might "fix" by submitting again. A failure is logged server-side
+  // (loudly, so it can be back-filled) and the submission still succeeds —
+  // this preserves the form's existing user experience exactly.
+  try {
+    const item = buildInquiryItem(parsed.data, new Date());
+    const crm = await createMondayItem({ groupId: REBM_GROUP_ID, ...item });
+    if (crm.created) {
+      console.log(`[contact] Monday item created id=${crm.id}`);
+    } else if (crm.reason === "unconfigured") {
+      // Names only — never any value.
+      console.warn(`[contact] Monday not configured — set: ${crm.missing.join(", ")}`);
+    } else {
+      console.error(`[contact] Monday create failed (non-fatal): ${crm.detail}`);
+    }
+  } catch (e) {
+    console.error(
+      `[contact] Monday create threw (non-fatal): ${e instanceof Error ? e.message : "unknown"}`,
+    );
   }
 
   // Visitor auto-reply is BEST-EFFORT and secondary: the lead has already been
