@@ -9,6 +9,13 @@
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
+    // Lets a runtime import name an explicit ".ts" file. Needed by
+    // lib/newsletter/notify.ts, which imports the contact form's Resend
+    // helpers at runtime: the bare Node test runner cannot resolve the "@/"
+    // alias and ESM will not resolve an extensionless relative specifier, so
+    // the extension has to be explicit. Safe with noEmit — it permits the
+    // form, it does not require it.
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",

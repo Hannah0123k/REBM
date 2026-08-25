@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { createRateLimiter } from "@/lib/contact/rateLimit";
 import { createMondayItem } from "@/lib/monday/client";
 import { REBM_GROUP_ID, buildSubscriberItem } from "@/lib/monday/prospects";
+import { sendSubscriberNotification } from "@/lib/newsletter/notify";
 import { splitName, subscribeToNewsletter } from "@/lib/newsletter/subscribe";
 import { newsletterSchema } from "@/lib/newsletter/validation";
 
@@ -76,6 +77,31 @@ export async function subscribeNewsletter(raw: unknown): Promise<NewsletterResul
     } catch (e) {
       console.error(
         `[newsletter] Monday create threw (non-fatal): ${e instanceof Error ? e.message : "unknown"}`,
+      );
+    }
+
+    // Internal "someone subscribed" notice to the team, sent AFTER the Monday
+    // record so the subscriber is already captured. Also best-effort: the
+    // signup is recorded either way, so a Resend outage must not undo it or
+    // change what the visitor sees. Never sent to the subscriber — recipients
+    // come only from server env.
+    try {
+      const notice = await sendSubscriberNotification({
+        fullName: parsed.data.fullName,
+        email: parsed.data.email,
+        subscribedAt: new Date(),
+      });
+      if (notice.sent) {
+        console.log("[newsletter] internal notification sent");
+      } else if (notice.reason === "unconfigured") {
+        // Names only — never any value.
+        console.warn(`[newsletter] notification not configured — set: ${notice.missing.join(", ")}`);
+      } else if (notice.reason === "provider_error") {
+        console.error(`[newsletter] notification failed (non-fatal): ${notice.detail}`);
+      }
+    } catch (e) {
+      console.error(
+        `[newsletter] notification threw (non-fatal): ${e instanceof Error ? e.message : "unknown"}`,
       );
     }
   }

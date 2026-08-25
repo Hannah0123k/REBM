@@ -255,7 +255,13 @@ export function renderVisitorConfirmation(data: ContactInput): { subject: string
  *  — and the whole submission — hang up to the platform's function limit. */
 const RESEND_TIMEOUT_MS = 10_000;
 
-async function postToResend(body: Record<string, unknown>, apiKey: string): Promise<SendResult> {
+/**
+ * Low-level Resend send. Exported ONLY so other internal notifications can
+ * reuse the same timeout, error shape and transport (see
+ * lib/newsletter/notify.ts) instead of duplicating the fetch. Callers pass a
+ * fully-built body; nothing about the contact flow changes.
+ */
+export async function postToResend(body: Record<string, unknown>, apiKey: string): Promise<SendResult> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), RESEND_TIMEOUT_MS);
   try {
