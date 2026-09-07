@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { absoluteUrl } from "@/lib/site";
 
 import { Container } from "@/components/Container";
 import { Footer } from "@/components/Footer";
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
   title: "Privacy Policy — Real Estate Broker Match",
   description:
     "How Real Estate Foundation, Inc. (Real Estate Broker Match) collects, uses, shares, and protects personal information through its real estate broker referral service.",
+  alternates: { canonical: absoluteUrl("/privacy") },
 };
 
 /**

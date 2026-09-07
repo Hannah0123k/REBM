@@ -42,6 +42,7 @@ const OG_IMAGE = {
 // plugin, so these are written fresh. See CLAUDE.md → Before launch.
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  alternates: { canonical: SITE_URL },
   title: "Real Estate Broker Match",
   description: SITE_DESCRIPTION,
   // Every page that doesn't declare its own `openGraph` inherits this block, so

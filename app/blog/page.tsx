@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { absoluteUrl } from "@/lib/site";
 
 import { Container } from "@/components/Container";
 import { Footer } from "@/components/Footer";
@@ -31,6 +32,7 @@ export const metadata: Metadata = {
   title: "Blog — Real Estate Broker Match",
   description:
     "Insights on commercial real estate, market trends, and broker matching from Real Estate Broker Match.",
+  alternates: { canonical: absoluteUrl("/blog") },
 };
 
 /**

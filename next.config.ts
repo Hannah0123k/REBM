@@ -64,10 +64,65 @@ const securityHeaders = [
   },
 ];
 
+/**
+ * Redirects for the WordPress URLs Google still holds.
+ * ===========================================================================
+ * The migration moved every post from a root-level WordPress URL to /blog/...,
+ * and the tag and category archives from /tag/... to /blog/tag/... . Nothing
+ * bridged the two, so ~87 previously indexed URLs began returning 404 at the
+ * DNS cutover and Google dropped them. These are 308/permanent so the ranking
+ * signal on the old URL transfers to the new one instead of being discarded.
+ *
+ * Generated from migration/manifest.json (source_url -> destination_url), so
+ * this list is the actual set of URLs that moved, not a guess.
+ *
+ * They must stay permanently. Google keeps old URLs in its index for a long
+ * time, and external sites still link to them.
+ */
+const legacyPostRedirects = [
+  { source: "/a-complete-guide-to-what-commercial-real-estate-brokers-actually-do-for-sellers", destination: "/blog/a-complete-guide-to-what-commercial-real-estate-brokers-actually-do-for-sellers", permanent: true },
+  { source: "/capital-gains-basics-investment-property", destination: "/blog/capital-gains-basics-investment-property", permanent: true },
+  { source: "/how-cap-rates-are-trending-and-what-it-means-for-your-property-value", destination: "/blog/how-cap-rates-are-trending-and-what-it-means-for-your-property-value", permanent: true },
+  { source: "/how-commercial-real-estate-sellers-lose-leverage-during-due-diligence-and-how-to-prevent-it", destination: "/blog/how-commercial-real-estate-sellers-lose-leverage-during-due-diligence-and-how-to-prevent-it", permanent: true },
+  { source: "/how-local-market-micro-knowledge-drives-pricing-in-commercial-real-estate", destination: "/blog/how-local-market-micro-knowledge-drives-pricing-in-commercial-real-estate", permanent: true },
+  { source: "/how-long-does-it-take-to-sell-commercial-real-estate", destination: "/blog/how-long-does-it-take-to-sell-commercial-real-estate", permanent: true },
+  { source: "/how-long-does-it-take-to-sell-commercial-real-estate-copy", destination: "/blog/how-long-does-it-take-to-sell-commercial-real-estate-copy", permanent: true },
+  { source: "/how-multifamily-buyers-underwrite-properties-in-todays-market", destination: "/blog/how-multifamily-buyers-underwrite-properties-in-todays-market", permanent: true },
+  { source: "/how-to-choose-the-right-commercial-real-estate-broker-for-your-property", destination: "/blog/how-to-choose-the-right-commercial-real-estate-broker-for-your-property", permanent: true },
+  { source: "/industrial-property-buyers-what-they-look-for-and-why", destination: "/blog/industrial-property-buyers-what-they-look-for-and-why", permanent: true },
+  { source: "/interest-rates-and-cre-pricing-a-sellers-guide", destination: "/blog/interest-rates-and-cre-pricing-a-sellers-guide", permanent: true },
+  { source: "/local-broker-vs-national-brokerage-which-gets-sellers-better-pricing", destination: "/blog/local-broker-vs-national-brokerage-which-gets-sellers-better-pricing", permanent: true },
+  { source: "/loopnet-vs-commercial-real-estate-broker-what-property-owners-need-to-know", destination: "/blog/loopnet-vs-commercial-real-estate-broker-what-property-owners-need-to-know", permanent: true },
+  { source: "/office-sales-in-a-hybrid-work-world-seller-strategies-that-drive-value", destination: "/blog/office-sales-in-a-hybrid-work-world-seller-strategies-that-drive-value", permanent: true },
+  { source: "/rebm-market-pulse-february-2026", destination: "/blog/rebm-market-pulse-february-2026", permanent: true },
+  { source: "/specialist-vs-generalist-brokers", destination: "/blog/specialist-vs-generalist-brokers", permanent: true },
+  { source: "/when-should-a-property-owner-hire-a-commercial-real-estate-brokerand-when-shouldnt-they", destination: "/blog/when-should-a-property-owner-hire-a-commercial-real-estate-brokerand-when-shouldnt-they", permanent: true },
+  { source: "/why-commercial-listings-sit-unsold-for-months", destination: "/blog/why-commercial-listings-sit-unsold-for-months", permanent: true },
+  { source: "/why-international-sellers-lose-leverage-in-commercial-real-estate-negotiations", destination: "/blog/why-international-sellers-lose-leverage-in-commercial-real-estate-negotiations", permanent: true },
+  { source: "/why-out-of-state-owners-overpay-for-convenience", destination: "/blog/why-out-of-state-owners-overpay-for-convenience", permanent: true },
+  { source: "/working-with-international-clients-buying-and-selling-us-real-estate", destination: "/blog/working-with-international-clients-buying-and-selling-us-real-estate", permanent: true },
+];
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
+  },
+  async redirects() {
+    return [
+      ...legacyPostRedirects,
+      // 65 tag archives + 1 category archive. A pattern rule covers every tag
+      // without listing them, and keeps working for tags added later.
+      { source: "/tag/:slug", destination: "/blog/tag/:slug", permanent: true },
+      { source: "/category/:slug", destination: "/blog", permanent: true },
+      // WordPress feed and author URLs Google may still hold. Nothing serves
+      // them now, and a redirect to the blog beats a 404.
+      { source: "/feed", destination: "/blog", permanent: true },
+      { source: "/comments/feed", destination: "/blog", permanent: true },
+      { source: "/author/:slug", destination: "/blog", permanent: true },
+      // The privacy policy lived at the WordPress path; this build uses /privacy.
+      { source: "/privacy-policy", destination: "/privacy", permanent: true },
+    ];
   },
 };
 
