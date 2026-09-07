@@ -86,7 +86,10 @@ const legacyPostRedirects = [
   { source: "/how-commercial-real-estate-sellers-lose-leverage-during-due-diligence-and-how-to-prevent-it", destination: "/blog/how-commercial-real-estate-sellers-lose-leverage-during-due-diligence-and-how-to-prevent-it", permanent: true },
   { source: "/how-local-market-micro-knowledge-drives-pricing-in-commercial-real-estate", destination: "/blog/how-local-market-micro-knowledge-drives-pricing-in-commercial-real-estate", permanent: true },
   { source: "/how-long-does-it-take-to-sell-commercial-real-estate", destination: "/blog/how-long-does-it-take-to-sell-commercial-real-estate", permanent: true },
-  { source: "/how-long-does-it-take-to-sell-commercial-real-estate-copy", destination: "/blog/how-long-does-it-take-to-sell-commercial-real-estate-copy", permanent: true },
+  // The "-copy" duplicate was never published on the new site, so pointing at
+  // it would redirect straight into a 404. Send it to the original article it
+  // duplicates instead, which is the page it should always have been.
+  { source: "/how-long-does-it-take-to-sell-commercial-real-estate-copy", destination: "/blog/how-long-does-it-take-to-sell-commercial-real-estate", permanent: true },
   { source: "/how-multifamily-buyers-underwrite-properties-in-todays-market", destination: "/blog/how-multifamily-buyers-underwrite-properties-in-todays-market", permanent: true },
   { source: "/how-to-choose-the-right-commercial-real-estate-broker-for-your-property", destination: "/blog/how-to-choose-the-right-commercial-real-estate-broker-for-your-property", permanent: true },
   { source: "/industrial-property-buyers-what-they-look-for-and-why", destination: "/blog/industrial-property-buyers-what-they-look-for-and-why", permanent: true },
