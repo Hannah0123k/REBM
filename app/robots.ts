@@ -15,10 +15,25 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
+        // /wp-content/uploads/ is deliberately NOT disallowed: the migrated
+        // Market Pulse PDFs live there and should stay crawlable.
+        allow: ["/", "/wp-content/uploads/"],
         disallow: [
           "/admin", // login-gated CMS
           "/api/",
+          // Dead WordPress infrastructure. These paths hold plugin and theme
+          // CSS/JS from the old site — never pages, and nothing that should be
+          // indexed. Vercel's firewall denies them outright (they are the most
+          // scanned paths on the internet), and a 403 makes Google retry rather
+          // than drop the URL, so it kept reporting them as errors. Telling
+          // crawlers not to ask stops the error at the source and returns the
+          // crawl budget to real pages.
+          "/wp-content/plugins/",
+          "/wp-content/themes/",
+          "/wp-includes/",
+          "/wp-admin/",
+          "/wp-json/",
+          "/xmlrpc.php",
         ],
       },
     ],
