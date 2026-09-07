@@ -79,11 +79,25 @@ const securityHeaders = [
  * They must stay permanently. Google keeps old URLs in its index for a long
  * time, and external sites still link to them.
  */
+// FOUR OF THESE DO NOT POINT AT THEIR OWN ARTICLE.
+//
+// Five of the 21 migrated posts were never published on the new site, so a
+// direct mapping would redirect Google straight into a 404 — worse than a plain
+// 404, because it spends a crawl and teaches nothing. Those five instead point
+// at the closest published article on the same subject, which keeps the ranking
+// signal on the old URL working for a live page and lands a reader somewhere
+// relevant rather than on an error.
+//
+// IF ONE OF THOSE POSTS IS LATER PUBLISHED, restore its direct mapping — the
+// entry below would otherwise keep sending its own old URL to a different
+// article. The affected sources are marked with a "->" comment.
 const legacyPostRedirects = [
   { source: "/a-complete-guide-to-what-commercial-real-estate-brokers-actually-do-for-sellers", destination: "/blog/a-complete-guide-to-what-commercial-real-estate-brokers-actually-do-for-sellers", permanent: true },
   { source: "/capital-gains-basics-investment-property", destination: "/blog/capital-gains-basics-investment-property", permanent: true },
-  { source: "/how-cap-rates-are-trending-and-what-it-means-for-your-property-value", destination: "/blog/how-cap-rates-are-trending-and-what-it-means-for-your-property-value", permanent: true },
-  { source: "/how-commercial-real-estate-sellers-lose-leverage-during-due-diligence-and-how-to-prevent-it", destination: "/blog/how-commercial-real-estate-sellers-lose-leverage-during-due-diligence-and-how-to-prevent-it", permanent: true },
+  // cap rates -> the rates-and-pricing guide
+  { source: "/how-cap-rates-are-trending-and-what-it-means-for-your-property-value", destination: "/blog/interest-rates-and-cre-pricing-a-sellers-guide", permanent: true },
+  // sellers losing leverage -> the other leverage article
+  { source: "/how-commercial-real-estate-sellers-lose-leverage-during-due-diligence-and-how-to-prevent-it", destination: "/blog/why-international-sellers-lose-leverage-in-commercial-real-estate-negotiations", permanent: true },
   { source: "/how-local-market-micro-knowledge-drives-pricing-in-commercial-real-estate", destination: "/blog/how-local-market-micro-knowledge-drives-pricing-in-commercial-real-estate", permanent: true },
   { source: "/how-long-does-it-take-to-sell-commercial-real-estate", destination: "/blog/how-long-does-it-take-to-sell-commercial-real-estate", permanent: true },
   // The "-copy" duplicate was never published on the new site, so pointing at
@@ -97,10 +111,12 @@ const legacyPostRedirects = [
   { source: "/local-broker-vs-national-brokerage-which-gets-sellers-better-pricing", destination: "/blog/local-broker-vs-national-brokerage-which-gets-sellers-better-pricing", permanent: true },
   { source: "/loopnet-vs-commercial-real-estate-broker-what-property-owners-need-to-know", destination: "/blog/loopnet-vs-commercial-real-estate-broker-what-property-owners-need-to-know", permanent: true },
   { source: "/office-sales-in-a-hybrid-work-world-seller-strategies-that-drive-value", destination: "/blog/office-sales-in-a-hybrid-work-world-seller-strategies-that-drive-value", permanent: true },
-  { source: "/rebm-market-pulse-february-2026", destination: "/blog/rebm-market-pulse-february-2026", permanent: true },
+  // no other Market Pulse issue is published, so the blog index
+  { source: "/rebm-market-pulse-february-2026", destination: "/blog", permanent: true },
   { source: "/specialist-vs-generalist-brokers", destination: "/blog/specialist-vs-generalist-brokers", permanent: true },
   { source: "/when-should-a-property-owner-hire-a-commercial-real-estate-brokerand-when-shouldnt-they", destination: "/blog/when-should-a-property-owner-hire-a-commercial-real-estate-brokerand-when-shouldnt-they", permanent: true },
-  { source: "/why-commercial-listings-sit-unsold-for-months", destination: "/blog/why-commercial-listings-sit-unsold-for-months", permanent: true },
+  // listings sitting unsold -> time-to-sell
+  { source: "/why-commercial-listings-sit-unsold-for-months", destination: "/blog/how-long-does-it-take-to-sell-commercial-real-estate", permanent: true },
   { source: "/why-international-sellers-lose-leverage-in-commercial-real-estate-negotiations", destination: "/blog/why-international-sellers-lose-leverage-in-commercial-real-estate-negotiations", permanent: true },
   { source: "/why-out-of-state-owners-overpay-for-convenience", destination: "/blog/why-out-of-state-owners-overpay-for-convenience", permanent: true },
   { source: "/working-with-international-clients-buying-and-selling-us-real-estate", destination: "/blog/working-with-international-clients-buying-and-selling-us-real-estate", permanent: true },
