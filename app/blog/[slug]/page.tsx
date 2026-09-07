@@ -316,6 +316,34 @@ export default async function BlogPostPage({
                 )}
               </div>
 
+              {/* Tag links. The archives existed but nothing linked to them, so
+                  they were orphaned — reachable only by typing the URL, which is
+                  part of why Google crawled them and declined to index them.
+                  Linking from the article gives them a real place in the site and
+                  gives a reader a way to find related pieces. Thin archives are
+                  still noindex,follow (see MIN_INDEXABLE_TAG_POSTS), so these
+                  links pass through to the articles without asking Google to
+                  index a page that only quotes one post. */}
+              {view.tags.length > 0 ? (
+                <nav aria-label="Article topics" className="mt-[40px] border-t border-[rgb(226,232,240)] pt-[20px]">
+                  <h2 className="text-[13px] font-semibold tracking-[0.08em] text-[rgb(120,130,140)] uppercase">
+                    Topics
+                  </h2>
+                  <ul className="mt-[12px] flex flex-wrap gap-[8px]">
+                    {view.tags.map((t) => (
+                      <li key={t.slug}>
+                        <Link
+                          href={`/blog/tag/${t.slug}`}
+                          className="inline-block rounded-full bg-[#EEF3F8] px-[12px] py-[5px] text-[14px] text-rebm-navy transition-colors hover:bg-[#E1EAF3] focus-visible:ring-2 focus-visible:ring-rebm-navy focus-visible:outline-none"
+                        >
+                          {t.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              ) : null}
+
             </div>
           </Container>
         </article>
