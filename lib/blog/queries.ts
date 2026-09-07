@@ -267,6 +267,51 @@ export async function getAllPublishedSlugs(): Promise<string[]> {
 }
 
 /** Tags that have at least one publicly-visible post (public read via RLS). */
+/**
+ * Minimum published posts a tag archive needs before it is worth indexing.
+ *
+ * 56% of this site's tags sit on exactly one post, and a tag page listing one
+ * post is a near-duplicate of that post: same title, same excerpt, no unique
+ * content. Google crawls those and declines to index them, which is what the
+ * "Crawled - currently not indexed" bucket in Search Console is mostly made of.
+ * Below this threshold a tag page stays live and linkable for readers but is
+ * marked noindex and kept out of the sitemap, so crawl budget goes to pages
+ * that can actually rank.
+ */
+export const MIN_INDEXABLE_TAG_POSTS = 3;
+
+/**
+ * Tags with their PUBLISHED post counts, in one round trip.
+ *
+ * getPublicTags() deliberately does not filter by visibility, so it can count a
+ * draft's tags. This one joins through to blog_posts and applies the same
+ * visibility predicate as every other public query, because an index/noindex
+ * decision must be based on what a reader can actually see.
+ */
+export async function getPublicTagCounts(): Promise<(PublicTag & { count: number })[]> {
+  const supabase = createPublicClient();
+  const { data, error } = await supabase
+    .from("blog_post_tags")
+    .select("tags(name, slug), blog_posts!inner(status, published_at, archived_at)")
+    .in("blog_posts.status", ["published", "scheduled"])
+    .not("blog_posts.published_at", "is", null)
+    .lte("blog_posts.published_at", new Date().toISOString())
+    .is("blog_posts.archived_at", null);
+  if (error) throw new Error(`getPublicTagCounts: ${error.message}`);
+
+  const counts = new Map<string, PublicTag & { count: number }>();
+  for (const row of (data ?? []) as unknown as RawTagJoin[]) {
+    const t = row?.tags;
+    for (const tag of Array.isArray(t) ? t : t ? [t] : []) {
+      if (!tag?.name || !tag?.slug) continue;
+      const hit = counts.get(tag.slug);
+      if (hit) hit.count += 1;
+      else counts.set(tag.slug, { name: tag.name, slug: tag.slug, count: 1 });
+    }
+  }
+  return [...counts.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}
+
 export async function getPublicTags(): Promise<PublicTag[]> {
   const supabase = createPublicClient();
   const { data, error } = await supabase

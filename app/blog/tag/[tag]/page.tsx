@@ -7,7 +7,7 @@ import { Footer } from "@/components/Footer";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { BlogPagination } from "@/components/blog/BlogPagination";
 import { cardFromPost } from "@/lib/blog/cardView";
-import { getPublishedPosts } from "@/lib/blog/queries";
+import { MIN_INDEXABLE_TAG_POSTS, getPublishedPosts } from "@/lib/blog/queries";
 import { SITE_NAME, absoluteUrl } from "@/lib/site";
 
 /**
@@ -28,14 +28,20 @@ export async function generateMetadata({
   // A tag with no visible posts 404s in the page — but the blog loading boundary
   // makes that a soft-404 (HTTP 200). A cheap existence check lets us mark the
   // empty case noindex so invalid tag URLs don't get indexed.
-  const { posts } = await getPublishedPosts({ tagSlug: tag, page: 1, pageSize: 1 });
+  const { posts, total } = await getPublishedPosts({ tagSlug: tag, page: 1, pageSize: 1 });
   if (posts.length === 0) {
     return { title: `${name} — ${SITE_NAME} Blog`, robots: { index: false, follow: false } };
   }
+  // A tag carrying one or two posts is a near-duplicate of those posts rather
+  // than a page in its own right. Keep it live and followable — the links still
+  // pass through to the articles — but keep it out of the index, where it would
+  // only compete with the post it is quoting. See MIN_INDEXABLE_TAG_POSTS.
+  const thin = total < MIN_INDEXABLE_TAG_POSTS;
   return {
     title: `${name} — ${SITE_NAME} Blog`,
     description: `Articles tagged ${name} from ${SITE_NAME}.`,
     alternates: { canonical: absoluteUrl(`/blog/tag/${tag}`) },
+    ...(thin ? { robots: { index: false, follow: true } } : {}),
   };
 }
 

@@ -1,6 +1,11 @@
 import type { MetadataRoute } from "next";
 
-import { getAllPublishedSlugs, getPublicTags, getPublishedPosts } from "@/lib/blog/queries";
+import {
+  MIN_INDEXABLE_TAG_POSTS,
+  getAllPublishedSlugs,
+  getPublicTagCounts,
+  getPublishedPosts,
+} from "@/lib/blog/queries";
 import { absoluteUrl } from "@/lib/site";
 
 /**
@@ -65,13 +70,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   try {
-    const tags = await getPublicTags();
-    tagEntries = tags.map((t) => ({
-      url: absoluteUrl(`/blog/tag/${t.slug}`),
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: 0.4,
-    }));
+    // Only tags substantial enough to be indexable. Listing a thin archive here
+    // invites Google to crawl a page it will then refuse to index, which spends
+    // crawl budget and adds to "Crawled - currently not indexed" for nothing.
+    const tags = await getPublicTagCounts();
+    tagEntries = tags
+      .filter((t) => t.count >= MIN_INDEXABLE_TAG_POSTS)
+      .map((t) => ({
+        url: absoluteUrl(`/blog/tag/${t.slug}`),
+        lastModified: now,
+        changeFrequency: "monthly" as const,
+        priority: 0.4,
+      }));
   } catch (e) {
     console.error(`[sitemap] tag query failed: ${e instanceof Error ? e.message : "unknown"}`);
   }
